@@ -15,18 +15,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* 
-        ====================================================
-        BUSINESS INFO SETTINGS - EDIT HERE
-        ====================================================
-        Address: [Your Business Address Here]
-        Phone: +971524186102
-        Email: ashan.uae.123@gmail.com
-        Instagram: [Your Instagram Handle]
-        Facebook: [Your Facebook Page]
-        ====================================================
-        */
-
         :root {
             --metallic-blue: #2c5f8d;
             --metallic-blue-dark: #1e4563;
@@ -55,13 +43,13 @@
             background-color: var(--white);
         }
 
-        /* Navigation */
+        /* ── Top Bar ── */
         .top-bar {
             background-color: var(--metallic-blue-dark);
             color: var(--white);
             padding: 0.5rem 0;
             font-size: 0.9rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
         .top-bar-container {
@@ -86,13 +74,12 @@
             transition: color 0.3s ease;
         }
 
-        .top-bar-info a:hover {
-            color: #f6d365;
-        }
+        .top-bar-info a:hover { color: #f6d365; }
 
+        /* ── Navigation ── */
         nav {
             background-color: var(--white);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             position: sticky;
             top: 0;
             z-index: 999;
@@ -105,24 +92,57 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 2rem;
+            padding: 0.7rem 2rem;
         }
 
-        .logo {
-            font-size: 1.5rem;
+        /* ══════════════════════════════
+           LOGO — SVG inline mark + text
+           ══════════════════════════════ */
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        /* The SVG badge */
+        .logo-icon {
+            width: 52px;
+            height: 52px;
+            flex-shrink: 0;
+            filter: drop-shadow(0 3px 6px rgba(44,95,141,0.35));
+        }
+
+        /* Text block next to icon */
+        .logo-text-group {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.15;
+        }
+
+        .logo-main {
+            font-size: 1.35rem;
             font-weight: 700;
             color: var(--metallic-blue);
+            letter-spacing: -0.02em;
         }
 
-        .logo span {
+        .logo-main span {
             background: var(--gold-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            color: var(--gold-accent);
-            /* Fallback */
         }
 
+        .logo-tagline {
+            font-size: 0.65rem;
+            font-weight: 500;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--text-light);
+        }
+
+        /* ── Nav menu ── */
         .nav-menu {
             display: flex;
             list-style: none;
@@ -137,9 +157,7 @@
             position: relative;
         }
 
-        .nav-menu a:hover {
-            color: var(--metallic-blue);
-        }
+        .nav-menu a:hover { color: var(--metallic-blue); }
 
         .nav-menu a::after {
             content: '';
@@ -152,9 +170,7 @@
             transition: width 0.3s ease;
         }
 
-        .nav-menu a:hover::after {
-            width: 100%;
-        }
+        .nav-menu a:hover::after { width: 100%; }
 
         .mobile-menu-toggle {
             display: none;
@@ -165,7 +181,7 @@
             cursor: pointer;
         }
 
-        /* Hero Section */
+        /* ── Hero ── */
         .hero {
             background: linear-gradient(135deg, var(--metallic-blue) 0%, var(--metallic-blue-dark) 100%);
             color: var(--white);
@@ -178,11 +194,8 @@
         .hero::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
+            inset: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100%25" height="100%25" fill="url(%23grid)"/></svg>');
             opacity: 0.3;
         }
 
@@ -198,7 +211,7 @@
             font-size: 3rem;
             font-weight: 700;
             margin-bottom: 1rem;
-            font-family: 'Noto Sans Sinhala', 'Poppins', sans-serif;
+            font-family: 'Noto Sans Sinhala','Poppins',sans-serif;
             line-height: 1.3;
         }
 
@@ -213,14 +226,13 @@
             display: inline-block;
             background: var(--gold-gradient);
             color: var(--metallic-blue-dark);
-            /* Darker text for better contrast on gold */
             padding: 1rem 2.5rem;
             text-decoration: none;
             border-radius: 50px;
             font-weight: 700;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(212,175,55,0.4);
+            border: 1px solid rgba(255,255,255,0.2);
             position: relative;
             overflow: hidden;
         }
@@ -228,27 +240,17 @@
         .cta-button::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);
             transition: 0.5s;
         }
 
-        .cta-button:hover::before {
-            left: 100%;
-        }
+        .cta-button:hover::before { left: 100%; }
+        .cta-button:hover { transform: translateY(-3px); box-shadow: 0 6px 25px rgba(212,175,55,0.6); }
 
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 25px rgba(212, 175, 55, 0.6);
-        }
-
-        /* Section Styling */
-        section {
-            padding: 5rem 2rem;
-        }
+        /* ── Section base ── */
+        section { padding: 5rem 2rem; }
 
         .section-title {
             text-align: center;
@@ -265,11 +267,9 @@
         .section-title::after {
             content: '';
             position: absolute;
-            bottom: -10px;
-            left: 50%;
+            bottom: -10px; left: 50%;
             transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
+            width: 80px; height: 4px;
             background: var(--gold-gradient);
             border-radius: 2px;
         }
@@ -281,15 +281,12 @@
             font-size: 1.1rem;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1200px; margin: 0 auto; }
 
-        /* Services Section */
-        #services {
-            background-color: var(--light-gray);
-        }
+        /* ═══════════════════════════════════════════════
+           SERVICES — 3-D icon cards
+           ═══════════════════════════════════════════════ */
+        #services { background-color: var(--light-gray); }
 
         .services-grid {
             display: grid;
@@ -299,38 +296,133 @@
         }
 
         .service-category {
-            background-color: var(--white);
+            background: var(--white);
             padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            transition: all 0.35s cubic-bezier(.22,.61,.36,1);
+            position: relative;
+            overflow: hidden;
         }
 
+        .service-category::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: var(--gold-gradient);
+            border-radius: 16px 16px 0 0;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.35s ease;
+        }
+
+        .service-category:hover::before { transform: scaleX(1); }
+
         .service-category:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(44,95,141,0.18);
+        }
+
+        /* ── 3-D Icon ── */
+        .service-icon-3d {
+            width: 72px;
+            height: 72px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.2rem;
+            position: relative;
+            transition: transform 0.35s ease, box-shadow 0.35s ease;
+        }
+
+        /* The raised 3-D look: layered box-shadows */
+        .service-icon-3d.icon-apparel {
+            background: linear-gradient(145deg, #3a7fc1, #2456a4);
+            box-shadow:
+                0 2px 0 #1a3f7f,
+                0 4px 0 #143060,
+                0 6px 0 #0e2144,
+                0 8px 12px rgba(20,48,96,0.45),
+                inset 0 1px 0 rgba(255,255,255,0.25);
+        }
+
+        .service-icon-3d.icon-fast {
+            background: linear-gradient(145deg, #e8b84b, #c8951e);
+            box-shadow:
+                0 2px 0 #a07010,
+                0 4px 0 #7a5508,
+                0 6px 0 #553c05,
+                0 8px 12px rgba(120,80,0,0.45),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+        }
+
+        .service-icon-3d.icon-promo {
+            background: linear-gradient(145deg, #3dba8a, #28976c);
+            box-shadow:
+                0 2px 0 #1e7554,
+                0 4px 0 #165740,
+                0 6px 0 #0e3a2b,
+                0 8px 12px rgba(14,58,43,0.45),
+                inset 0 1px 0 rgba(255,255,255,0.25);
+        }
+
+        .service-icon-3d i {
+            font-size: 2rem;
+            color: #fff;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.35));
+            transition: transform 0.3s ease;
+        }
+
+        .service-category:hover .service-icon-3d {
+            transform: translateY(-4px) rotate(-4deg);
+        }
+
+        .service-category:hover .service-icon-3d.icon-apparel {
+            box-shadow:
+                0 4px 0 #1a3f7f,
+                0 8px 0 #143060,
+                0 12px 0 #0e2144,
+                0 16px 20px rgba(20,48,96,0.40),
+                inset 0 1px 0 rgba(255,255,255,0.25);
+        }
+
+        .service-category:hover .service-icon-3d.icon-fast {
+            box-shadow:
+                0 4px 0 #a07010,
+                0 8px 0 #7a5508,
+                0 12px 0 #553c05,
+                0 16px 20px rgba(120,80,0,0.40),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+        }
+
+        .service-category:hover .service-icon-3d.icon-promo {
+            box-shadow:
+                0 4px 0 #1e7554,
+                0 8px 0 #165740,
+                0 12px 0 #0e3a2b,
+                0 16px 20px rgba(14,58,43,0.40),
+                inset 0 1px 0 rgba(255,255,255,0.25);
         }
 
         .service-category h3 {
             color: var(--metallic-blue);
-            font-size: 1.4rem;
-            margin-bottom: 1.5rem;
-            font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif;
+            font-size: 1.2rem;
+            margin-bottom: 1.2rem;
+            font-family: 'Poppins','Noto Sans Sinhala',sans-serif;
         }
 
-        .service-category ul {
-            list-style: none;
-        }
+        .service-category ul { list-style: none; }
 
         .service-category li {
             padding: 0.5rem 0;
             border-bottom: 1px solid #eeeeee;
-            font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif;
+            font-family: 'Poppins','Noto Sans Sinhala',sans-serif;
+            font-size: 0.95rem;
         }
 
-        .service-category li:last-child {
-            border-bottom: none;
-        }
+        .service-category li:last-child { border-bottom: none; }
 
         .service-category li::before {
             content: '✓';
@@ -339,7 +431,7 @@
             margin-right: 0.5rem;
         }
 
-        /* About Section */
+        /* ── About ── */
         .about-content {
             display: grid;
             grid-template-columns: 1fr;
@@ -351,7 +443,7 @@
             font-size: 1.05rem;
             line-height: 1.8;
             color: var(--text-dark);
-            font-family: 'Noto Sans Sinhala', 'Poppins', sans-serif;
+            font-family: 'Noto Sans Sinhala','Poppins',sans-serif;
             margin-bottom: 1.5rem;
         }
 
@@ -382,15 +474,10 @@
             margin-bottom: 1rem;
         }
 
-        .highlight-box h4 {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-        }
+        .highlight-box h4 { font-size: 1.2rem; margin-bottom: 0.5rem; }
 
-        /* Portfolio Section */
-        #portfolio {
-            background-color: var(--light-gray);
-        }
+        /* ── Portfolio ── */
+        #portfolio { background-color: var(--light-gray); }
 
         .gallery-grid {
             display: grid;
@@ -407,23 +494,17 @@
         }
 
         .gallery-item img {
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             object-fit: cover;
             transition: transform 0.5s ease;
         }
 
-        .gallery-item:hover img {
-            transform: scale(1.1);
-        }
+        .gallery-item:hover img { transform: scale(1.1); }
 
         .gallery-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(44, 95, 141, 0.9), rgba(30, 69, 99, 0.9));
+            inset: 0;
+            background: linear-gradient(135deg,rgba(44,95,141,0.9),rgba(30,69,99,0.9));
             display: flex;
             align-items: center;
             justify-content: center;
@@ -431,9 +512,7 @@
             transition: opacity 0.3s ease;
         }
 
-        .gallery-item:hover .gallery-overlay {
-            opacity: 1;
-        }
+        .gallery-item:hover .gallery-overlay { opacity: 1; }
 
         .gallery-overlay p {
             color: var(--white);
@@ -443,10 +522,8 @@
             text-align: center;
         }
 
-        /* Contact Section */
-        #contact {
-            background-color: var(--white);
-        }
+        /* ── Contact ── */
+        #contact { background-color: var(--white); }
 
         .contact-container {
             display: grid;
@@ -462,9 +539,7 @@
             border-radius: 10px;
         }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
+        .form-group { margin-bottom: 1.5rem; }
 
         .form-group label {
             display: block;
@@ -473,7 +548,6 @@
             color: var(--text-dark);
         }
 
-        /* CRITICAL: Updated form input styling for visibility */
         .form-group input,
         .form-group textarea {
             width: 100%;
@@ -482,13 +556,10 @@
             background-color: #ffffff !important;
             color: #333333 !important;
             border-radius: 5px;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Poppins',sans-serif;
             font-size: 1rem;
             transition: all 0.3s ease;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .form-group input:focus,
@@ -504,10 +575,7 @@
             opacity: 1;
         }
 
-        .form-group textarea {
-            resize: vertical;
-            min-height: 120px;
-        }
+        .form-group textarea { resize: vertical; min-height: 120px; }
 
         .submit-button {
             background-color: var(--metallic-blue);
@@ -525,7 +593,7 @@
         .submit-button:hover {
             background-color: var(--metallic-blue-dark);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(44, 95, 141, 0.3);
+            box-shadow: 0 5px 15px rgba(44,95,141,0.3);
         }
 
         .contact-info {
@@ -548,6 +616,17 @@
             width: 30px;
         }
 
+        .contact-detail a {
+            color: var(--metallic-blue);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .contact-detail a:hover {
+            color: var(--gold-accent);
+            text-decoration: underline;
+        }
+
         .call-button {
             display: inline-block;
             background-color: var(--metallic-blue);
@@ -564,7 +643,7 @@
         .call-button:hover {
             background-color: var(--metallic-blue-dark);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(44, 95, 141, 0.3);
+            box-shadow: 0 5px 15px rgba(44,95,141,0.3);
         }
 
         .social-links {
@@ -577,8 +656,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 50px;
-            height: 50px;
+            width: 50px; height: 50px;
             background-color: var(--light-gray);
             color: var(--metallic-blue);
             border-radius: 50%;
@@ -592,7 +670,7 @@
             transform: translateY(-3px);
         }
 
-        /* Footer */
+        /* ── Footer ── */
         footer {
             background-color: var(--metallic-blue-dark);
             color: var(--white);
@@ -600,52 +678,32 @@
             padding: 2rem;
         }
 
-        footer p {
-            margin: 0;
-            opacity: 0.9;
-        }
+        footer p { margin: 0; opacity: 0.9; }
 
-        /* Animations */
+        /* ── Animations ── */
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes pulse-gold {
-            0% {
-                box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7);
-            }
-
-            70% {
-                box-shadow: 0 0 0 15px rgba(212, 175, 55, 0);
-            }
-
-            100% {
-                box-shadow: 0 0 0 0 rgba(212, 175, 55, 0);
-            }
+            0%   { box-shadow: 0 0 0 0 rgba(212,175,55,0.7); }
+            70%  { box-shadow: 0 0 0 15px rgba(212,175,55,0); }
+            100% { box-shadow: 0 0 0 0 rgba(212,175,55,0); }
         }
 
         .float-whatsapp {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
+            bottom: 30px; right: 30px;
             background-color: #25d366;
             color: white;
-            width: 60px;
-            height: 60px;
+            width: 60px; height: 60px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 30px;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
             z-index: 1000;
             transition: all 0.3s ease;
             text-decoration: none;
@@ -657,7 +715,7 @@
             background-color: #128c7e;
         }
 
-        /* Responsive Design */
+        /* ── Responsive ── */
         @media (max-width: 768px) {
             .top-bar-container {
                 flex-direction: column;
@@ -679,62 +737,39 @@
                 width: 100%;
                 text-align: center;
                 transition: 0.3s;
-                box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
+                box-shadow: 0 10px 27px rgba(0,0,0,0.05);
                 padding: 2rem 0;
             }
 
-            .nav-menu.active {
-                left: 0;
-            }
+            .nav-menu.active { left: 0; }
 
-            .mobile-menu-toggle {
-                display: block;
-            }
+            .mobile-menu-toggle { display: block; }
 
-            .hero h1 {
-                font-size: 2rem;
-            }
+            .hero h1 { font-size: 2rem; }
+            .hero-subtitle { font-size: 1.1rem; }
+            .section-title { font-size: 2rem; }
 
-            .hero-subtitle {
-                font-size: 1.1rem;
-            }
-
-            .section-title {
-                font-size: 2rem;
-            }
-
-            .contact-container {
-                grid-template-columns: 1fr;
-            }
+            .contact-container { grid-template-columns: 1fr; }
 
             .services-grid,
-            .gallery-grid {
-                grid-template-columns: 1fr;
-            }
+            .gallery-grid { grid-template-columns: 1fr; }
+
+            .logo-main { font-size: 1.1rem; }
+            .logo-icon { width: 42px; height: 42px; }
         }
 
         @media (max-width: 480px) {
-            .hero {
-                padding: 5rem 1rem 4rem;
-            }
-
-            .hero h1 {
-                font-size: 1.6rem;
-            }
-
-            .nav-container {
-                padding: 1rem;
-            }
-
-            section {
-                padding: 3rem 1rem;
-            }
+            .hero { padding: 5rem 1rem 4rem; }
+            .hero h1 { font-size: 1.6rem; }
+            .nav-container { padding: 1rem; }
+            section { padding: 3rem 1rem; }
         }
     </style>
 </head>
 
 <body>
-    <!-- Top Bar (Contact Us Udinma) -->
+
+    <!-- Top Bar -->
     <div class="top-bar">
         <div class="top-bar-container">
             <div class="top-bar-info">
@@ -742,7 +777,7 @@
             </div>
             <div class="top-bar-info">
                 <a href="tel:+971524186102"><i class="fas fa-phone-alt"></i> +971 52 418 6102</a>
-                <a href="/cdn-cgi/l/email-protection#81e0f2e9e0efaff4e0e4afb0b3b2c1e6ece0e8edafe2eeec"><i class="fas fa-envelope"></i> <span class="__cf_email__" data-cfemail="48293b202926663d292d66797a7b082f25292124662b2725">[email&#160;protected]</span></a>
+                <a href="mailto:ashan.uae.123@gmail.com"><i class="fas fa-envelope"></i> ashan.uae.123@gmail.com</a>
             </div>
         </div>
     </div>
@@ -750,7 +785,49 @@
     <!-- Navigation -->
     <nav>
         <div class="nav-container">
-            <div class="logo">Janu Print <span>| Fab</span></div>
+
+            <!-- ══ LOGO ══ -->
+            <a href="#home" class="logo-wrap">
+                <!-- Inline SVG badge — printer / fabric cross mark -->
+                <svg class="logo-icon" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- outer shield / badge shape -->
+                    <path d="M26 2L6 10V26c0 12 8.5 22.5 20 26 11.5-3.5 20-14 20-26V10L26 2Z"
+                          fill="url(#logoGrad1)" stroke="url(#logoGold)" stroke-width="1.2"/>
+                    <!-- inner subtle shine -->
+                    <path d="M26 6L9 13V26c0 10.5 7.5 19.5 17 22.8 9.5-3.3 17-12.3 17-22.8V13L26 6Z"
+                          fill="url(#logoGrad2)" opacity="0.55"/>
+                    <!-- printer icon body -->
+                    <rect x="15" y="21" width="22" height="14" rx="2.5" fill="white" opacity="0.95"/>
+                    <rect x="18" y="17" width="16" height="6" rx="1.5" fill="url(#logoGold)"/>
+                    <rect x="18" y="28" width="16" height="3" rx="1" fill="url(#logoGold)"/>
+                    <!-- paper coming out -->
+                    <rect x="20" y="33" width="12" height="5" rx="1" fill="white" opacity="0.9"/>
+                    <!-- star accent top -->
+                    <circle cx="26" cy="11" r="3" fill="url(#logoGold)" opacity="0.9"/>
+                    <defs>
+                        <linearGradient id="logoGrad1" x1="6" y1="2" x2="46" y2="50" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#2c5f8d"/>
+                            <stop offset="100%" stop-color="#1e4563"/>
+                        </linearGradient>
+                        <linearGradient id="logoGrad2" x1="9" y1="6" x2="43" y2="49" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#4a90d9"/>
+                            <stop offset="100%" stop-color="#2c5f8d"/>
+                        </linearGradient>
+                        <linearGradient id="logoGold" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
+                            <stop offset="0%" stop-color="#b8860b"/>
+                            <stop offset="50%" stop-color="#d4af37"/>
+                            <stop offset="100%" stop-color="#f6d365"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+
+                <div class="logo-text-group">
+                    <span class="logo-main">Janu Print <span>| Fab</span></span>
+                    <span class="logo-tagline">Premium Printing Solutions</span>
+                </div>
+            </a>
+            <!-- ══ END LOGO ══ -->
+
             <ul class="nav-menu">
                 <li><a href="#home">Home</a></li>
                 <li><a href="#services">Services</a></li>
@@ -780,8 +857,13 @@
             <p class="section-subtitle">Comprehensive printing solutions tailored to your needs</p>
 
             <div class="services-grid">
-                <!-- Category A -->
+
+                <!-- Category A — Apparel -->
                 <div class="service-category">
+                    <!-- 3-D blue icon -->
+                    <div class="service-icon-3d icon-apparel">
+                        <i class="fas fa-tshirt"></i>
+                    </div>
                     <h3>Custom Apparel Printing | ඇඳුම් මුද්‍රණය</h3>
                     <ul>
                         <li>T-Shirts (Men, Women, Kids) | ටී-ෂර්ට්</li>
@@ -792,8 +874,12 @@
                     </ul>
                 </div>
 
-                <!-- Category B -->
+                <!-- Category B — Fast Turnaround -->
                 <div class="service-category">
+                    <!-- 3-D gold icon -->
+                    <div class="service-icon-3d icon-fast">
+                        <i class="fas fa-bolt"></i>
+                    </div>
                     <h3>Fast Turnaround Services | කඩිනම් මුද්‍රණ සේවා</h3>
                     <ul>
                         <li>Same Day DTF Printing | එදිනම DTF මුද්‍රණය</li>
@@ -802,8 +888,12 @@
                     </ul>
                 </div>
 
-                <!-- Category C -->
+                <!-- Category C — Promotional -->
                 <div class="service-category">
+                    <!-- 3-D green icon -->
+                    <div class="service-icon-3d icon-promo">
+                        <i class="fas fa-gift"></i>
+                    </div>
                     <h3>Promotional Items | ප්‍රවර්ධන ද්‍රව්‍ය</h3>
                     <ul>
                         <li>Custom Tote & Drawstring Bags | රෙදි බෑග් වර්ග</li>
@@ -811,6 +901,7 @@
                         <li>Caps Printing & Custom Patches | තොප්පි සහ ලාංඡන</li>
                     </ul>
                 </div>
+
             </div>
         </div>
     </section>
@@ -828,7 +919,6 @@
                     අමුද්‍රව්‍ය භාවිතා කරමින්, ශ්‍රී ලාංකීය පාරිභෝගිකයාට ඉහළම ගුණාත්මකභාවයෙන් යුත් නිමවුමක් ලබා දීමයි.
                     දේශීය දැනුම සහ ජාත්‍යන්තර ප්‍රමිතිය අප සතු සුවිශේෂී හැකියාවයි.
                 </div>
-
                 <div class="about-text">
                     We are a proudly Sri Lankan company operating with extensive experience in both Sri Lanka and Dubai.
                     We specialize in delivering high-quality products crafted from premium Dubai-standard materials. By
@@ -843,13 +933,11 @@
                     <h4>Premium Materials</h4>
                     <p>Dubai-standard quality</p>
                 </div>
-
                 <div class="highlight-box">
                     <i class="fas fa-users"></i>
                     <h4>Expert Team</h4>
                     <p>Skilled professionals</p>
                 </div>
-
                 <div class="highlight-box">
                     <i class="fas fa-star"></i>
                     <h4>100% Satisfaction</h4>
@@ -866,53 +954,29 @@
             <p class="section-subtitle">Showcasing our finest work</p>
 
             <div class="gallery-grid">
-                <!-- Gallery Item 1 -->
                 <div class="gallery-item">
-                    <img src="https://i.ibb.co/rTBS56K/Screenshot-2026-02-12-162303.png"
-                        alt="Portfolio Item 1">
-                    <div class="gallery-overlay">
-                        <p>Custom T-Shirt Design</p>
-                    </div>
+                    <img src="https://i.ibb.co/rTBS56K/Screenshot-2026-02-12-162303.png" alt="Portfolio Item 1">
+                    <div class="gallery-overlay"><p>Custom T-Shirt Design</p></div>
                 </div>
-
                 <div class="gallery-item">
-                    <img src="https://i.ibb.co/5WVsXWbY/Screenshot-2026-02-12-161621.png"
-                        alt="Portfolio Item 2">
-                    <div class="gallery-overlay">
-                        <p>Corporate Uniform Project</p>
-                    </div>
+                    <img src="https://i.ibb.co/5WVsXWbY/Screenshot-2026-02-12-161621.png" alt="Portfolio Item 2">
+                    <div class="gallery-overlay"><p>Corporate Uniform Project</p></div>
                 </div>
-
                 <div class="gallery-item">
-                    <img src="https://i.ibb.co/FLWGJCRs/vector-sports-jerseys-racing-jerseys-running-jerseys-947814-59509.jpg"
-                        alt="Portfolio Item 3">
-                    <div class="gallery-overlay">
-                        <p>DTF Printing Sample</p>
-                    </div>
+                    <img src="https://i.ibb.co/FLWGJCRs/vector-sports-jerseys-racing-jerseys-running-jerseys-947814-59509.jpg" alt="Portfolio Item 3">
+                    <div class="gallery-overlay"><p>DTF Printing Sample</p></div>
                 </div>
-
                 <div class="gallery-item">
-                    <img src="https://i.ibb.co/wNHq19zb/Carhartt-Signature-Logo-Midweight-Sweatshirt-001-Black-1-ml.jpg"
-                        alt="Portfolio Item 4">
-                    <div class="gallery-overlay">
-                        <p>Promotional Tote Bags</p>
-                    </div>
+                    <img src="https://i.ibb.co/wNHq19zb/Carhartt-Signature-Logo-Midweight-Sweatshirt-001-Black-1-ml.jpg" alt="Portfolio Item 4">
+                    <div class="gallery-overlay"><p>Promotional Tote Bags</p></div>
                 </div>
-
                 <div class="gallery-item">
-                    <img src="https://i.ibb.co/vg3W0qh/00588358-9f5c-44df-b1c5-23bd1cd914c1.png"
-                        alt="Portfolio Item 5">
-                    <div class="gallery-overlay">
-                        <p>Custom Hoodies</p>
-                    </div>
+                    <img src="https://i.ibb.co/vg3W0qh/00588358-9f5c-44df-b1c5-23bd1cd914c1.png" alt="Portfolio Item 5">
+                    <div class="gallery-overlay"><p>Custom Hoodies</p></div>
                 </div>
-
                 <div class="gallery-item">
-                    <img src="https://i.ibb.co/rf5h53mq/DTF-print-example.jpg"
-                        alt="Portfolio Item 6">
-                    <div class="gallery-overlay">
-                        <p>Sportswear Collection</p>
-                    </div>
+                    <img src="https://i.ibb.co/rf5h53mq/DTF-print-example.jpg" alt="Portfolio Item 6">
+                    <div class="gallery-overlay"><p>Sportswear Collection</p></div>
                 </div>
             </div>
         </div>
@@ -935,23 +999,18 @@
                             <label for="name">Name</label>
                             <input type="text" id="name" name="name" required placeholder="Your Name">
                         </div>
-
                         <div class="form-group">
                             <label for="email">Email</label>
                             <input type="email" id="email" name="email" required placeholder="Your Email">
                         </div>
-
                         <div class="form-group">
                             <label for="phone">Phone Number</label>
                             <input type="tel" id="phone" name="phone" required placeholder="Your Phone Number">
                         </div>
-
                         <div class="form-group">
                             <label for="message">Message</label>
-                            <textarea id="message" name="message" required
-                                placeholder="How can we help you?"></textarea>
+                            <textarea id="message" name="message" required placeholder="How can we help you?"></textarea>
                         </div>
-
                         <button type="submit" class="submit-button">Send Message</button>
                     </form>
                 </div>
@@ -961,7 +1020,7 @@
                         <i class="fas fa-phone"></i>
                         <div>
                             <strong>Phone:</strong><br>
-                            +971524186102
+                            +971 52 418 6102
                         </div>
                     </div>
 
@@ -969,7 +1028,7 @@
                         <i class="fas fa-envelope"></i>
                         <div>
                             <strong>Email:</strong><br>
-                            <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0362706b626d2d7662662d32313043646e626a6f2d606c6e">[email&#160;protected]</a>
+                            <a href="mailto:ashan.uae.123@gmail.com">ashan.uae.123@gmail.com</a>
                         </div>
                     </div>
 
@@ -981,8 +1040,7 @@
                         <a href="#" target="_blank" title="Instagram">
                             <i class="fab fa-instagram"></i>
                         </a>
-                        <a href="https://www.facebook.com/profile.php?id=61580183291668" target="_blank"
-                            title="Facebook">
+                        <a href="https://www.facebook.com/profile.php?id=61580183291668" target="_blank" title="Facebook">
                             <i class="fab fa-facebook-f"></i>
                         </a>
                         <a href="https://wa.me/971524186102" target="_blank" title="WhatsApp">
@@ -999,13 +1057,13 @@
         <p>&copy; 2026 Janu Print | Fab. All Rights Reserved.</p>
     </footer>
 
-    <!-- WhatsApp Floating Button -->
+    <!-- WhatsApp Float Button -->
     <a href="https://wa.me/971524186102?text=Hi%2C%20I%20visited%20your%20website%20and%20I%20would%20like%20to%20know%20more%20about%20your%20services."
         class="float-whatsapp" target="_blank" title="Chat on WhatsApp">
         <i class="fab fa-whatsapp"></i>
     </a>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    <script>
         // Mobile Menu Toggle
         const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
         const navMenu = document.querySelector('.nav-menu');
@@ -1017,9 +1075,7 @@
             icon.classList.toggle('fa-times');
         });
 
-        // Close mobile menu when clicking on a link
-        const navLinks = document.querySelectorAll('.nav-menu a');
-        navLinks.forEach(link => {
+        document.querySelectorAll('.nav-menu a').forEach(link => {
             link.addEventListener('click', () => {
                 navMenu.classList.remove('active');
                 const icon = mobileMenuToggle.querySelector('i');
@@ -1028,42 +1084,43 @@
             });
         });
 
-        // Smooth scroll for all anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             });
         });
 
-        // Add scroll effect to navigation
         let lastScroll = 0;
         window.addEventListener('scroll', () => {
             const nav = document.querySelector('nav');
             const currentScroll = window.pageYOffset;
-
-            if (currentScroll > 100) {
-                nav.style.boxShadow = '0 2px 20px rgba(0,0,0,0.15)';
-            } else {
-                nav.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
-            }
-
+            nav.style.boxShadow = currentScroll > 100
+                ? '0 2px 20px rgba(0,0,0,0.15)'
+                : '0 2px 10px rgba(0,0,0,0.1)';
             lastScroll = currentScroll;
         });
 
-        // Animate elements on scroll
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -100px 0px'
-        };
-
+        // Scroll-in animation
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -80px 0px' });
+
+        document.querySelectorAll('.service-category, .highlight-box, .gallery-item').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+
+</body>
+</html>
