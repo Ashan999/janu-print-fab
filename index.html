@@ -914,14 +914,35 @@
                         2. Click the 'Activate Form' button in the email from formsubmit.co.
                         3. If not activated, emails will not arrive.
                     -->
-                  <form action="https://formsubmit.co/ashan.uae.123@gmail.com" method="POST">
-    <input type="hidden" name="_subject" value="New Submission from: https://ashan999.github.io/janu-print-fab/">
-    
-    <input type="hidden" name="_next" value="https://ashan999.github.io/janu-print-fab/">
-    
-    <input type="hidden" name="_captcha" value="false">
+                    <form action="https://formsubmit.co/ashan.uae.123@gmail.com" method="POST">
+                        <input type="hidden" name="_captcha" value="false">
+                        <input type="hidden" name="_template" value="table">
+                        <input type="hidden" name="_subject" value="NEW MSG FROM JANU PRINT FAB">
+                        <input type="hidden" name="_next" value="https://ashan999.github.io/janu-print-fab/">
 
-    </form>
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" required placeholder="Your Name">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required placeholder="Your Email">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" required placeholder="Your Phone Number">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" required
+                                placeholder="How can we help you?"></textarea>
+                        </div>
+
+                        <button type="submit" class="submit-button">Send Message</button>
+                    </form>
                 </div>
 
                 <div class="contact-info">
