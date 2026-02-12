@@ -477,11 +477,18 @@
         .form-group textarea {
             width: 100%;
             padding: 0.8rem;
-            border: 1px solid #ddd;
+            border: 1px solid #bbb;
+            /* Darker border for better visibility */
+            background-color: #ffffff;
+            /* Explicit white background */
+            color: #333333;
+            /* Explicit dark text */
             border-radius: 5px;
             font-family: 'Poppins', sans-serif;
             font-size: 1rem;
-            transition: border-color 0.3s ease;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+            /* Subtle inner shadow */
         }
 
         .form-group input:focus,
