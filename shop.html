@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Of Janu Print | FAB Order Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Sinhala:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --metallic-blue: #00c3dd;
+            --metallic-blue-dark: #1e4563;
+            --gold-accent: #d4af37;
+            --gold-gradient: linear-gradient(135deg, #b8860b 0%, #d4af37 50%, #f6d365 100%);
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --text-dark: #333333;
+            --text-light: #666666;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--light-gray);
+        }
+
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 2rem;
+        }
+
+        h1 { 
+            text-align: center; 
+            color: var(--metallic-blue); 
+            font-size: 2.5rem; 
+            margin-bottom: 3rem;
+            font-weight: 700;
+            font-family: 'Noto Sans Sinhala', 'Poppins', sans-serif;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .item-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(.22,.61,.36,1);
+            border: none;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        }
+
+        .item-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: var(--gold-gradient);
+            border-radius: 16px 16px 0 0;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.35s ease;
+        }
+
+        .item-card:hover::before { 
+            transform: scaleX(1); 
+        }
+
+        .item-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(44,95,141,0.18);
+        }
+
+        .item-card i {
+            font-size: 3.5rem;
+            color: var(--metallic-blue);
+            margin-bottom: 1rem;
+            transition: 0.3s;
+            display: block;
+        }
+
+        .item-card h3 { 
+            margin: 1rem 0 0.5rem 0; 
+            font-size: 1.2rem;
+            color: var(--metallic-blue);
+            font-weight: 600;
+            font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif;
+        }
+
+        .item-card p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        /* --- Popup / Modal --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--white);
+            color: var(--text-dark);
+            width: 90%; 
+            max-width: 500px;
+            padding: 2.5rem;
+            border-radius: 18px;
+            z-index: 1001;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            animation: popUp 0.3s ease-out;
+            border-top: 4px solid var(--metallic-blue);
+        }
+
+        @keyframes popUp {
+            from { transform: translate(-50%, -40%); opacity: 0; }
+            to { transform: translate(-50%, -50%); opacity: 1; }
+        }
+
+        .modal h2 { 
+            color: var(--metallic-blue); 
+            margin-top: 0; 
+            border-bottom: 2px solid var(--light-gray); 
+            padding-bottom: 1rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        label { 
+            display: block; 
+            margin-top: 1.2rem; 
+            font-weight: 600; 
+            font-size: 0.95rem;
+            color: var(--text-dark);
+        }
+
+        select, input, textarea {
+            width: 100%; 
+            padding: 12px 15px; 
+            margin-top: 8px;
+            border: 2px solid var(--light-gray); 
+            border-radius: 10px;
+            font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: var(--white);
+            color: var(--text-dark);
+        }
+
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--metallic-blue);
+            box-shadow: 0 0 0 3px rgba(0, 195, 221, 0.1);
+        }
+
+        .btn-send {
+            background: var(--gold-gradient);
+            color: var(--metallic-blue-dark);
+            border: none; 
+            width: 100%; 
+            padding: 16px 2rem;
+            border-radius: 50px; 
+            font-weight: 700;
+            margin-top: 1.5rem; 
+            cursor: pointer; 
+            font-size: 1.05rem;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px;
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3),
+                        inset -1px -1px 3px rgba(0, 0, 0, 0.1),
+                        inset 1px 1px 3px rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-send::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: 0.5s;
+        }
+
+        .btn-send:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(212, 175, 55, 0.5),
+                        inset -1px -1px 3px rgba(0, 0, 0, 0.15),
+                        inset 1px 1px 3px rgba(255, 255, 255, 0.6);
+        }
+
+        .btn-send:hover::before {
+            left: 100%;
+        }
+
+        /* --- Bank Details Section (Initially Hidden) --- */
+        #bankDetails {
+            display: none;
+            background: linear-gradient(135deg, rgba(0, 195, 221, 0.08) 0%, rgba(212, 175, 55, 0.08) 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 1.5rem;
+            border-left: 4px solid var(--metallic-blue);
+            font-size: 0.95rem;
+        }
+
+        #bankDetails h4 {
+            margin: 0 0 0.8rem 0;
+            color: var(--metallic-blue);
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        #bankDetails p {
+            color: var(--text-dark);
+            margin: 0.5rem 0;
+            line-height: 1.6;
+        }
+
+        .close-btn {
+            position: absolute; 
+            top: 15px; 
+            right: 20px;
+            font-size: 1.5rem; 
+            cursor: pointer; 
+            color: var(--text-light);
+            transition: all 0.3s ease;
+            background: none;
+            border: none;
+        }
+
+        .close-btn:hover {
+            color: var(--metallic-blue);
+            transform: rotate(90deg);
+        }
+
+        /* ── Back to Home Button ── */
+        .back-to-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+            background: var(--gold-gradient);
+            color: var(--metallic-blue-dark);
+            padding: 0.9rem 2rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3),
+                        inset -1px -1px 3px rgba(0, 0, 0, 0.1),
+                        inset 1px 1px 3px rgba(255, 255, 255, 0.5);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            border: none;
+            cursor: pointer;
+            font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif;
+        }
+
+        .back-to-home::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: 0.5s;
+        }
+
+        .back-to-home:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(212, 175, 55, 0.5),
+                        inset -1px -1px 3px rgba(0, 0, 0, 0.15),
+                        inset 1px 1px 3px rgba(255, 255, 255, 0.6);
+        }
+
+        .back-to-home:hover::before {
+            left: 100%;
+        }
+
+        .back-to-home i {
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .modal {
+                padding: 1.5rem;
+            }
+        }
+
+        /* ── WhatsApp Floating Button ── */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #25D366 0%, #20BA58 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 999;
+            box-shadow: 0 12px 35px rgba(37, 211, 102, 0.4);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 50px rgba(37, 211, 102, 0.6);
+        }
+
+        .whatsapp-float i {
+            font-size: 2.5rem;
+            color: var(--white);
+            animation: heartBeat 1.3s infinite;
+        }
+
+        @keyframes heartBeat {
+            0% {
+                transform: scale(1);
+            }
+            14% {
+                transform: scale(1.3);
+            }
+            28% {
+                transform: scale(1);
+            }
+            42% {
+                transform: scale(1.3);
+            }
+            70% {
+                transform: scale(1);
+            }
+        }
+
+        /* ── Animated Text Banner ── */
+        .whatsapp-text-banner {
+            position: fixed;
+            bottom: 110px;
+            right: -500px;
+            background: var(--gold-gradient);
+            color: var(--metallic-blue-dark);
+            padding: 12px 25px;
+            border-radius: 30px 0 0 30px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            z-index: 9999;
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+            overflow: visible;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            white-space: nowrap;
+            animation: slideFromButton 12s ease-in-out infinite;
+        }
+
+        @keyframes slideFromButton {
+            0% {
+                right: -500px;
+                opacity: 0;
+            }
+            5% {
+                right: 100px;
+                opacity: 1;
+            }
+            95% {
+                right: auto;
+                left: 0;
+                opacity: 1;
+            }
+            100% {
+                right: auto;
+                left: -500px;
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .whatsapp-float {
+                bottom: 20px;
+                right: 20px;
+                width: 60px;
+                height: 60px;
+            }
+
+            .whatsapp-float i {
+                font-size: 2rem;
+            }
+
+            .whatsapp-text-banner {
+                bottom: 90px;
+                font-size: 0.8rem;
+                padding: 10px 20px;
+                animation: slideFromButton 12s ease-in-out infinite;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .whatsapp-text-banner {
+                display: none;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <button type="button" class="back-to-home" onclick="goBack()">
+        <i class="fas fa-arrow-left"></i> Back to Home
+    </button>
+    <h1><i class="fas fa-print"></i> Of Janu Print | FAB Order Page</h1>
+    
+    <div class="main-grid">
+        <div class="item-card" onclick="openOrder('T-Shirt')">
+            <i class="fas fa-tshirt"></i>
+            <h3>T-Shirts</h3>
+            <p>GSM, Custom Colors</p>
+        </div>
+
+        <div class="item-card" onclick="openOrder('Mug')">
+            <i class="fas fa-mug-hot"></i>
+            <h3>Mug Printing</h3>
+            <p>Magic, White, Black</p>
+        </div>
+
+        <div class="item-card" onclick="openOrder('Cap')">
+            <i class="fas fa-hat-cowboy"></i>
+            <h3>Caps</h3>
+            <p>Snapback, Trucker, Mesh</p>
+        </div>
+
+        <div class="item-card" onclick="openOrder('Carton')">
+            <i class="fas fa-box-open"></i>
+            <h3>Packaging Carton</h3>
+            <p>Custom Size, Ply Type</p>
+        </div>
+
+        <div class="item-card" onclick="openOrder('NamePlate')">
+            <i class="fas fa-id-card"></i>
+            <h3>Name Plates</h3>
+            <p>Acrylic, Steel, Aluminum</p>
+        </div>
+
+        <div class="item-card" onclick="openOrder('PlasticBag')">
+            <i class="fas fa-shopping-bag"></i>
+            <h3>Plastic Bags</h3>
+            <p>T-shirt, Loop Handle</p>
+        </div>
+        
+        <div class="item-card" onclick="openOrder('WristBand')">
+            <i class="fas fa-band-aid"></i>
+            <h3>Wrist Bands</h3>
+            <p>Event, Silicone, Tyvek</p>
+        </div>
+
+        <div class="item-card" onclick="openOrder('Bottle')">
+            <i class="fas fa-bottle-water"></i>
+            <h3>Bottle Labels</h3>
+            <p>Water, Juice, Spray</p>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="overlay" onclick="closeOrder()"></div>
+<div class="modal" id="orderModal">
+    <span class="close-btn" onclick="closeOrder()">&times;</span>
+    <h2 id="modalTitle">Order Item</h2>
+    <div id="modalForm">
+        </div>
+    
+    <button class="btn-send" onclick="sendWhatsApp()">
+        <i class="fab fa-whatsapp"></i> Send to WhatsApp
+    </button>
+
+    <div id="bankDetails">
+        <h4 style="margin:0; color:var(--gold);">🏦 Bank Details</h4>
+        <p style="font-size:0.85rem; margin:10px 0;">
+            Bank: <b>Commercial Bank</b><br>
+            Acc: <b>8001234567</b><br>
+            Name: <b>Janu Print</b>
+        </p>
+        <small>*ගෙවීම් කළ පසු රිසිට් පත WhatsApp කරන්න.</small>
+    </div>
+</div>
+
+<!-- WhatsApp Floating Button with Text Banner -->
+<a href="https://wa.me/971524186102" target="_blank" class="whatsapp-float" title="Chat on WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+</a>
+
+<script>
+    function goBack(event) {
+        // සයිට් එක අලුත් ටැබ් එකක නම් ඕපන් වුණේ, ඒක close කරන්න උත්සාහ කරයි
+        if (window.history.length <= 1) {
+            window.close();
+        } 
+        // නැත්නම් කෙලින්ම index.html එකට යයි
+        else {
+            window.history.back();
+        }
+    }
+
+    let currentCategory = '';
+
+    const configs = {
+        'T-Shirt': `
+            <label>Select GSM</label>
+            <select id="field1"><option>180 GSM</option><option>200 GSM</option><option>240 GSM</option></select>
+            <label>Color</label>
+            <input type="text" id="field2" placeholder="e.g. Black, White, Red">
+            <label>Material</label>
+            <select id="field3"><option>Cotton</option><option>Dry Fit</option><option>Poly Cotton</option></select>
+            <label>Quantity</label>
+            <input type="number" id="field4" value="1">`,
+        
+        'Mug': `
+            <label>Mug Type</label>
+            <select id="field1"><option>Normal White</option><option>Magic Mug</option><option>Color Inside</option><option>Full Black</option></select>
+            <label>Color</label>
+            <input type="text" id="field2" placeholder="Specify color">
+            <label>Quantity</label>
+            <input type="number" id="field3" value="1">`,
+
+        'Cap': `
+            <label>Cap Type</label>
+            <select id="field1"><option>Baseball</option><option>Snapback</option><option>Trucker</option><option>Sports</option></select>
+            <label>Print Type</label>
+            <select id="field2"><option>Embroidery</option><option>Logo Print</option><option>3D Puff</option></select>
+            <label>Quantity</label>
+            <input type="number" id="field3" value="1">`,
+
+        'Carton': `
+            <label>Carton Type</label>
+            <input type="text" id="field1" placeholder="e.g. Pizza Box, RSC">
+            <label>Board Type</label>
+            <select id="field2"><option>3 Ply</option><option>5 Ply</option><option>Double Wall</option></select>
+            <label>Printing</label>
+            <select id="field3"><option>Plain</option><option>1 Color</option><option>Full Color</option></select>
+            <label>Quantity</label>
+            <input type="number" id="field4" value="50">`,
+
+        'NamePlate': `
+            <label>Plate Type</label>
+            <select id="field1"><option>Office</option><option>Door</option><option>Table</option></select>
+            <label>Material</label>
+            <select id="field2"><option>Acrylic</option><option>Steel</option><option>Aluminum</option></select>
+            <label>Quantity</label>
+            <input type="number" id="field3" value="1">`,
+
+        'PlasticBag': `
+            <label>Bag Type</label>
+            <select id="field1"><option>T-Shirt Bag</option><option>Loop Handle</option><option>Garbage Bag</option></select>
+            <label>Thickness</label>
+            <select id="field2"><option>20 Micron</option><option>40 Micron</option><option>50+ Micron</option></select>
+            <label>Quantity</label>
+            <input type="number" id="field3" value="500">`,
+
+        'WristBand': `
+            <label>Band Type</label>
+            <select id="field1"><option>Silicone</option><option>Fabric</option><option>Tyvek</option></select>
+            <label>Print Type</label>
+            <select id="field2"><option>Debossed</option><option>Printed Logo</option></select>
+            <label>Quantity</label>
+            <input type="number" id="field3" value="50">`,
+
+        'Bottle': `
+            <label>Bottle Type</label>
+            <select id="field1"><option>Water</option><option>Juice</option><option>Spray</option></select>
+            <label>Capacity</label>
+            <input type="text" id="field2" placeholder="e.g. 500ml, 1L">
+            <label>Label</label>
+            <select id="field3"><option>No Print</option><option>Sticker Label</option><option>Screen Print</option></select>
+            <label>Quantity</label>
+            <input type="number" id="field4" value="100">`
+    };
+
+    function openOrder(cat) {
+        currentCategory = cat;
+        document.getElementById('modalTitle').innerText = 'Order ' + cat;
+        document.getElementById('modalForm').innerHTML = configs[cat];
+        document.getElementById('overlay').style.display = 'block';
+        document.getElementById('orderModal').style.display = 'block';
+        document.getElementById('bankDetails').style.display = 'none'; // Reset bank view
+    }
+
+    function closeOrder() {
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('orderModal').style.display = 'none';
+    }
+
+    function sendWhatsApp() {
+        let f1 = document.getElementById('field1') ? document.getElementById('field1').value : '';
+        let f2 = document.getElementById('field2') ? document.getElementById('field2').value : '';
+        let f3 = document.getElementById('field3') ? document.getElementById('field3').value : '';
+        let f4 = document.getElementById('field4') ? document.getElementById('field4').value : '';
+
+        let msg = `*NEW ORDER: ${currentCategory}*%0A--------------------------%0A`;
+        if(f1) msg += `Type/GSM: ${f1}%0A`;
+        if(f2) msg += `Details/Color: ${f2}%0A`;
+        if(f3) msg += `Material/Print: ${f3}%0A`;
+        if(f4) msg += `Quantity: ${f4}%0A`;
+        msg += `--------------------------%0APlease send quotation.`;
+
+        window.open(`https://wa.me/971524186102?text=${msg}`, '_blank');
+        
+        // Show bank details after 2 seconds
+        setTimeout(() => {
+            document.getElementById('bankDetails').style.display = 'block';
+        }, 1000);
+    }
+</script>
+
+</body>
+</html>
