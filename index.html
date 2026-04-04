@@ -1,1110 +1,685 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Janu Print | Fab - Premium Printing Solutions</title>
-
-    <!-- Google Fonts -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Sinhala:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-
-    <!-- Font Awesome Icons -->
+    <title>Janu Print | Fab </title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Noto+Sans+Sinhala:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <style>
-        :root {
-            --metallic-blue: #00c3dd;
-            --metallic-blue-dark: #1e4563;
-            --gold-accent: #d4af37;
-            --gold-gradient: linear-gradient(135deg, #b8860b 0%, #d4af37 50%, #f6d365 100%);
-            --white: #ffffff;
-            --light-gray: #f8f9fa;
-            --text-dark: #333333;
-            --text-light: #666666;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif;
-            line-height: 1.6;
-            color: var(--text-dark);
-            background-color: var(--white);
-        }
-
-        /* ── Top Bar ── */
-        .top-bar {
-            background-color: var(--metallic-blue-dark);
-            color: var(--white);
-            padding: 0.5rem 0;
-            font-size: 0.9rem;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .top-bar-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            padding: 0 2rem;
-        }
-
-        .top-bar-info {
-            display: flex;
-            gap: 1.5rem;
-        }
-
-        .top-bar-info a {
-            color: var(--white);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: color 0.3s ease;
-        }
-
-        .top-bar-info a:hover { color: #f6d365; }
-
-        /* ── Navigation ── */
-        nav {
-            background-color: var(--white);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            transition: all 0.3s ease;
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.7rem 2rem;
-        }
-
-        /* ══════════════════════════════
-           LOGO — SVG inline mark + text
-           ══════════════════════════════ */
-        .logo-wrap {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            text-decoration: none;
-        }
-
-        /* The SVG badge */
-        .logo-icon {
-            width: 52px;
-            height: 52px;
-            flex-shrink: 0;
-            filter: drop-shadow(0 3px 6px rgba(44,95,141,0.35));
-        }
-
-        /* Text block next to icon */
-        .logo-text-group {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.15;
-        }
-
-        .logo-main {
-            font-size: 1.35rem;
-            font-weight: 700;
-            color: var(--metallic-blue);
-            letter-spacing: -0.02em;
-        }
-
-        .logo-main span {
-            background: var(--gold-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .logo-tagline {
-            font-size: 0.65rem;
-            font-weight: 500;
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-            color: var(--text-light);
-        }
-
-        /* ── Nav menu ── */
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-        }
-
-        .nav-menu a {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 500;
-            transition: color 0.3s ease;
-            position: relative;
-        }
-
-        .nav-menu a:hover { color: var(--metallic-blue); }
-
-        .nav-menu a::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--gold-gradient);
-            transition: width 0.3s ease;
-        }
-
-        .nav-menu a:hover::after { width: 100%; }
-
-        .mobile-menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: var(--metallic-blue);
-            cursor: pointer;
-        }
-
-        /* ── Hero ── */
-        .hero {
-            background: linear-gradient(135deg, var(--metallic-blue) 0%, var(--metallic-blue-dark) 100%);
-            color: var(--white);
-            padding: 8rem 2rem 6rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100%25" height="100%25" fill="url(%23grid)"/></svg>');
-            opacity: 0.3;
-        }
-
-        .hero-content {
-            max-width: 900px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-            animation: fadeInUp 1s ease;
-        }
-
-        .hero h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            font-family: 'Noto Sans Sinhala','Poppins',sans-serif;
-            line-height: 1.3;
-        }
-
-        .hero-subtitle {
-            font-size: 1.3rem;
-            margin-bottom: 2.5rem;
-            opacity: 0.95;
-            font-weight: 300;
-        }
-
-        .cta-button {
-            display: inline-block;
-            background: var(--gold-gradient);
-            color: var(--metallic-blue-dark);
-            padding: 1rem 2.5rem;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 700;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(212,175,55,0.4);
-            border: 1px solid rgba(255,255,255,0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .cta-button::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);
-            transition: 0.5s;
-        }
-
-        .cta-button:hover::before { left: 100%; }
-        .cta-button:hover { transform: translateY(-3px); box-shadow: 0 6px 25px rgba(212,175,55,0.6); }
-
-        /* ── Section base ── */
-        section { padding: 5rem 2rem; }
-
-        .section-title {
-            text-align: center;
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--metallic-blue);
-            margin-bottom: 1rem;
-            position: relative;
-            display: inline-block;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -10px; left: 50%;
-            transform: translateX(-50%);
-            width: 80px; height: 4px;
-            background: var(--gold-gradient);
-            border-radius: 2px;
-        }
-
-        .section-subtitle {
-            text-align: center;
-            color: var(--text-light);
-            margin-bottom: 3rem;
-            font-size: 1.1rem;
-        }
-
-        .container { max-width: 1200px; margin: 0 auto; }
-
-        /* ═══════════════════════════════════════════════
-           SERVICES — 3-D icon cards
-           ═══════════════════════════════════════════════ */
-        #services { background-color: var(--light-gray); }
-
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .service-category {
-            background: var(--white);
-            padding: 2rem;
-            border-radius: 16px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-            transition: all 0.35s cubic-bezier(.22,.61,.36,1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .service-category::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 4px;
-            background: var(--gold-gradient);
-            border-radius: 16px 16px 0 0;
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.35s ease;
-        }
-
-        .service-category:hover::before { transform: scaleX(1); }
-
-        .service-category:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 50px rgba(44,95,141,0.18);
-        }
-
-        /* ── 3-D Icon ── */
-        .service-icon-3d {
-            width: 72px;
-            height: 72px;
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.2rem;
-            position: relative;
-            transition: transform 0.35s ease, box-shadow 0.35s ease;
-        }
-
-        /* The raised 3-D look: layered box-shadows */
-        .service-icon-3d.icon-apparel {
-            background: linear-gradient(145deg, #3a7fc1, #2456a4);
-            box-shadow:
-                0 2px 0 #1a3f7f,
-                0 4px 0 #143060,
-                0 6px 0 #0e2144,
-                0 8px 12px rgba(20,48,96,0.45),
-                inset 0 1px 0 rgba(255,255,255,0.25);
-        }
-
-        .service-icon-3d.icon-fast {
-            background: linear-gradient(145deg, #e8b84b, #c8951e);
-            box-shadow:
-                0 2px 0 #a07010,
-                0 4px 0 #7a5508,
-                0 6px 0 #553c05,
-                0 8px 12px rgba(120,80,0,0.45),
-                inset 0 1px 0 rgba(255,255,255,0.3);
-        }
-
-        .service-icon-3d.icon-promo {
-            background: linear-gradient(145deg, #3dba8a, #28976c);
-            box-shadow:
-                0 2px 0 #1e7554,
-                0 4px 0 #165740,
-                0 6px 0 #0e3a2b,
-                0 8px 12px rgba(14,58,43,0.45),
-                inset 0 1px 0 rgba(255,255,255,0.25);
-        }
-
-        .service-icon-3d i {
-            font-size: 2rem;
-            color: #fff;
-            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.35));
-            transition: transform 0.3s ease;
-        }
-
-        .service-category:hover .service-icon-3d {
-            transform: translateY(-4px) rotate(-4deg);
-        }
-
-        .service-category:hover .service-icon-3d.icon-apparel {
-            box-shadow:
-                0 4px 0 #1a3f7f,
-                0 8px 0 #143060,
-                0 12px 0 #0e2144,
-                0 16px 20px rgba(20,48,96,0.40),
-                inset 0 1px 0 rgba(255,255,255,0.25);
-        }
-
-        .service-category:hover .service-icon-3d.icon-fast {
-            box-shadow:
-                0 4px 0 #a07010,
-                0 8px 0 #7a5508,
-                0 12px 0 #553c05,
-                0 16px 20px rgba(120,80,0,0.40),
-                inset 0 1px 0 rgba(255,255,255,0.3);
-        }
-
-        .service-category:hover .service-icon-3d.icon-promo {
-            box-shadow:
-                0 4px 0 #1e7554,
-                0 8px 0 #165740,
-                0 12px 0 #0e3a2b,
-                0 16px 20px rgba(14,58,43,0.40),
-                inset 0 1px 0 rgba(255,255,255,0.25);
-        }
-
-        .service-category h3 {
-            color: var(--metallic-blue);
-            font-size: 1.2rem;
-            margin-bottom: 1.2rem;
-            font-family: 'Poppins','Noto Sans Sinhala',sans-serif;
-        }
-
-        .service-category ul { list-style: none; }
-
-        .service-category li {
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #eeeeee;
-            font-family: 'Poppins','Noto Sans Sinhala',sans-serif;
-            font-size: 0.95rem;
-        }
-
-        .service-category li:last-child { border-bottom: none; }
-
-        .service-category li::before {
-            content: '✓';
-            color: var(--gold-accent);
-            font-weight: bold;
-            margin-right: 0.5rem;
-        }
-
-        /* ── About ── */
-        .about-content {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .about-text {
-            font-size: 1.05rem;
-            line-height: 1.8;
-            color: var(--text-dark);
-            font-family: 'Noto Sans Sinhala','Poppins',sans-serif;
-            margin-bottom: 1.5rem;
-        }
-
-        .about-highlights {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .highlight-box {
-            text-align: center;
-            padding: 2rem;
-            background-color: var(--light-gray);
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .highlight-box:hover {
-            background-color: var(--metallic-blue);
-            color: var(--white);
-            transform: translateY(-5px);
-        }
-
-        .highlight-box i {
-            font-size: 3rem;
-            color: var(--gold-accent);
-            margin-bottom: 1rem;
-        }
-
-        .highlight-box h4 { font-size: 1.2rem; margin-bottom: 0.5rem; }
-
-        /* ── Portfolio ── */
-        #portfolio { background-color: var(--light-gray); }
-
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .gallery-item {
-            position: relative;
-            overflow: hidden;
-            border-radius: 10px;
-            height: 300px;
-            cursor: pointer;
-        }
-
-        .gallery-item img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        .gallery-item:hover img { transform: scale(1.1); }
-
-        .gallery-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg,rgba(44,95,141,0.9),rgba(30,69,99,0.9));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .gallery-item:hover .gallery-overlay { opacity: 1; }
-
-        .gallery-overlay p {
-            color: var(--white);
-            font-size: 1.1rem;
-            font-weight: 500;
-            padding: 1rem;
-            text-align: center;
-        }
-
-        /* ── Contact ── */
-        #contact { background-color: var(--white); }
-
-        .contact-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .contact-form {
-            background-color: var(--light-gray);
-            padding: 2rem;
-            border-radius: 10px;
-        }
-
-        .form-group { margin-bottom: 1.5rem; }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--text-dark);
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.8rem;
-            border: 2px solid #999999;
-            background-color: #ffffff !important;
-            color: #333333 !important;
-            border-radius: 5px;
-            font-family: 'Poppins',sans-serif;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--metallic-blue);
-            background-color: #ffffff !important;
-        }
-
-        .form-group input::placeholder,
-        .form-group textarea::placeholder {
-            color: #999999;
-            opacity: 1;
-        }
-
-        .form-group textarea { resize: vertical; min-height: 120px; }
-
-        .submit-button {
-            background-color: var(--metallic-blue);
-            color: var(--white);
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 50px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-
-        .submit-button:hover {
-            background-color: var(--metallic-blue-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(44,95,141,0.3);
-        }
-
-        .contact-info {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .contact-detail {
-            display: flex;
-            align-items: center;
-            margin-bottom: 2rem;
-            font-size: 1.1rem;
-        }
-
-        .contact-detail i {
-            font-size: 1.5rem;
-            color: var(--metallic-blue);
-            margin-right: 1rem;
-            width: 30px;
-        }
-
-        .contact-detail a {
-            color: var(--metallic-blue);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .contact-detail a:hover {
-            color: var(--gold-accent);
-            text-decoration: underline;
-        }
-
-        .call-button {
-            display: inline-block;
-            background-color: var(--metallic-blue);
-            color: var(--white);
-            padding: 1rem 2rem;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-align: center;
-            margin: 1rem 0;
-        }
-
-        .call-button:hover {
-            background-color: var(--metallic-blue-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(44,95,141,0.3);
-        }
-
-        .social-links {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-
-        .social-links a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 50px; height: 50px;
-            background-color: var(--light-gray);
-            color: var(--metallic-blue);
-            border-radius: 50%;
-            font-size: 1.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .social-links a:hover {
-            background-color: var(--metallic-blue);
-            color: var(--white);
-            transform: translateY(-3px);
-        }
-
-        /* ── Footer ── */
-        footer {
-            background-color: var(--metallic-blue-dark);
-            color: var(--white);
-            text-align: center;
-            padding: 2rem;
-        }
-
-        footer p { margin: 0; opacity: 0.9; }
-
-        /* ── Animations ── */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes pulse-gold {
-            0%   { box-shadow: 0 0 0 0 rgba(212,175,55,0.7); }
-            70%  { box-shadow: 0 0 0 15px rgba(212,175,55,0); }
-            100% { box-shadow: 0 0 0 0 rgba(212,175,55,0); }
-        }
-
-        .float-whatsapp {
-            position: fixed;
-            bottom: 30px; right: 30px;
-            background-color: #25d366;
-            color: white;
-            width: 60px; height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
-            z-index: 1000;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            animation: pulse-gold 2s infinite;
-        }
-
-        .float-whatsapp:hover {
-            transform: scale(1.1);
-            background-color: #128c7e;
-        }
-
-        /* ── Responsive ── */
-        @media (max-width: 768px) {
-            .top-bar-container {
-                flex-direction: column;
-                gap: 0.5rem;
-                text-align: center;
-            }
-
-            .top-bar-info {
-                justify-content: center;
-                flex-wrap: wrap;
-            }
-
-            .nav-menu {
-                position: fixed;
-                left: -100%;
-                top: 70px;
-                flex-direction: column;
-                background-color: var(--white);
-                width: 100%;
-                text-align: center;
-                transition: 0.3s;
-                box-shadow: 0 10px 27px rgba(0,0,0,0.05);
-                padding: 2rem 0;
-            }
-
-            .nav-menu.active { left: 0; }
-
-            .mobile-menu-toggle { display: block; }
-
-            .hero h1 { font-size: 2rem; }
-            .hero-subtitle { font-size: 1.1rem; }
-            .section-title { font-size: 2rem; }
-
-            .contact-container { grid-template-columns: 1fr; }
-
-            .services-grid,
-            .gallery-grid { grid-template-columns: 1fr; }
-
-            .logo-main { font-size: 1.1rem; }
-            .logo-icon { width: 42px; height: 42px; }
-        }
-
-        @media (max-width: 480px) {
-            .hero { padding: 5rem 1rem 4rem; }
-            .hero h1 { font-size: 1.6rem; }
-            .nav-container { padding: 1rem; }
-            section { padding: 3rem 1rem; }
-        }
-    </style>
+<style>
+
+:root{--nc:#00f5ff;--ng:#ffd700;--db:#020a14;--ds:#040e1c;--dc:#071525;--dch:#0b1f35;--tp:#e8f4ff;--ts:#7ab8d4;--tm:#3a6a8a;--gg:linear-gradient(135deg,#b8860b 0%,#ffd700 50%,#f6d365 100%);--cg:linear-gradient(135deg,#00f5ff 0%,#00c3dd 50%,#0080a0 100%);--gc:0 0 20px rgba(0,245,255,.4),0 0 40px rgba(0,245,255,.2);--gg2:0 0 20px rgba(255,215,0,.4),0 0 40px rgba(255,215,0,.2);--bs:rgba(0,245,255,.12);}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Rajdhani','Noto Sans Sinhala',sans-serif;background:var(--db);color:var(--tp);overflow-x:hidden;cursor:none;}
+
+/* ═══ CURSOR ═══ */
+#cursor-dot{position:fixed;width:8px;height:8px;background:var(--nc);border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--nc),0 0 20px var(--nc);}
+#cursor-ring{position:fixed;width:36px;height:36px;border:1.5px solid rgba(0,245,255,.6);border-radius:50%;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);transition:width .3s,height .3s,border-color .3s;}
+#cursor-ring.hover{width:56px;height:56px;border-color:var(--ng);box-shadow:0 0 15px rgba(255,215,0,.3);}
+
+/* ═══ BG CANVAS ═══ */
+#bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.07) 2px,rgba(0,0,0,.07) 4px);pointer-events:none;z-index:1;}
+
+/* ════════════════════════════════════════════
+   WELCOME SCREEN
+════════════════════════════════════════════ */
+#welcome-screen{position:fixed;inset:0;z-index:99000;background:#000d1a;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;transition:opacity .9s ease,transform .9s ease;}
+#welcome-screen.hide{opacity:0;pointer-events:none;transform:scale(1.04);}
+#welcome-canvas{position:absolute;inset:0;width:100%;height:100%;}
+
+.hex-grid{position:absolute;inset:0;background-image:radial-gradient(circle,rgba(0,245,255,.06) 1px,transparent 1px);background-size:40px 40px;animation:hPulse 4s ease-in-out infinite;}
+@keyframes hPulse{0%,100%{opacity:.4}50%{opacity:1}}
+.w-scan{position:absolute;left:0;top:-10%;width:100%;height:3px;background:linear-gradient(90deg,transparent,rgba(0,245,255,.4),transparent);box-shadow:0 0 20px rgba(0,245,255,.3);animation:wScanMove 3.5s linear infinite;}
+@keyframes wScanMove{0%{top:-2%}100%{top:102%}}
+.w-corner{position:absolute;width:60px;height:60px;}
+.w-corner.tl{top:20px;left:20px;border-top:1px solid rgba(0,245,255,.3);border-left:1px solid rgba(0,245,255,.3);}
+.w-corner.tr{top:20px;right:20px;border-top:1px solid rgba(0,245,255,.3);border-right:1px solid rgba(0,245,255,.3);}
+.w-corner.bl{bottom:20px;left:20px;border-bottom:1px solid rgba(0,245,255,.3);border-left:1px solid rgba(0,245,255,.3);}
+.w-corner.br{bottom:20px;right:20px;border-bottom:1px solid rgba(0,245,255,.3);border-right:1px solid rgba(0,245,255,.3);}
+
+/* Welcome floating items */
+.wfi{position:absolute;display:flex;flex-direction:column;align-items:center;gap:6px;opacity:0;}
+.wfi.show{animation:wfiIn .6s ease forwards,wfiFloat var(--d,7s) var(--dl,0s) ease-in-out infinite;}
+@keyframes wfiIn{to{opacity:1}}
+@keyframes wfiFloat{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(var(--lf,-20px)) rotate(var(--r2,4deg))}}
+.wfi-box{width:62px;height:62px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.65rem;border:1px solid;position:relative;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.5);}
+.wfi-box::after{content:'';position:absolute;top:0;left:0;right:0;height:40%;background:linear-gradient(180deg,rgba(255,255,255,.15),transparent);border-radius:14px 14px 0 0;}
+.wfi-lbl{font-family:'Orbitron',sans-serif;font-size:.42rem;letter-spacing:.18em;text-transform:uppercase;opacity:.6;}
+
+/* Welcome content */
+.welcome-content{position:relative;z-index:2;text-align:center;display:flex;flex-direction:column;align-items:center;}
+.w-logo-wrap{position:relative;margin-bottom:1.8rem;animation:logoReveal 1.2s cubic-bezier(.22,.61,.36,1) both;}
+@keyframes logoReveal{0%{opacity:0;transform:scale(.4) rotate(-20deg);filter:blur(20px)}60%{opacity:1;filter:blur(0);transform:scale(1.08) rotate(2deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+.w-logo-icon{width:100px;height:100px;filter:drop-shadow(0 0 20px rgba(0,245,255,.7)) drop-shadow(0 0 40px rgba(0,245,255,.4));}
+.w-ring{position:absolute;border-radius:50%;border:1px solid;}
+.w-ring:nth-child(1){inset:-14px;border-color:rgba(0,245,255,.35);animation:ringPulse 2s ease-out infinite;}
+.w-ring:nth-child(2){inset:-28px;border-color:rgba(255,215,0,.2);animation:ringPulse 2s .5s ease-out infinite;}
+.w-ring:nth-child(3){inset:-46px;border-color:rgba(0,245,255,.15);animation:ringPulse 2s 1s ease-out infinite;}
+@keyframes ringPulse{0%{transform:scale(.85);opacity:1}100%{transform:scale(1.25);opacity:0}}
+.w-title{font-family:'Orbitron',sans-serif;font-size:clamp(1.8rem,5vw,3rem);font-weight:900;letter-spacing:.08em;color:var(--tp);opacity:0;animation:titleReveal 1s .6s cubic-bezier(.22,.61,.36,1) forwards;line-height:1.1;margin-bottom:.4rem;}
+.w-title span{background:var(--gg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+@keyframes titleReveal{from{opacity:0;transform:translateY(28px) skewX(-6deg);letter-spacing:.35em}to{opacity:1;transform:translateY(0) skewX(0);letter-spacing:.08em}}
+.w-tagline{font-family:'Orbitron',sans-serif;font-size:.65rem;letter-spacing:.4em;text-transform:uppercase;color:var(--nc);opacity:0;animation:fadeIn .8s 1.1s ease forwards;margin-bottom:2.8rem;text-shadow:0 0 15px rgba(0,245,255,.6);}
+@keyframes fadeIn{to{opacity:1}}
+
+.w-progress-wrap{width:300px;opacity:0;animation:fadeIn .5s 1.3s ease forwards;}
+.w-progress-label{display:flex;justify-content:space-between;font-family:'Orbitron',sans-serif;font-size:.58rem;letter-spacing:.15em;color:var(--tm);margin-bottom:.6rem;}
+.w-progress-track{width:100%;height:2px;background:rgba(0,245,255,.1);border-radius:2px;overflow:hidden;}
+.w-progress-bar{height:100%;background:linear-gradient(90deg,var(--nc),var(--ng));box-shadow:0 0 10px var(--nc);border-radius:2px;width:0%;animation:loadBar 2.4s 1.4s cubic-bezier(.4,0,.2,1) forwards;}
+@keyframes loadBar{to{width:100%}}
+.w-status{font-family:'Orbitron',sans-serif;font-size:.55rem;letter-spacing:.2em;color:var(--nc);margin-top:.9rem;opacity:0;animation:fadeIn .5s 1.6s ease forwards;}
+.w-dot{display:inline-block;width:5px;height:5px;background:var(--nc);border-radius:50%;margin-right:6px;animation:blink .8s infinite;box-shadow:0 0 6px var(--nc);}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* ════════════════════════════════════════════
+   SITE-WIDE FLOATING ICONS (background layer)
+════════════════════════════════════════════ */
+.fi-layer{position:fixed;inset:0;pointer-events:none;z-index:2;overflow:hidden;}
+.fi{position:absolute;display:flex;flex-direction:column;align-items:center;gap:5px;animation:fiFloat var(--fd,9s) var(--fdl,0s) ease-in-out infinite;opacity:var(--fop,.14);}
+.fi-b{width:var(--fsz,50px);height:var(--fsz,50px);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:var(--ffs,1.2rem);border:1px solid;position:relative;overflow:hidden;box-shadow:0 10px 28px rgba(0,0,0,.45);}
+.fi-b::after{content:'';position:absolute;top:0;left:0;right:0;height:40%;background:linear-gradient(180deg,rgba(255,255,255,.12),transparent);border-radius:13px 13px 0 0;}
+.fi-lbl{font-family:'Orbitron',sans-serif;font-size:.4rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.25);white-space:nowrap;}
+@keyframes fiFloat{0%,100%{transform:translateY(0) rotate(var(--fr,0deg)) scale(1)}40%{transform:translateY(var(--fl1,-14px)) rotate(var(--fr2,3deg)) scale(1.02)}70%{transform:translateY(var(--fl2,7px)) rotate(var(--fr3,-2deg)) scale(.99)}}
+.fi.c .fi-b{background:linear-gradient(145deg,rgba(0,170,210,.22),rgba(0,60,110,.28));border-color:rgba(0,245,255,.28);color:var(--nc);}
+.fi.g .fi-b{background:linear-gradient(145deg,rgba(195,145,25,.22),rgba(90,60,0,.28));border-color:rgba(255,215,0,.28);color:var(--ng);}
+.fi.gr .fi-b{background:linear-gradient(145deg,rgba(55,175,128,.22),rgba(12,70,50,.28));border-color:rgba(61,186,138,.28);color:#3dba8a;}
+.fi.p .fi-b{background:linear-gradient(145deg,rgba(210,75,170,.22),rgba(90,18,70,.28));border-color:rgba(210,80,170,.28);color:#ef80d4;}
+.fi.v .fi-b{background:linear-gradient(145deg,rgba(110,80,220,.22),rgba(40,20,110,.28));border-color:rgba(130,100,255,.28);color:#a88fff;}
+.fi.o .fi-b{background:linear-gradient(145deg,rgba(245,115,50,.22),rgba(130,40,0,.28));border-color:rgba(255,140,80,.28);color:#ff9060;}
+
+/* ═══ TOPBAR ═══ */
+.top-bar{background:rgba(2,10,20,.95);border-bottom:1px solid var(--bs);padding:.5rem 0;font-size:.82rem;position:relative;z-index:100;}
+.top-bar-container{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;padding:0 2rem;align-items:center;}
+.top-bar-info{display:flex;gap:1.5rem;}
+.top-bar-info span{color:var(--ts);font-family:'Rajdhani',sans-serif;letter-spacing:.05em;}
+.top-bar-info a{color:var(--ts);text-decoration:none;display:flex;align-items:center;gap:.5rem;transition:color .3s;letter-spacing:.03em;}
+.top-bar-info a i{color:var(--nc);font-size:.75rem;}
+.top-bar-info a:hover{color:var(--nc);}
+
+/* ═══ NAV ═══ */
+nav{background:rgba(4,14,28,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--bs);position:sticky;top:0;z-index:999;transition:all .3s;}
+nav.scrolled{box-shadow:0 4px 30px rgba(0,245,255,.08);}
+.nav-container{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;padding:.8rem 2rem;}
+.logo-wrap{display:flex;align-items:center;gap:.85rem;text-decoration:none;}
+.logo-icon{width:52px;height:52px;flex-shrink:0;filter:drop-shadow(0 0 8px rgba(0,245,255,.5));}
+.logo-text-group{display:flex;flex-direction:column;line-height:1.15;}
+.logo-main{font-family:'Orbitron',sans-serif;font-size:1.15rem;font-weight:700;color:var(--nc);letter-spacing:.05em;text-shadow:0 0 15px rgba(0,245,255,.5);}
+.logo-main span{background:var(--gg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.logo-tagline{font-size:.55rem;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--tm);font-family:'Rajdhani',sans-serif;}
+.nav-menu{display:flex;list-style:none;gap:2rem;}
+.nav-menu a{text-decoration:none;color:var(--ts);font-weight:600;font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;font-family:'Rajdhani',sans-serif;transition:color .3s;position:relative;padding:.3rem 0;}
+.nav-menu a::before{content:'';position:absolute;bottom:-2px;left:0;width:0;height:1px;background:var(--nc);box-shadow:var(--gc);transition:width .3s;}
+.nav-menu a:hover{color:var(--nc);text-shadow:0 0 10px rgba(0,245,255,.5);}
+.nav-menu a:hover::before{width:100%;}
+.mobile-menu-toggle{display:none;background:none;border:1px solid var(--bs);padding:.4rem .6rem;font-size:1.2rem;color:var(--nc);cursor:none;border-radius:4px;}
+
+/* ═══ HERO ═══ */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;z-index:3;padding:8rem 2rem 6rem;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:linear-gradient(rgba(0,245,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,.04) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 60% at 50% 50%,black 40%,transparent 100%);}
+.hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:70%;height:2px;background:linear-gradient(90deg,transparent,var(--nc),transparent);box-shadow:0 0 60px 20px rgba(0,245,255,.15);}
+.hero-content{max-width:900px;margin:0 auto;position:relative;z-index:1;text-align:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:.6rem;background:rgba(0,245,255,.07);border:1px solid rgba(0,245,255,.2);padding:.4rem 1.2rem;border-radius:50px;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--nc);font-family:'Orbitron',sans-serif;margin-bottom:2rem;animation:fadeUp 1s ease both;}
+.hero-badge i{font-size:.6rem;animation:blink 1.5s infinite;}
+.hero h1{font-family:'Noto Sans Sinhala','Rajdhani',sans-serif;font-size:2.6rem;font-weight:700;line-height:1.35;color:var(--tp);margin-bottom:1.5rem;animation:fadeUp 1s .2s ease both;}
+.hero-subtitle{font-family:'Orbitron',sans-serif;font-size:.95rem;letter-spacing:.15em;color:var(--ts);margin-bottom:3rem;animation:fadeUp 1s .4s ease both;}
+.hero-subtitle span{color:var(--nc);}
+.cta-group{display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap;animation:fadeUp 1s .6s ease both;}
+.cta-button{display:inline-flex;align-items:center;gap:.6rem;background:transparent;border:1px solid var(--nc);color:var(--nc);padding:.9rem 2.2rem;text-decoration:none;border-radius:3px;font-weight:600;font-family:'Orbitron',sans-serif;font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;transition:all .3s;position:relative;overflow:hidden;box-shadow:inset 0 0 20px rgba(0,245,255,.05),0 0 20px rgba(0,245,255,.1);}
+.cta-button::before{content:'';position:absolute;inset:0;background:rgba(0,245,255,.08);transform:translateX(-100%);transition:transform .4s;}
+.cta-button:hover::before{transform:translateX(0);}
+.cta-button:hover{box-shadow:var(--gc);text-shadow:0 0 10px var(--nc);}
+.cta-button.gold{border-color:var(--ng);color:var(--ng);box-shadow:inset 0 0 20px rgba(255,215,0,.05),0 0 20px rgba(255,215,0,.1);}
+.cta-button.gold::before{background:rgba(255,215,0,.08);}
+.cta-button.gold:hover{box-shadow:var(--gg2);text-shadow:0 0 10px var(--ng);}
+.hero-stats{display:flex;justify-content:center;gap:3rem;margin-top:4rem;padding-top:3rem;border-top:1px solid var(--bs);animation:fadeUp 1s .8s ease both;}
+.stat-item{text-align:center;}
+.stat-number{font-family:'Orbitron',sans-serif;font-size:1.8rem;font-weight:700;color:var(--nc);text-shadow:0 0 20px rgba(0,245,255,.5);display:block;}
+.stat-label{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--tm);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes glitch{0%{text-shadow:0 0 10px var(--nc)}2%{text-shadow:3px 0 0 rgba(255,0,0,.5),-3px 0 0 rgba(0,255,255,.5)}4%{text-shadow:0 0 10px var(--nc)}96%{text-shadow:0 0 10px var(--nc)}98%{text-shadow:-3px 0 0 rgba(255,0,0,.5),3px 0 0 rgba(0,255,255,.5)}100%{text-shadow:0 0 10px var(--nc)}}
+
+/* ═══ SECTIONS ═══ */
+section{padding:6rem 2rem;position:relative;z-index:3;}
+.container{max-width:1200px;margin:0 auto;}
+.section-header{text-align:center;margin-bottom:4rem;}
+.section-eyebrow{font-family:'Orbitron',sans-serif;font-size:.65rem;letter-spacing:.35em;text-transform:uppercase;color:var(--nc);display:flex;align-items:center;justify-content:center;gap:.8rem;margin-bottom:1rem;}
+.section-eyebrow::before,.section-eyebrow::after{content:'';width:40px;height:1px;background:var(--nc);box-shadow:0 0 8px var(--nc);}
+.section-title{font-family:'Orbitron',sans-serif;font-size:2rem;font-weight:700;color:var(--tp);letter-spacing:.05em;margin-bottom:1rem;animation:glitch 8s infinite;}
+.section-subtitle{font-size:1rem;color:var(--ts);letter-spacing:.05em;}
+
+/* ═══ SERVICES ═══ */
+#services{background:var(--ds);}
+#services::before{content:'';position:absolute;inset:0;background:linear-gradient(rgba(0,245,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,.025) 1px,transparent 1px);background-size:40px 40px;}
+.services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.5rem;}
+.service-category{background:var(--dc);border:1px solid var(--bs);border-radius:4px;padding:2.2rem;position:relative;overflow:hidden;transition:all .4s cubic-bezier(.22,.61,.36,1);}
+.service-category::before{content:'';position:absolute;top:-1px;left:-1px;width:20px;height:20px;border-top:2px solid var(--nc);border-left:2px solid var(--nc);box-shadow:-2px -2px 10px rgba(0,245,255,.3);}
+.service-category::after{content:'';position:absolute;bottom:-1px;right:-1px;width:20px;height:20px;border-bottom:2px solid var(--nc);border-right:2px solid var(--nc);box-shadow:2px 2px 10px rgba(0,245,255,.3);}
+.service-category:hover{background:var(--dch);border-color:rgba(0,245,255,.3);transform:translateY(-6px);box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 30px rgba(0,245,255,.08);}
+.scan-line{position:absolute;top:-100%;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--nc),transparent);opacity:0;transition:opacity .3s;}
+.service-category:hover .scan-line{opacity:1;animation:scanD .8s ease forwards;}
+@keyframes scanD{from{top:-2%}to{top:102%}}
+.service-icon-3d{width:68px;height:68px;display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;border-radius:4px;}
+.service-icon-3d.icon-apparel{background:linear-gradient(145deg,rgba(0,120,200,.2),rgba(0,60,120,.3));border:1px solid rgba(0,195,221,.4);box-shadow:0 0 20px rgba(0,195,221,.2),inset 0 0 20px rgba(0,195,221,.05);}
+.service-icon-3d.icon-fast{background:linear-gradient(145deg,rgba(200,149,30,.2),rgba(120,80,0,.3));border:1px solid rgba(255,215,0,.4);box-shadow:0 0 20px rgba(255,215,0,.2),inset 0 0 20px rgba(255,215,0,.05);}
+.service-icon-3d.icon-promo{background:linear-gradient(145deg,rgba(61,186,138,.2),rgba(22,87,64,.3));border:1px solid rgba(61,186,138,.4);box-shadow:0 0 20px rgba(61,186,138,.2),inset 0 0 20px rgba(61,186,138,.05);}
+.service-icon-3d.icon-apparel i{color:var(--nc);text-shadow:0 0 15px var(--nc);}
+.service-icon-3d.icon-fast i{color:var(--ng);text-shadow:0 0 15px var(--ng);}
+.service-icon-3d.icon-promo i{color:#3dba8a;text-shadow:0 0 15px #3dba8a;}
+.service-icon-3d i{font-size:1.8rem;transition:transform .3s;}
+.service-category:hover .service-icon-3d i{transform:scale(1.15) rotate(-5deg);}
+.service-category h3{font-family:'Orbitron',sans-serif;font-size:.85rem;font-weight:600;letter-spacing:.08em;color:var(--nc);margin-bottom:1.5rem;line-height:1.4;}
+.service-category ul{list-style:none;}
+.service-category li{padding:.55rem 0;border-bottom:1px solid rgba(0,245,255,.06);font-size:.9rem;color:var(--ts);display:flex;align-items:center;gap:.6rem;transition:color .3s;letter-spacing:.02em;}
+.service-category li:last-child{border-bottom:none;}
+.service-category li::before{content:'▹';color:var(--nc);font-size:.75rem;flex-shrink:0;}
+.service-category:hover li{color:var(--tp);}
+
+/* ═══ ABOUT ═══ */
+#about{background:var(--db);}
+.about-layout{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;margin-bottom:4rem;}
+.about-visual{position:relative;height:320px;}
+.about-hex-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+.ring{position:absolute;border-radius:50%;border:1px solid;}
+.ring-1{width:240px;height:240px;border-color:rgba(0,245,255,.15);animation:spin 20s linear infinite;}
+.ring-2{width:180px;height:180px;border-color:rgba(255,215,0,.15);border-style:dashed;animation:spin 15s linear infinite reverse;}
+.ring-3{width:120px;height:120px;border-color:rgba(0,245,255,.2);animation:spin 10s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ring-center{width:70px;height:70px;background:rgba(0,245,255,.08);border:1px solid rgba(0,245,255,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(0,245,255,.2);position:relative;}
+.ring-center i{font-size:1.8rem;color:var(--nc);text-shadow:0 0 20px var(--nc);}
+.about-text{font-size:.98rem;line-height:1.9;color:var(--ts);margin-bottom:1.5rem;letter-spacing:.02em;}
+.about-text.sinhala{font-family:'Noto Sans Sinhala',sans-serif;font-size:.9rem;}
+.about-highlights{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;}
+.highlight-box{background:var(--dc);border:1px solid var(--bs);border-radius:4px;padding:1.8rem 1.2rem;text-align:center;position:relative;overflow:hidden;transition:all .3s;}
+.highlight-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--cg);transform:scaleX(0);transition:transform .3s;}
+.highlight-box:hover::before{transform:scaleX(1);}
+.highlight-box:hover{border-color:rgba(0,245,255,.25);box-shadow:0 10px 40px rgba(0,0,0,.4),0 0 20px rgba(0,245,255,.05);transform:translateY(-4px);}
+.highlight-box i{font-size:2rem;color:var(--ng);text-shadow:0 0 15px var(--ng);margin-bottom:1rem;display:block;}
+.highlight-box h4{font-family:'Orbitron',sans-serif;font-size:.7rem;letter-spacing:.1em;color:var(--tp);margin-bottom:.4rem;}
+.highlight-box p{font-size:.82rem;color:var(--tm);}
+
+/* ═══ PORTFOLIO ═══ */
+#portfolio{background:var(--ds);}
+#portfolio::before{content:'';position:absolute;inset:0;background:linear-gradient(rgba(0,245,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,.02) 1px,transparent 1px);background-size:40px 40px;}
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.2rem;}
+.gallery-item{position:relative;overflow:hidden;border-radius:4px;height:280px;cursor:none;border:1px solid var(--bs);}
+.gallery-item img{width:100%;height:100%;object-fit:cover;transition:transform .6s,filter .6s;filter:brightness(.7) saturate(.8);}
+.gallery-item:hover img{transform:scale(1.08);filter:brightness(.4) saturate(.5);}
+.gallery-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity .4s;padding:1.5rem;}
+.gallery-item:hover .gallery-overlay{opacity:1;}
+.gallery-overlay-line{width:40px;height:1px;background:var(--nc);box-shadow:0 0 8px var(--nc);margin-bottom:1rem;}
+.gallery-overlay p{color:var(--tp);font-family:'Orbitron',sans-serif;font-size:.75rem;letter-spacing:.15em;text-align:center;text-transform:uppercase;}
+.gallery-item::before,.gallery-item::after{content:'';position:absolute;width:16px;height:16px;z-index:2;opacity:0;transition:opacity .3s;}
+.gallery-item::before{top:8px;left:8px;border-top:2px solid var(--nc);border-left:2px solid var(--nc);}
+.gallery-item::after{bottom:8px;right:8px;border-bottom:2px solid var(--nc);border-right:2px solid var(--nc);}
+.gallery-item:hover::before,.gallery-item:hover::after{opacity:1;}
+
+/* ═══ CONTACT ═══ */
+#contact{background:var(--db);}
+.contact-container{display:grid;grid-template-columns:1fr 1fr;gap:3rem;max-width:1000px;margin:0 auto;}
+.contact-form{background:var(--dc);border:1px solid var(--bs);border-radius:4px;padding:2.5rem;position:relative;}
+.contact-form::before{content:'';position:absolute;top:-1px;left:-1px;width:30px;height:30px;border-top:2px solid var(--nc);border-left:2px solid var(--nc);}
+.contact-form::after{content:'';position:absolute;bottom:-1px;right:-1px;width:30px;height:30px;border-bottom:2px solid var(--ng);border-right:2px solid var(--ng);}
+.form-group{margin-bottom:1.5rem;}
+.form-group label{display:block;margin-bottom:.5rem;font-family:'Orbitron',sans-serif;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--tm);}
+.form-group input,.form-group textarea{width:100%;padding:.85rem 1rem;background:rgba(0,245,255,.03);border:1px solid var(--bs);border-radius:3px;color:var(--tp)!important;font-family:'Rajdhani',sans-serif;font-size:.95rem;letter-spacing:.03em;transition:all .3s;}
+.form-group input:focus,.form-group textarea:focus{outline:none;border-color:var(--nc);background:rgba(0,245,255,.06);box-shadow:0 0 15px rgba(0,245,255,.1);}
+.form-group input::placeholder,.form-group textarea::placeholder{color:var(--tm);opacity:1;}
+.form-group textarea{resize:vertical;min-height:120px;}
+.submit-button{width:100%;padding:1rem;background:transparent;border:1px solid var(--nc);color:var(--nc);font-family:'Orbitron',sans-serif;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;cursor:none;border-radius:3px;transition:all .3s;position:relative;overflow:hidden;}
+.submit-button::before{content:'';position:absolute;inset:0;background:rgba(0,245,255,.08);transform:translateX(-100%);transition:transform .4s;}
+.submit-button:hover::before{transform:translateX(0);}
+.submit-button:hover{box-shadow:0 0 25px rgba(0,245,255,.25);text-shadow:0 0 10px var(--nc);}
+.contact-info{display:flex;flex-direction:column;justify-content:center;gap:.5rem;}
+.contact-detail{display:flex;align-items:flex-start;gap:1rem;padding:1.2rem;background:var(--dc);border:1px solid var(--bs);border-radius:4px;margin-bottom:.8rem;transition:all .3s;}
+.contact-detail:hover{border-color:rgba(0,245,255,.25);box-shadow:0 5px 20px rgba(0,0,0,.3);}
+.contact-detail i{font-size:1.1rem;color:var(--nc);text-shadow:0 0 10px var(--nc);margin-top:.1rem;width:20px;}
+.contact-detail strong{font-family:'Orbitron',sans-serif;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--tm);display:block;margin-bottom:.3rem;}
+.contact-detail a{color:var(--nc);text-decoration:none;font-size:.95rem;transition:text-shadow .3s;}
+.contact-detail a:hover{text-shadow:0 0 10px var(--nc);}
+.call-button{display:flex;align-items:center;justify-content:center;gap:.7rem;background:transparent;border:1px solid var(--ng);color:var(--ng);padding:.9rem 1.5rem;text-decoration:none;border-radius:3px;font-family:'Orbitron',sans-serif;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;transition:all .3s;margin:.5rem 0;}
+.call-button:hover{box-shadow:var(--gg2);text-shadow:0 0 10px var(--ng);}
+.social-links{display:flex;gap:.8rem;margin-top:.5rem;}
+.social-links a{display:flex;align-items:center;justify-content:center;width:44px;height:44px;background:var(--dc);border:1px solid var(--bs);color:var(--ts);border-radius:3px;font-size:1.1rem;transition:all .3s;text-decoration:none;}
+.social-links a:hover{border-color:var(--nc);color:var(--nc);box-shadow:0 0 15px rgba(0,245,255,.2);}
+
+/* ═══ FOOTER ═══ */
+footer{background:var(--ds);border-top:1px solid var(--bs);padding:2rem;text-align:center;position:relative;z-index:3;}
+footer p{font-family:'Orbitron',sans-serif;font-size:.65rem;letter-spacing:.2em;color:var(--tm);}
+.float-whatsapp{position:fixed;bottom:30px;right:30px;background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.5);color:#25d366;width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.6rem;z-index:1000;transition:all .3s;text-decoration:none;box-shadow:0 0 20px rgba(37,211,102,.2);animation:pulseG 2.5s infinite;}
+@keyframes pulseG{0%{box-shadow:0 0 0 0 rgba(37,211,102,.4)}70%{box-shadow:0 0 0 15px rgba(37,211,102,0)}100%{box-shadow:0 0 0 0 rgba(37,211,102,0)}}
+.float-whatsapp:hover{background:rgba(37,211,102,.25);transform:scale(1.1);box-shadow:0 0 30px rgba(37,211,102,.4);}
+
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+@media(max-width:768px){
+.top-bar-container{flex-direction:column;gap:.5rem;text-align:center;}
+.top-bar-info{justify-content:center;flex-wrap:wrap;}
+.nav-menu{position:fixed;left:-100%;top:70px;flex-direction:column;background:rgba(4,14,28,.98);border-right:1px solid var(--bs);width:75%;height:100vh;text-align:left;transition:left .3s;padding:2rem;gap:1.5rem;}
+.nav-menu.active{left:0;}
+.mobile-menu-toggle{display:block;}
+.hero h1{font-size:1.8rem;}
+.hero-stats{gap:1.5rem;}
+.stat-number{font-size:1.4rem;}
+.section-title{font-size:1.5rem;}
+.contact-container{grid-template-columns:1fr;}
+.about-layout{grid-template-columns:1fr;}
+.about-visual{display:none;}
+.about-highlights{grid-template-columns:1fr;}
+.services-grid,.gallery-grid{grid-template-columns:1fr;}
+body{cursor:auto;}
+#cursor-dot,#cursor-ring{display:none;}
+.fi-layer{display:none;}
+.wfi{display:none;}
+}
+@media(max-width:480px){.hero{padding:5rem 1rem 4rem;}.hero h1{font-size:1.5rem;}section{padding:4rem 1rem;}.cta-group{flex-direction:column;align-items:center;}}
+</style>
 </head>
-
 <body>
 
-    <!-- Top Bar -->
-    <div class="top-bar">
-        <div class="top-bar-container">
-            <div class="top-bar-info">
-                <span>Welcome to Janu Print | Fab</span>
+<!-- ════════════ WELCOME SCREEN ════════════ -->
+<div id="welcome-screen">
+    <canvas id="welcome-canvas"></canvas>
+    <div class="hex-grid"></div>
+    <div class="w-scan"></div>
+    <div class="w-corner tl"></div><div class="w-corner tr"></div>
+    <div class="w-corner bl"></div><div class="w-corner br"></div>
+
+    <!-- Floating product icons in welcome -->
+    <div class="wfi show" style="top:18%;left:8%;--d:7s;--dl:1.8s;--r:-8deg;--r2:4deg;--lf:-22px;">
+        <div class="wfi-box" style="background:linear-gradient(145deg,rgba(0,170,210,.32),rgba(0,55,110,.38));border-color:rgba(0,245,255,.55);color:#00f5ff;box-shadow:0 0 28px rgba(0,245,255,.35),0 12px 30px rgba(0,0,0,.5);">
+            <i class="fas fa-tshirt"></i>
+        </div>
+        <span class="wfi-lbl" style="color:rgba(0,245,255,.55);">T-Shirt</span>
+    </div>
+
+    <div class="wfi show" style="top:13%;right:9%;--d:8.5s;--dl:2s;--r:6deg;--r2:-3deg;--lf:-18px;">
+        <div class="wfi-box" style="background:linear-gradient(145deg,rgba(195,145,25,.32),rgba(90,55,0,.38));border-color:rgba(255,215,0,.55);color:#ffd700;box-shadow:0 0 28px rgba(255,215,0,.35),0 12px 30px rgba(0,0,0,.5);">
+            <i class="fas fa-hat-cowboy"></i>
+        </div>
+        <span class="wfi-lbl" style="color:rgba(255,215,0,.55);">Cap</span>
+    </div>
+
+    <div class="wfi show" style="bottom:26%;left:7%;--d:9s;--dl:2.2s;--r:5deg;--r2:-4deg;--lf:-20px;">
+        <div class="wfi-box" style="background:linear-gradient(145deg,rgba(55,175,128,.32),rgba(12,65,48,.38));border-color:rgba(61,186,138,.55);color:#3dba8a;box-shadow:0 0 28px rgba(61,186,138,.35),0 12px 30px rgba(0,0,0,.5);">
+            <i class="fas fa-mug-hot"></i>
+        </div>
+        <span class="wfi-lbl" style="color:rgba(61,186,138,.55);">Mug</span>
+    </div>
+
+    <div class="wfi show" style="bottom:24%;right:8%;--d:7.5s;--dl:2.4s;--r:-5deg;--r2:3deg;--lf:-16px;">
+        <div class="wfi-box" style="background:linear-gradient(145deg,rgba(210,75,170,.32),rgba(90,18,70,.38));border-color:rgba(220,80,180,.55);color:#f080d4;box-shadow:0 0 28px rgba(220,80,180,.35),0 12px 30px rgba(0,0,0,.5);">
+            <i class="fas fa-shopping-bag"></i>
+        </div>
+        <span class="wfi-lbl" style="color:rgba(220,80,180,.55);">Bag</span>
+    </div>
+
+    <div class="wfi show" style="top:54%;left:5%;--d:10s;--dl:2.6s;--r:8deg;--r2:-5deg;--lf:-14px;">
+        <div class="wfi-box" style="background:linear-gradient(145deg,rgba(110,80,220,.32),rgba(40,20,110,.38));border-color:rgba(140,110,255,.55);color:#a88fff;box-shadow:0 0 28px rgba(130,100,255,.35),0 12px 30px rgba(0,0,0,.5);">
+            <i class="fas fa-couch"></i>
+        </div>
+        <span class="wfi-lbl" style="color:rgba(150,120,255,.55);">Cushion</span>
+    </div>
+
+    <div class="wfi show" style="top:50%;right:5%;--d:8s;--dl:2.8s;--r:-7deg;--r2:4deg;--lf:-18px;">
+        <div class="wfi-box" style="background:linear-gradient(145deg,rgba(245,115,50,.32),rgba(130,40,0,.38));border-color:rgba(255,140,80,.55);color:#ff9060;box-shadow:0 0 28px rgba(255,140,80,.35),0 12px 30px rgba(0,0,0,.5);">
+            <i class="fas fa-print"></i>
+        </div>
+        <span class="wfi-lbl" style="color:rgba(255,140,80,.55);">Print</span>
+    </div>
+
+    <!-- Welcome text center -->
+    <div class="welcome-content">
+        <div class="w-logo-wrap">
+            <div class="w-ring"></div><div class="w-ring"></div><div class="w-ring"></div>
+            <svg class="w-logo-icon" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M26 2L6 10V26c0 12 8.5 22.5 20 26 11.5-3.5 20-14 20-26V10L26 2Z" fill="url(#wG1)" stroke="url(#wGo)" stroke-width="1.2"/>
+                <path d="M26 6L9 13V26c0 10.5 7.5 19.5 17 22.8 9.5-3.3 17-12.3 17-22.8V13L26 6Z" fill="url(#wG2)" opacity="0.55"/>
+                <rect x="15" y="21" width="22" height="14" rx="2.5" fill="white" opacity="0.95"/>
+                <rect x="18" y="17" width="16" height="6" rx="1.5" fill="url(#wGo)"/>
+                <rect x="18" y="28" width="16" height="3" rx="1" fill="url(#wGo)"/>
+                <rect x="20" y="33" width="12" height="5" rx="1" fill="white" opacity="0.9"/>
+                <circle cx="26" cy="11" r="3" fill="url(#wGo)" opacity="0.9"/>
+                <defs>
+                    <linearGradient id="wG1" x1="6" y1="2" x2="46" y2="50" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00a0c0"/><stop offset="100%" stop-color="#005080"/></linearGradient>
+                    <linearGradient id="wG2" x1="9" y1="6" x2="43" y2="49" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00f5ff" stop-opacity="0.4"/><stop offset="100%" stop-color="#0080a0" stop-opacity="0.2"/></linearGradient>
+                    <linearGradient id="wGo" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox"><stop offset="0%" stop-color="#b8860b"/><stop offset="50%" stop-color="#ffd700"/><stop offset="100%" stop-color="#f6d365"/></linearGradient>
+                </defs>
+            </svg>
+        </div>
+        <div class="w-scan">ආයුබෝවන් </div>
+        <div class="w-title">Janu Print <span>| Fab</span></div>
+        <div class="w-tagline">Premium Printing Solutions</div>
+        <div class="w-progress-wrap">
+            <div class="w-progress-label"><span>INITIALIZING SYSTEM</span><span id="pct">0%</span></div>
+            <div class="w-progress-track"><div class="w-progress-bar"></div></div>
+            <div class="w-status"><span class="w-dot"></span>LOADING EXPERIENCE...</div>
+        </div>
+    </div>
+</div>
+
+<!-- ════════════ SITE FLOATING ICONS ════════════ -->
+<div class="fi-layer">
+    <div class="fi c" style="top:10%;left:1.5%;--fd:9s;--fdl:0s;--fr:-6deg;--fr2:3deg;--fr3:-2deg;--fl1:-16px;--fl2:8px;--fsz:48px;--ffs:1.15rem;--fop:.13;"><div class="fi-b"><i class="fas fa-tshirt"></i></div><span class="fi-lbl">T-Shirt</span></div>
+    <div class="fi g" style="top:32%;right:1.5%;--fd:11s;--fdl:1s;--fr:5deg;--fr2:-4deg;--fr3:2deg;--fl1:-20px;--fl2:9px;--fsz:46px;--ffs:1.1rem;--fop:.12;"><div class="fi-b"><i class="fas fa-hat-cowboy"></i></div><span class="fi-lbl">Cap</span></div>
+    <div class="fi gr" style="top:60%;left:1%;--fd:8s;--fdl:2s;--fr:7deg;--fr2:-3deg;--fr3:4deg;--fl1:-14px;--fl2:6px;--fsz:46px;--ffs:1.1rem;--fop:.12;"><div class="fi-b"><i class="fas fa-mug-hot"></i></div><span class="fi-lbl">Mug</span></div>
+    <div class="fi p" style="top:72%;right:1.5%;--fd:10s;--fdl:.5s;--fr:-8deg;--fr2:5deg;--fr3:-3deg;--fl1:-18px;--fl2:8px;--fsz:46px;--ffs:1.1rem;--fop:.12;"><div class="fi-b"><i class="fas fa-shopping-bag"></i></div><span class="fi-lbl">Bag</span></div>
+    <div class="fi c" style="top:84%;left:2%;--fd:12s;--fdl:1.5s;--fr:4deg;--fr2:-2deg;--fr3:3deg;--fl1:-12px;--fl2:5px;--fsz:44px;--ffs:1rem;--fop:.1;"><div class="fi-b"><i class="fas fa-tshirt"></i></div><span class="fi-lbl">Hoodie</span></div>
+    <div class="fi v" style="top:18%;right:2.5%;--fd:7.5s;--fdl:3s;--fr:-4deg;--fr2:3deg;--fr3:-2deg;--fl1:-12px;--fl2:6px;--fsz:44px;--ffs:1rem;--fop:.11;"><div class="fi-b"><i class="fas fa-couch"></i></div><span class="fi-lbl">Cushion</span></div>
+    <div class="fi o" style="top:47%;right:1%;--fd:9.5s;--fdl:2.5s;--fr:6deg;--fr2:-4deg;--fr3:2deg;--fl1:-16px;--fl2:7px;--fsz:44px;--ffs:1rem;--fop:.11;"><div class="fi-b"><i class="fas fa-print"></i></div><span class="fi-lbl">Print</span></div>
+    <div class="fi g" style="top:88%;right:2%;--fd:8.5s;--fdl:1s;--fr:-5deg;--fr2:4deg;--fr3:-3deg;--fl1:-14px;--fl2:6px;--fsz:42px;--ffs:.95rem;--fop:.1;"><div class="fi-b"><i class="fas fa-certificate"></i></div><span class="fi-lbl">Patch</span></div>
+</div>
+
+<!-- CURSOR -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+<canvas id="bg-canvas"></canvas>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+    <div class="top-bar-container">
+        <div class="top-bar-info"><span>// JANU PRINT | FAB — SYSTEM ONLINE</span></div>
+        <div class="top-bar-info">
+            <a href="tel:+971524186102"><i class="fas fa-phone-alt"></i> +971 52 418 6102</a>
+            <a href="mailto:ashan.uae.123@gmail.com"><i class="fas fa-envelope"></i> ashan.uae.123@gmail.com</a>
+        </div>
+    </div>
+</div>
+
+<!-- NAV -->
+<nav id="main-nav">
+    <div class="nav-container">
+        <a href="#home" class="logo-wrap">
+            <svg class="logo-icon" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M26 2L6 10V26c0 12 8.5 22.5 20 26 11.5-3.5 20-14 20-26V10L26 2Z" fill="url(#lG1)" stroke="url(#lGo)" stroke-width="1.2"/>
+                <path d="M26 6L9 13V26c0 10.5 7.5 19.5 17 22.8 9.5-3.3 17-12.3 17-22.8V13L26 6Z" fill="url(#lG2)" opacity="0.55"/>
+                <rect x="15" y="21" width="22" height="14" rx="2.5" fill="white" opacity="0.95"/>
+                <rect x="18" y="17" width="16" height="6" rx="1.5" fill="url(#lGo)"/>
+                <rect x="18" y="28" width="16" height="3" rx="1" fill="url(#lGo)"/>
+                <rect x="20" y="33" width="12" height="5" rx="1" fill="white" opacity="0.9"/>
+                <circle cx="26" cy="11" r="3" fill="url(#lGo)" opacity="0.9"/>
+                <defs>
+                    <linearGradient id="lG1" x1="6" y1="2" x2="46" y2="50" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00a0c0"/><stop offset="100%" stop-color="#005080"/></linearGradient>
+                    <linearGradient id="lG2" x1="9" y1="6" x2="43" y2="49" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00f5ff" stop-opacity="0.4"/><stop offset="100%" stop-color="#0080a0" stop-opacity="0.2"/></linearGradient>
+                    <linearGradient id="lGo" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox"><stop offset="0%" stop-color="#b8860b"/><stop offset="50%" stop-color="#ffd700"/><stop offset="100%" stop-color="#f6d365"/></linearGradient>
+                </defs>
+            </svg>
+            <div class="logo-text-group">
+                <span class="logo-main">Janu Print <span>| Fab</span></span>
+                <span class="logo-tagline">Premium Printing Solutions</span>
             </div>
-            <div class="top-bar-info">
-                <a href="tel:+971524186102"><i class="fas fa-phone-alt"></i> +971 52 418 6102</a>
-                <a href="/cdn-cgi/l/email-protection#40213328212e6e3521256e71727300272d21292c6e232f2d"><i class="fas fa-envelope"></i> <span class="__cf_email__" data-cfemail="01607269606f2f7460642f30333241666c60686d2f626e6c">[email&#160;protected]</span></a>
+        </a>
+        <ul class="nav-menu" id="nav-menu">
+            <li><a href="#home">Home</a></li>
+            <li><a href="shop.html" target="_blank">Shop</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#about">About Us</a></li>
+            <li><a href="#portfolio">Portfolio</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <button class="mobile-menu-toggle" id="menu-toggle"><i class="fas fa-bars"></i></button>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section id="home" class="hero">
+    <div class="hero-content">
+        <div class="hero-badge"><i class="fas fa-circle"></i>ජාත්‍යන්තර ප්‍රමිතියේ මුද්‍රණ සේවාව — දැන් ඇණවුම් සඳහා විවෘතයි</div>
+        <h1>ඔබේ අවශ්‍යතාවය තේරුම් ගත් එයට සරිලන විශිෂ්ටම සේවාව .</h1>
+        <p class="hero-subtitle">PREMIUM PRINTING SOLUTIONS <span>//</span> INTERNATIONAL STANDARDS</p>
+        <div class="cta-group">
+            <a href="#portfolio" class="cta-button"><i class="fas fa-th-large"></i> නිෂ්පාදන බලන්න </a>
+            <a href="#contact" class="cta-button gold"><i class="fas fa-paper-plane"></i> මිලදීගන්න </a>
+        </div>
+        <div class="hero-stats">
+            <div class="stat-item"><span class="stat-number" data-target="500">0</span><span class="stat-label">Projects Done</span></div>
+            <div class="stat-item"><span class="stat-number" data-target="100">0</span><span class="stat-label">% Satisfaction</span></div>
+            <div class="stat-item"><span class="stat-number" data-target="2">0</span><span class="stat-label">Countries Served</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+    <div class="container">
+        <div class="section-header reveal">
+            <div class="section-eyebrow">අපි මොනවද කරන්නේ</div>
+            <h2 class="section-title">අපේ සේවාවන් </h2>
+            <p class="section-subtitle">ගුණාත්මක බව සහ විශ්වාසය සමඟින්, ඔබට අවශ්‍ය දේ ඒ අයුරින්ම.</p>
+        </div>
+        <div class="services-grid">
+            <div class="service-category reveal"><div class="scan-line"></div><div class="service-icon-3d icon-apparel"><i class="fas fa-tshirt"></i></div><h3>Custom Apparel Printing<br>| ඇඳුම් මුද්‍රණය</h3><ul><li>T-Shirts (Men, Women, Kids) | ටී-ෂර්ට්</li><li>Hoodies &amp; Sweatshirts | හූඩීස් සහ ස්වීට්ෂර්ට්</li><li>Polo Shirts | පෝලෝ ටී-ෂර්ට්</li><li>Sportswear &amp; Uniforms | ක්‍රීඩා සහ නිල ඇඳුම්</li><li>Safety Wear &amp; Aprons | ආරක්ෂිත ඇඳුම් සහ ඇප්‍රන්</li></ul></div>
+            <div class="service-category reveal" style="transition-delay:.1s"><div class="scan-line"></div><div class="service-icon-3d icon-fast"><i class="fas fa-bolt"></i></div><h3>Fast Turnaround Services<br>| කඩිනම් මුද්‍රණ සේවා</h3><ul><li>Same Day DTF Printing | එදිනම DTF මුද්‍රණය</li><li>Premium Heat Transfer | හීට් ට්‍රාන්ස්ෆර් මුද්‍රණය</li><li>Bulk Screen Printing | ස්ක්‍රීන් ප්‍රින්ටින් (තොග ඇණවුම්)</li></ul></div>
+            <div class="service-category reveal" style="transition-delay:.2s"><div class="scan-line"></div><div class="service-icon-3d icon-promo"><i class="fas fa-gift"></i></div><h3>Promotional Items<br>| ප්‍රවර්ධන ද්‍රව්‍ය</h3><ul><li>Custom Tote &amp; Drawstring Bags | රෙදි බෑග් වර්ග</li><li>Personalized Cushion Covers | කුෂන් කවර්</li><li>Caps Printing &amp; Custom Patches | තොප්පි සහ ලාංඡන</li></ul></div>
+        </div>
+    </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+    <div class="container">
+        <div class="section-header reveal">
+            <div class="section-eyebrow">Who We Are</div>
+            <h2 class="section-title">About Us</h2>
+            <p class="section-subtitle">Excellence through experience and quality</p>
+        </div>
+        <div class="about-layout">
+            <div class="about-visual reveal">
+                <div class="about-hex-bg">
+                    <div class="ring ring-1"></div><div class="ring ring-2"></div><div class="ring ring-3"></div>
+                    <div class="ring-center"><i class="fas fa-print"></i></div>
+                </div>
+            </div>
+            <div class="about-texts reveal">
+                <p class="about-text sinhala">ජාත්‍යන්තර ප්‍රමිතියේ අමුද්‍රව්‍ය සහ අප සතු සුවිශේෂී පළපුරුද්ද එක්තැන් කරමින්, ඔබේ ඕනෑම මුද්‍රණ අවශ්‍යතාවයක් ඉහළම ගුණාත්මකභාවයෙන් යුතුව ඉටුකර දීමට අප සූදානම්. පරිපූර්ණ නිමාව - ඔබ කැමති විදිහටම!.</p>
+                <p class="about-text">As a service provider rooted in Sri Lanka with years of international expertise, our primary mission is to deliver world-class printing solutions to our local clients. We combine premium quality materials with global standards to ensure every finish meets the highest level of excellence.</p>
+            </div>
+        </div>
+        <div class="about-highlights">
+            <div class="highlight-box reveal"><i class="fas fa-gem"></i><h4>Premium Materials</h4><p>Dubai-standard quality</p></div>
+            <div class="highlight-box reveal" style="transition-delay:.1s"><i class="fas fa-users"></i><h4>Expert Team</h4><p>Skilled professionals</p></div>
+            <div class="highlight-box reveal" style="transition-delay:.2s"><i class="fas fa-star"></i><h4>100% Satisfaction</h4><p>Quality guaranteed</p></div>
+        </div>
+    </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section id="portfolio">
+    <div class="container">
+        <div class="section-header reveal">
+            <div class="section-eyebrow">Our Work</div>
+            <h2 class="section-title">Portfolio</h2>
+            <p class="section-subtitle">Showcasing our finest work</p>
+        </div>
+        <div class="gallery-grid reveal" id="drive-gallery"></div>
+    </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+    <div class="container">
+        <div class="section-header reveal">
+            <div class="section-eyebrow">Get In Touch</div>
+            <h2 class="section-title">Contact Us</h2>
+            <p class="section-subtitle">Let's bring your ideas to life</p>
+        </div>
+        <div class="contact-container">
+            <div class="contact-form reveal">
+                <form action="https://formsubmit.co/ashan.uae.123@gmail.com" method="POST">
+                    <input type="hidden" name="_captcha" value="false">
+                    <input type="hidden" name="_template" value="table">
+                    <input type="hidden" name="_subject" value="New Inquiry from Janu Print Website">
+                    <div class="form-group"><label>Name</label><input type="text" name="name" required placeholder="Your Name"></div>
+                    <div class="form-group"><label>Email</label><input type="email" name="email" required placeholder="Your Email"></div>
+                    <div class="form-group"><label>Phone Number</label><input type="tel" name="phone" required placeholder="Your Phone Number"></div>
+                    <div class="form-group"><label>Message</label><textarea name="message" required placeholder="How can we help you?"></textarea></div>
+                    <button type="submit" class="submit-button"><i class="fas fa-paper-plane"></i> &nbsp;TRANSMIT MESSAGE</button>
+                </form>
+            </div>
+            <div class="contact-info reveal" style="transition-delay:.15s">
+                <div class="contact-detail"><i class="fas fa-phone"></i><div><strong>Phone</strong>+971 52 418 6102</div></div>
+                <div class="contact-detail"><i class="fas fa-envelope"></i><div><strong>Email</strong><a href="mailto:ashan.uae.123@gmail.com">ashan.uae.123@gmail.com</a></div></div>
+                <a href="tel:+971524186102" class="call-button"><i class="fas fa-phone-alt"></i> CALL NOW</a>
+                <div class="social-links">
+                    <a href="#" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.facebook.com/profile.php?id=61580183291668" target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://wa.me/971524186102" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                </div>
             </div>
         </div>
     </div>
+</section>
 
-    <!-- Navigation -->
-    <nav>
-        <div class="nav-container">
+<footer><p>&copy; 2026 JANU PRINT | FAB — ALL SYSTEMS OPERATIONAL — ALL RIGHTS RESERVED</p></footer>
+<a href="https://wa.me/971524186102?text=Hi%2C%20I%20visited%20your%20website%20and%20I%20would%20like%20to%20know%20more%20about%20your%20services." class="float-whatsapp" target="_blank" title="Chat on WhatsApp"><i class="fab fa-whatsapp"></i></a>
 
-            <!-- ══ LOGO ══ -->
-            <a href="#home" class="logo-wrap">
-                <!-- Inline SVG badge — printer / fabric cross mark -->
-                <svg class="logo-icon" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- outer shield / badge shape -->
-                    <path d="M26 2L6 10V26c0 12 8.5 22.5 20 26 11.5-3.5 20-14 20-26V10L26 2Z"
-                          fill="url(#logoGrad1)" stroke="url(#logoGold)" stroke-width="1.2"/>
-                    <!-- inner subtle shine -->
-                    <path d="M26 6L9 13V26c0 10.5 7.5 19.5 17 22.8 9.5-3.3 17-12.3 17-22.8V13L26 6Z"
-                          fill="url(#logoGrad2)" opacity="0.55"/>
-                    <!-- printer icon body -->
-                    <rect x="15" y="21" width="22" height="14" rx="2.5" fill="white" opacity="0.95"/>
-                    <rect x="18" y="17" width="16" height="6" rx="1.5" fill="url(#logoGold)"/>
-                    <rect x="18" y="28" width="16" height="3" rx="1" fill="url(#logoGold)"/>
-                    <!-- paper coming out -->
-                    <rect x="20" y="33" width="12" height="5" rx="1" fill="white" opacity="0.9"/>
-                    <!-- star accent top -->
-                    <circle cx="26" cy="11" r="3" fill="url(#logoGold)" opacity="0.9"/>
-                    <defs>
-                        <linearGradient id="logoGrad1" x1="6" y1="2" x2="46" y2="50" gradientUnits="userSpaceOnUse">
-                            <stop offset="0%" stop-color="#2c5f8d"/>
-                            <stop offset="100%" stop-color="#1e4563"/>
-                        </linearGradient>
-                        <linearGradient id="logoGrad2" x1="9" y1="6" x2="43" y2="49" gradientUnits="userSpaceOnUse">
-                            <stop offset="0%" stop-color="#4a90d9"/>
-                            <stop offset="100%" stop-color="#2c5f8d"/>
-                        </linearGradient>
-                        <linearGradient id="logoGold" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
-                            <stop offset="0%" stop-color="#b8860b"/>
-                            <stop offset="50%" stop-color="#d4af37"/>
-                            <stop offset="100%" stop-color="#f6d365"/>
-                        </linearGradient>
-                    </defs>
-                </svg>
-
-                <div class="logo-text-group">
-                    <span class="logo-main">Janu Print <span>| Fab</span></span>
-                    <span class="logo-tagline">Premium Printing Solutions</span>
-                </div>
-            </a>
-            <!-- ══ END LOGO ══ -->
-
-            <ul class="nav-menu">
-                <li><a href="#home">Home</a></li>
-                <li><a href="shop.html" target="_blank">Shop</a></li>
-                <li><a href="#services">Services</a></li>
-                <li><a href="#about">About Us</a></li>
-                <li><a href="#portfolio">Portfolio</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-            <button class="mobile-menu-toggle">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="hero-content">
-            <h1>ඔබේ සිහින හැබෑ කරන, විශ්වාසනීය සහ විශිෂ්ටතම සේවාව.</h1>
-            <p class="hero-subtitle">Premium Printing Solutions with International Standards.</p>
-            <a href="#portfolio" class="cta-button">Explore Portfolio</a>
-        </div>
-    </section>
-
-    <!-- Services Section -->
-    <section id="services">
-        <div class="container">
-            <h2 class="section-title">Our Services</h2>
-            <p class="section-subtitle">Comprehensive printing solutions tailored to your needs</p>
-
-            <div class="services-grid">
-
-                <!-- Category A — Apparel -->
-                <div class="service-category">
-                    <!-- 3-D blue icon -->
-                    <div class="service-icon-3d icon-apparel">
-                        <i class="fas fa-tshirt"></i>
-                    </div>
-                    <h3>Custom Apparel Printing | ඇඳුම් මුද්‍රණය</h3>
-                    <ul>
-                        <li>T-Shirts (Men, Women, Kids) | ටී-ෂර්ට්</li>
-                        <li>Hoodies & Sweatshirts | හූඩීස් සහ ස්වීට්ෂර්ට්</li>
-                        <li>Polo Shirts | පෝලෝ ටී-ෂර්ට්</li>
-                        <li>Sportswear & Uniforms | ක්‍රීඩා සහ නිල ඇඳුම්</li>
-                        <li>Safety Wear & Aprons | ආරක්ෂිත ඇඳුම් සහ ඇප්‍රන්</li>
-                    </ul>
-                </div>
-
-                <!-- Category B — Fast Turnaround -->
-                <div class="service-category">
-                    <!-- 3-D gold icon -->
-                    <div class="service-icon-3d icon-fast">
-                        <i class="fas fa-bolt"></i>
-                    </div>
-                    <h3>Fast Turnaround Services | කඩිනම් මුද්‍රණ සේවා</h3>
-                    <ul>
-                        <li>Same Day DTF Printing | එදිනම DTF මුද්‍රණය</li>
-                        <li>Premium Heat Transfer | හීට් ට්‍රාන්ස්ෆර් මුද්‍රණය</li>
-                        <li>Bulk Screen Printing | ස්ක්‍රීන් ප්‍රින්ටින් (තොග ඇණවුම්)</li>
-                    </ul>
-                </div>
-
-                <!-- Category C — Promotional -->
-                <div class="service-category">
-                    <!-- 3-D green icon -->
-                    <div class="service-icon-3d icon-promo">
-                        <i class="fas fa-gift"></i>
-                    </div>
-                    <h3>Promotional Items | ප්‍රවර්ධන ද්‍රව්‍ය</h3>
-                    <ul>
-                        <li>Custom Tote & Drawstring Bags | රෙදි බෑග් වර්ග</li>
-                        <li>Personalized Cushion Covers | කුෂන් කවර්</li>
-                        <li>Caps Printing & Custom Patches | තොප්පි සහ ලාංඡන</li>
-                    </ul>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- About Us Section -->
-    <section id="about">
-        <div class="container">
-            <h2 class="section-title">About Us</h2>
-            <p class="section-subtitle">Excellence through experience and quality</p>
-
-            <div class="about-content">
-                <div class="about-text">
-                    අප ආයතනය ශ්‍රී ලාංකික බිම් මට්ටමේ සිට ක්‍රියාත්මක වන, ශ්‍රී ලංකාව සහ ඩුබායි (Dubai) යන දෙරටේම සේවා
-                    පළපුරුද්ද සහිත ආයතනයකි. අපගේ ප්‍රධානතම අරමුණ වන්නේ ඩුබායි රාජ්‍යයේ උසස් ප්‍රමිතියෙන් යුත්
-                    අමුද්‍රව්‍ය භාවිතා කරමින්, ශ්‍රී ලාංකීය පාරිභෝගිකයාට ඉහළම ගුණාත්මකභාවයෙන් යුත් නිමවුමක් ලබා දීමයි.
-                    දේශීය දැනුම සහ ජාත්‍යන්තර ප්‍රමිතිය අප සතු සුවිශේෂී හැකියාවයි.
-                </div>
-                <div class="about-text">
-                    We are a proudly Sri Lankan company operating with extensive experience in both Sri Lanka and Dubai.
-                    We specialize in delivering high-quality products crafted from premium Dubai-standard materials. By
-                    blending international standards with local expertise, Janu Print | Fab ensures that every project
-                    meets the highest benchmarks of durability and excellence.
-                </div>
-            </div>
-
-            <div class="about-highlights">
-                <div class="highlight-box">
-                    <i class="fas fa-gem"></i>
-                    <h4>Premium Materials</h4>
-                    <p>Dubai-standard quality</p>
-                </div>
-                <div class="highlight-box">
-                    <i class="fas fa-users"></i>
-                    <h4>Expert Team</h4>
-                    <p>Skilled professionals</p>
-                </div>
-                <div class="highlight-box">
-                    <i class="fas fa-star"></i>
-                    <h4>100% Satisfaction</h4>
-                    <p>Quality guaranteed</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Portfolio Section -->
-    <section id="portfolio">
-        <div class="container">
-            <h2 class="section-title">Our Portfolio</h2>
-            <p class="section-subtitle">Showcasing our finest work</p>
-
-            <div class="gallery-grid" id="drive-gallery"></div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact">
-        <div class="container">
-            <h2 class="section-title">Contact Us</h2>
-            <p class="section-subtitle">Let's bring your ideas to life</p>
-
-            <div class="contact-container">
-                <div class="contact-form">
-                    <form action="https://formsubmit.co/ashan.uae.123@gmail.com" method="POST">
-                        <input type="hidden" name="_captcha" value="false">
-                        <input type="hidden" name="_template" value="table">
-                        <input type="hidden" name="_subject" value="New Inquiry from Janu Print Website">
-
-                        <div class="form-group">
-                            <label for="name">Name</label>
-                            <input type="text" id="name" name="name" required placeholder="Your Name">
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" name="email" required placeholder="Your Email">
-                        </div>
-                        <div class="form-group">
-                            <label for="phone">Phone Number</label>
-                            <input type="tel" id="phone" name="phone" required placeholder="Your Phone Number">
-                        </div>
-                        <div class="form-group">
-                            <label for="message">Message</label>
-                            <textarea id="message" name="message" required placeholder="How can we help you?"></textarea>
-                        </div>
-                        <button type="submit" class="submit-button">Send Message</button>
-                    </form>
-                </div>
-
-                <div class="contact-info">
-                    <div class="contact-detail">
-                        <i class="fas fa-phone"></i>
-                        <div>
-                            <strong>Phone:</strong><br>
-                            +971 52 418 6102
-                        </div>
-                    </div>
-
-                    <div class="contact-detail">
-                        <i class="fas fa-envelope"></i>
-                        <div>
-                            <strong>Email:</strong><br>
-                            <a href="/cdn-cgi/l/email-protection#fa9b89929b94d48f9b9fd4cbc8c9ba9d979b9396d4999597"><span class="__cf_email__" data-cfemail="7415071c151a5a0115115a454647341319151d185a171b19">[email&#160;protected]</span></a>
-                        </div>
-                    </div>
-
-                    <a href="tel:+971524186102" class="call-button">
-                        <i class="fas fa-phone-alt"></i> Call Now
-                    </a>
-
-                    <div class="social-links">
-                        <a href="#" target="_blank" title="Instagram">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="https://www.facebook.com/profile.php?id=61580183291668" target="_blank" title="Facebook">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="https://wa.me/971524186102" target="_blank" title="WhatsApp">
-                            <i class="fab fa-whatsapp"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2026 Janu Print | Fab. All Rights Reserved.</p>
-    </footer>
-
-    <!-- WhatsApp Float Button -->
-    <a href="https://wa.me/971524186102?text=Hi%2C%20I%20visited%20your%20website%20and%20I%20would%20like%20to%20know%20more%20about%20your%20services."
-        class="float-whatsapp" target="_blank" title="Chat on WhatsApp">
-        <i class="fab fa-whatsapp"></i>
-    </a>
-
-    <!-- Google Drive Gallery Script -->
-    <script>
-      fetch('https://script.google.com/macros/s/AKfycbxql-7lbmNE6-g5lqijwVvV5ssbHFQ4zYsbBdQnlkFRKWo0jAj4z-sX-zVXqjAqzYcjEA/exec')
-        .then(response => response.json())
-        .then(data => {
-          const gallery = document.getElementById('drive-gallery');
-          data.forEach(image => {
-            const item = document.createElement('div');
-            item.className = 'gallery-item';
-            item.innerHTML = `
-              <img src="${image.url}" alt="${image.name}">
-              <div class="gallery-overlay"><p>${image.name}</p></div>
-            `;
-            gallery.appendChild(item);
-          });
-        })
-        .catch(error => console.error('Error fetching images:', error));
-    </script>
-
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-        // Mobile Menu Toggle
-        const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-        const navMenu = document.querySelector('.nav-menu');
-
-        mobileMenuToggle.addEventListener('click', () => {
-            navMenu.classList.toggle('active');
-            const icon = mobileMenuToggle.querySelector('i');
-            icon.classList.toggle('fa-bars');
-            icon.classList.toggle('fa-times');
+<!-- Gallery -->
+<script>
+fetch('https://script.google.com/macros/s/AKfycbxql-7lbmNE6-g5lqijwVvV5ssbHFQ4zYsbBdQnlkFRKWo0jAj4z-sX-zVXqjAqzYcjEA/exec')
+    .then(r=>r.json()).then(data=>{
+        const g=document.getElementById('drive-gallery');
+        data.forEach(img=>{
+            const d=document.createElement('div');d.className='gallery-item';
+            d.innerHTML=`<img src="${img.url}" alt="${img.name}" loading="lazy"><div class="gallery-overlay"><div class="gallery-overlay-line"></div><p>${img.name}</p></div>`;
+            g.appendChild(d);
         });
+    }).catch(e=>console.error(e));
+</script>
 
-        document.querySelectorAll('.nav-menu a').forEach(link => {
-            link.addEventListener('click', () => {
-                navMenu.classList.remove('active');
-                const icon = mobileMenuToggle.querySelector('i');
-                icon.classList.add('fa-bars');
-                icon.classList.remove('fa-times');
-            });
-        });
+<script>
+/* ══ WELCOME CANVAS ══ */
+(function(){
+    const wc=document.getElementById('welcome-canvas');
+    const ctx=wc.getContext('2d');
+    wc.width=window.innerWidth; wc.height=window.innerHeight;
+    const W=wc.width,H=wc.height;
 
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            });
-        });
+    /* Stars */
+    const stars=Array.from({length:200},()=>({
+        x:Math.random()*W,y:Math.random()*H,
+        r:Math.random()*1.3+0.2,
+        op:Math.random()*0.55+0.1,
+        tw:Math.random()*Math.PI*2,
+        spd:Math.random()*0.02+0.008
+    }));
 
-        let lastScroll = 0;
-        window.addEventListener('scroll', () => {
-            const nav = document.querySelector('nav');
-            const currentScroll = window.pageYOffset;
-            nav.style.boxShadow = currentScroll > 100
-                ? '0 2px 20px rgba(0,0,0,0.15)'
-                : '0 2px 10px rgba(0,0,0,0.1)';
-            lastScroll = currentScroll;
-        });
+    /* Vertical data streams */
+    const streams=Array.from({length:28},()=>({
+        x:Math.random()*W,y:Math.random()*H,
+        spd:Math.random()*1.5+0.5,
+        len:Math.random()*90+30,
+        op:Math.random()*0.18+0.05,
+        col:Math.random()>0.6?'255,215,0':'0,245,255'
+    }));
 
-        // Scroll-in animation
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, { thr
+    let frame=0;
+    const cx=W/2,cy=H/2;
+
+    function draw(){
+        ctx.clearRect(0,0,W,H);
+
+        /* dark radial vignette */
+        const vg=ctx.createRadialGradient(cx,cy,0,cx,cy,Math.max(W,H)*.7);
+        vg.addColorStop(0,'rgba(0,20,40,0)');
+        vg.addColorStop(1,'rgba(0,5,15,.6)');
+        ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
+
+        /* stars */
+        stars.forEach(s=>{s.tw+=s.spd;const o=s.op*(0.5+0.5*Math.sin(s.tw));ctx.save();ctx.globalAlpha=o;ctx.fillStyle='#fff';ctx.shadowColor='#00f5ff';ctx.shadowBlur=5;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();ctx.restore();});
+
+        /* streams */
+        streams.forEach(s=>{s.y+=s.spd;if(s.y>H+s.len)s.y=-s.len;const g=ctx.createLinearGradient(s.x,s.y-s.len,s.x,s.y);g.addColorStop(0,`rgba(${s.col},0)`);g.addColorStop(1,`rgba(${s.col},${s.op})`);ctx.save();ctx.strokeStyle=g;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(s.x,s.y-s.len);ctx.lineTo(s.x,s.y);ctx.stroke();ctx.restore();});
+
+        /* pulse rings from center */
+        for(let i=0;i<3;i++){
+            const r=100+i*80+(frame%150)*1.2;
+            const op=Math.max(0,.15-r/4000);
+            ctx.save();ctx.globalAlpha=op;ctx.strokeStyle='#00f5ff';ctx.lineWidth=.8;ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.stroke();ctx.restore();
+        }
+
+        frame++;
+        requestAnimationFrame(draw);
+    }
+    draw();
+
+    /* progress counter */
+    const pct=document.getElementById('pct');
+    let p=0;
+    const iv=setInterval(()=>{
+        p=Math.min(100,p+Math.random()*3+1.2);
+        if(pct) pct.textContent=Math.floor(p)+'%';
+        if(p>=100) clearInterval(iv);
+    },32);
+
+    /* dismiss */
+    setTimeout(()=>{
+        const ws=document.getElementById('welcome-screen');
+        ws.classList.add('hide');
+        setTimeout(()=>{ws.style.display='none';},950);
+    },3900);
+})();
+
+/* ══ MAIN BG CANVAS ══ */
+(function(){
+    const canvas=document.getElementById('bg-canvas');
+    const ctx=canvas.getContext('2d');
+    let W,H,P=[],mouse={x:-999,y:-999};
+
+    function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+
+    class Dot{
+        constructor(){this.reset(true);}
+        reset(init){this.x=Math.random()*W;this.y=init?Math.random()*H:H+10;this.sz=Math.random()*1.5+.3;this.vy=-(Math.random()*.4+.1);this.vx=(Math.random()-.5)*.2;this.op=Math.random()*.5+.1;this.col=Math.random()>.7?'#ffd700':'#00f5ff';}
+        update(){this.y+=this.vy;this.x+=this.vx;const dx=this.x-mouse.x,dy=this.y-mouse.y,d=Math.sqrt(dx*dx+dy*dy);if(d<100){const f=(100-d)/100;this.x+=(dx/d)*f*1.5;this.y+=(dy/d)*f*1.5;}if(this.y<-10)this.reset(false);}
+        draw(){ctx.save();ctx.globalAlpha=this.op;ctx.fillStyle=this.col;ctx.shadowColor=this.col;ctx.shadowBlur=6;ctx.beginPath();ctx.arc(this.x,this.y,this.sz,0,Math.PI*2);ctx.fill();ctx.restore();}
+    }
+
+    const nodes=Array.from({length:35},()=>({x:Math.random()*1920,y:Math.random()*1080,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.8+.5}));
+
+    function init(){P=Array.from({length:80},()=>new Dot());}
+
+    function drawConn(){for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){const dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<200){ctx.save();ctx.globalAlpha=(1-d/200)*.12;ctx.strokeStyle='#00f5ff';ctx.lineWidth=.5;ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.stroke();ctx.restore();}}}
+
+    function animate(){
+        ctx.clearRect(0,0,W,H);
+        nodes.forEach(n=>{n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;ctx.save();ctx.globalAlpha=.25;ctx.fillStyle='#00f5ff';ctx.shadowColor='#00f5ff';ctx.shadowBlur=5;ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fill();ctx.restore();});
+        drawConn();
+        P.forEach(p=>{p.update();p.draw();});
+        requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize',()=>{resize();init();});
+    window.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY;});
+    resize();init();animate();
+})();
+
+/* ══ CURSOR ══ */
+const dot=document.getElementById('cursor-dot'),ring=document.getElementById('cursor-ring');
+let rx=0,ry=0,dx_=0,dy_=0;
+document.addEventListener('mousemove',e=>{dx_=e.clientX;dy_=e.clientY;});
+(function ac(){rx+=(dx_-rx)*.12;ry+=(dy_-ry)*.12;dot.style.left=dx_+'px';dot.style.top=dy_+'px';ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(ac);})();
+document.querySelectorAll('a,button,.service-category,.gallery-item,.highlight-box,.wfi,.fi').forEach(el=>{el.addEventListener('mouseenter',()=>ring.classList.add('hover'));el.addEventListener('mouseleave',()=>ring.classList.remove('hover'));});
+
+/* ══ MOBILE MENU ══ */
+const tog=document.getElementById('menu-toggle'),mnav=document.getElementById('nav-menu');
+tog.addEventListener('click',()=>{mnav.classList.toggle('active');const ic=tog.querySelector('i');ic.classList.toggle('fa-bars');ic.classList.toggle('fa-times');});
+document.querySelectorAll('.nav-menu a').forEach(l=>l.addEventListener('click',()=>{mnav.classList.remove('active');tog.querySelector('i').className='fas fa-bars';}));
+
+/* ══ SMOOTH SCROLL ══ */
+document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',function(e){const t=document.querySelector(this.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'});}}));
+
+/* ══ NAV SCROLL ══ */
+window.addEventListener('scroll',()=>document.getElementById('main-nav').classList.toggle('scrolled',scrollY>60));
+
+/* ══ REVEAL ══ */
+const rObs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible');});},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>rObs.observe(el));
+
+/* ══ COUNTERS ══ */
+const cObs=new IntersectionObserver(e=>{e.forEach(x=>{if(!x.isIntersecting)return;const el=x.target,t=+el.dataset.target;let c=0;const s=t/60;const iv=setInterval(()=>{c+=s;if(c>=t){el.textContent=t+(t===2?'':'+');clearInterval(iv);}else el.textContent=Math.floor(c)+(t===2?'':'+');},25);cObs.unobserve(el);});},{threshold:.5});
+document.querySelectorAll('.stat-number').forEach(el=>cObs.observe(el));
+</script>
+</body>
+</html>
