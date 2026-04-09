@@ -1,1039 +1,1126 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Janu Print | Fab — Premium Printing Solutions</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600&family=Noto+Sans+Sinhala:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Janu Print | Fab - Premium Printing Solutions</title>
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Sinhala:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
-:root {
-    /* Main Theme Colors - Deep Navy & Premium Gold */
-    --teal:       #1e3f74;        /* Deep Blue (ඔබ තෝරාගත් වර්ණය) */
-    --teal-dark:  #142d52;        /* තවත් තද නිල් පැහැයක් (Hover effects සඳහා) */
-    --teal-light: #355fa1;        /* මදක් ලා නිල් පැහැයක් */
-    --teal-pale:  #f0f4fa;        /* ඉතා ලා නිල් පැහැයක් (Backgrounds සඳහා) */
 
-    /* Gold Accents - මලකඩ නොබැඳුණු දීප්තිමත් රන් පැහැය */
-    --gold:       #e09a20;        /* ප්‍රධාන රන් පැහැය */
-    --gold-light: #ffb83d;        /* දීප්තිමත් රන් පැහැය */
-    --gold-dark:  #b37a1a;        /* තද රන් පැහැය (3D අකුරු වලට සුදුසුයි) */
-    --gold-pale:  #fff9f0;        /* Creamy පෙනුමක් සහිත රන් පැහැයක් */
+    <style>
+        :root {
+            --metallic-blue: #00c3dd;
+            --metallic-blue-dark: #1e4563;
+            --gold-accent: #d4af37;
+            --gold-gradient: linear-gradient(135deg, #b8860b 0%, #d4af37 50%, #f6d365 100%);
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --text-dark: #333333;
+            --text-light: #666666;
+        }
 
-    /* Neutral Colors */
-    --silver:       #8a9299;
-    --silver-light: #e2e8f0;
-    --white:        #ffffff;
-    --off-white:    #fcfcfc;      /* පිරිසිදු නිමාවක් සඳහා */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    /* Text Colors - කියවීමට පහසු ගැඹුරු වර්ණ */
-    --text-dark:    #0f172a;      /* ඉතා තද නිල්/කළු මිශ්‍රිතයි */
-    --text-mid:     #334155;
-    --text-light:   #64748b;
+        html {
+            scroll-behavior: smooth;
+        }
 
-    /* Borders & Shadows - මේවා මම තවත් ස්වාභාවික කළා */
-    --border:       rgba(30, 63, 116, 0.1);
-    --shadow-sm:    0 2px 8px rgba(30, 63, 116, 0.05);
-    --shadow-md:    0 12px 30px rgba(30, 63, 116, 0.1);
-    --shadow-lg:    0 20px 50px rgba(30, 63, 116, 0.15);
-}
-.j-letter-3d {
-    font-family: 'Cormorant Garamond', serif;
-    /* --- වෙනස් කළ යුතු තැන් --- */
-    font-size: 14rem;        /* ප්‍රමාණය විශාල කිරීමට (ඔබට කැමති අගයක් දෙන්න) */
-    font-weight: 900;       /* උපරිම Bold ගතිය ලබා ගැනීමට */
-    /* ------------------------ */
-    color: var(--gold-light);
-    position: absolute;
-    z-index: 5;
-    animation: rotate3D 5s linear infinite;
-    transform-style: preserve-3d;
-    
-    /* අකුර තවත් කැපී පෙනීමට ත්‍රිමාණ සෙවනැල්ලක් */
-    text-shadow: 
-        2px 2px 0px var(--gold-dark), 
-        4px 4px 8px rgba(0,0,0,0.4);
-}
-.about-content {
-    grid-template-columns: 1fr; /* columns දෙකක් වෙනුවට එකක් කරයි */
-    max-width: 800px;
-    margin: 0 auto;
-    text-align: center; /* මැදට කිරීමට (අවශ්‍ය නම් පමණක්) */
-}
+        body {
+            font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--white);
+        }
 
-.about-visual {
-    display: none; /* Icon එක ඇති කොටස සම්පූර්ණයෙන්ම සඟවයි */
-}
-@keyframes rotate3D {
-    0% {
-        transform: rotateY(0deg);
-    }
-    100% {
-        transform: rotateY(360deg);
-    }
-}
+        /* ── Top Bar ── */
+        .top-bar {
+            background-color: var(--metallic-blue-dark);
+            color: var(--white);
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
 
-/* රවුම ඇතුළත අකුර හොඳින් මැදි කිරීමට */
-.hero-logo-wrap {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
+        .top-bar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 2rem;
+        }
 
-/* රවුම වටා කැරකෙන ඇනිමේෂන් එක */
-@keyframes orbit {
-    from {
-        transform: rotate(0deg) translateX(160px) rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg) translateX(160px) rotate(-360deg);
-    }
-}
+        .top-bar-info {
+            display: flex;
+            gap: 1.5rem;
+        }
 
-.hero-logo-wrap {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+        .top-bar-info a {
+            color: var(--white);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s ease;
+        }
 
-.hero-float-tag {
-    position: absolute;
-    /* දැනට ඇති position (top, left) ඉවත් කර animation එක ලබා දීම */
-    top: auto !important;
-    left: auto !important;
-    right: auto !important;
-    bottom: auto !important;
-    
-    animation: orbit 15s linear infinite;
-}
+        .top-bar-info a:hover { color: #f6d365; }
 
-/* එකිනෙක අයිතම අතර පරතරය තබා ගැනීමට Delay එකක් ලබා දීම */
-.hero-float-tag:nth-child(1) { animation-delay: 0s; }
-.hero-float-tag:nth-child(2) { animation-delay: -5s; }
-.hero-float-tag:nth-child(3) { animation-delay: -10s; }
+        /* ── Navigation ── */
+        nav {
+            background-color: var(--white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            transition: all 0.3s ease;
+        }
 
-/* මවුස් එක උඩට ගෙනියන විට ඇනිමේෂන් එක නතර කිරීමට (අවශ්‍ය නම් පමණක්) */
-.hero-logo-wrap:hover .hero-float-tag {
-    animation-play-state: paused;
-}
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior:smooth; }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.7rem 2rem;
+        }
 
-body {
-    font-family:'DM Sans','Noto Sans Sinhala',sans-serif;
-    background:var(--white);
-    color:var(--text-dark);
-    overflow-x:hidden;
-    line-height:1.6;
-}
+        /* ══════════════════════════════
+           LOGO — SVG inline mark + text
+           ══════════════════════════════ */
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
 
-/* ─── TOPBAR ─── */
-.topbar {
-    background:var(--teal-dark);
-    padding:.55rem 0;
-    font-size:.8rem;
-}
-.topbar-inner {
-    max-width:1200px; margin:0 auto;
-    display:flex; justify-content:space-between; align-items:center;
-    padding:0 2rem; flex-wrap:wrap; gap:.5rem;
-}
-.topbar-left { color:rgba(255,255,255,.7); letter-spacing:.04em; }
-.topbar-right { display:flex; gap:1.5rem; }
-.topbar-right a {
-    color:rgba(255,255,255,.75); text-decoration:none;
-    display:flex; align-items:center; gap:.45rem;
-    transition:color .2s;
-}
-.topbar-right a i { color:var(--gold-light); }
-.topbar-right a:hover { color:#fff; }
+        /* The SVG badge */
+        .logo-icon {
+            width: 52px;
+            height: 52px;
+            flex-shrink: 0;
+            filter: drop-shadow(0 3px 6px rgba(44,95,141,0.35));
+        }
 
-/* ─── NAV ─── */
-nav {
-    background:var(--white);
-    border-bottom:1px solid var(--border);
-    position:sticky; top:0; z-index:999;
-    box-shadow:var(--shadow-sm);
-    transition:box-shadow .3s;
-}
-nav.scrolled { box-shadow:0 4px 24px rgba(26,107,110,.14); }
-.nav-inner {
-    max-width:1200px; margin:0 auto;
-    display:flex; align-items:center; justify-content:space-between;
-    padding:.9rem 2rem;
-}
-.nav-logo {
-    display:flex; align-items:center; gap:1rem;
-    text-decoration:none;
-}
-.nav-logo img {
-    height:54px; width:auto;
-    filter:drop-shadow(0 2px 6px rgba(26,107,110,.2));
-}
-.nav-logo-text { display:flex; flex-direction:column; line-height:1.2; }
-.nav-logo-name {
-    font-family:'Cormorant Garamond',serif;
-    font-size:1.35rem; font-weight:700;
-    color:var(--teal-dark); letter-spacing:.03em;
-}
-.nav-logo-name span { color:var(--gold); }
-.nav-logo-tag {
-    font-size:.6rem; letter-spacing:.22em; text-transform:uppercase;
-    color:var(--silver); font-weight:500;
-}
-.nav-links { display:flex; gap:2rem; list-style:none; }
-.nav-links a {
-    text-decoration:none; color:var(--text-mid);
-    font-size:.85rem; font-weight:500; letter-spacing:.06em;
-    text-transform:uppercase; position:relative; padding:.2rem 0;
-    transition:color .2s;
-}
-.nav-links a::after {
-    content:''; position:absolute; bottom:-2px; left:0;
-    width:0; height:2px; background:var(--gold);
-    transition:width .3s;
-}
-.nav-links a:hover { color:var(--teal); }
-.nav-links a:hover::after { width:100%; }
-.nav-cta {
-    background:var(--teal); color:#fff;
-    padding:.55rem 1.4rem; border-radius:4px;
-    text-decoration:none; font-size:.8rem; font-weight:500;
-    letter-spacing:.08em; text-transform:uppercase;
-    transition:background .2s, transform .2s;
-    white-space:nowrap;
-}
-.nav-cta:hover { background:var(--teal-dark); transform:translateY(-1px); }
-.nav-mobile-btn {
-    display:none; background:none; border:none;
-    color:var(--teal); font-size:1.4rem; cursor:pointer; padding:.3rem;
-}
+        /* Text block next to icon */
+        .logo-text-group {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.15;
+        }
 
-/* ─── HERO ─── */
-.hero {
-    background:linear-gradient(135deg, var(--teal-dark) 0%, var(--teal) 55%, #2a8085 100%);
-    position:relative; overflow:hidden;
-    padding:6rem 2rem 5rem;
-    min-height:88vh;
-    display:flex; align-items:center;
-}
-.hero::before {
-    content:'';
-    position:absolute; inset:0;
-    background:url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h60v60H0z' fill='none'/%3E%3Ccircle cx='30' cy='30' r='1' fill='rgba(255,255,255,0.04)'/%3E%3C/svg%3E") repeat;
-}
-.hero::after {
-    content:'';
-    position:absolute; bottom:-2px; left:0; right:0; height:80px;
-    background:linear-gradient(to bottom right, transparent 49%, var(--white) 50%);
-}
-.hero-inner {
-    max-width:1200px; margin:0 auto;
-    display:grid; grid-template-columns:1fr 1fr;
-    gap:4rem; align-items:center; position:relative; z-index:1;
-}
-.hero-badge {
-    display:inline-flex; align-items:center; gap:.6rem;
-    background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25);
-    padding:.35rem 1rem; border-radius:30px;
-    font-size:.72rem; letter-spacing:.18em; text-transform:uppercase;
-    color:rgba(255,255,255,.9); margin-bottom:1.5rem;
-}
-.hero-badge span { width:6px; height:6px; background:var(--gold-light); border-radius:50%; flex-shrink:0; animation:pulse-dot 2s infinite; }
-@keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
-.hero-title {
-    font-family:'Noto Sans Sinhala','Cormorant Garamond',serif;
-    font-size:clamp(1.6rem, 3.5vw, 2.6rem);
-    font-weight:600; line-height:1.4;
-    color:#fff; margin-bottom:1.2rem;
-}
-.hero-sub {
-    font-size:.95rem; color:rgba(255,255,255,.75);
-    line-height:1.8; margin-bottom:2rem;
-}
-.hero-actions { display:flex; gap:1rem; flex-wrap:wrap; }
-.btn-primary {
-    background:var(--gold); color:#fff;
-    padding:.75rem 1.8rem; border-radius:4px;
-    text-decoration:none; font-size:.83rem; font-weight:600;
-    letter-spacing:.08em; text-transform:uppercase;
-    transition:all .25s; display:inline-flex; align-items:center; gap:.5rem;
-    box-shadow:0 4px 20px rgba(184,150,90,.35);
-}
-.btn-primary:hover { background:var(--gold-light); transform:translateY(-2px); box-shadow:0 8px 30px rgba(184,150,90,.45); }
-.btn-outline {
-    background:transparent; color:#fff;
-    padding:.75rem 1.8rem; border-radius:4px; border:1.5px solid rgba(255,255,255,.45);
-    text-decoration:none; font-size:.83rem; font-weight:500;
-    letter-spacing:.08em; text-transform:uppercase;
-    transition:all .25s; display:inline-flex; align-items:center; gap:.5rem;
-}
-.btn-outline:hover { border-color:#fff; background:rgba(255,255,255,.1); }
-.hero-stats {
-    display:flex; gap:2.5rem; margin-top:2.8rem;
-    padding-top:2.2rem; border-top:1px solid rgba(255,255,255,.15);
-}
-.hero-stat-num {
-    font-family:'Cormorant Garamond',serif;
-    font-size:2rem; font-weight:700; color:var(--gold-light);
-    display:block; line-height:1;
-}
-.hero-stat-lbl { font-size:.72rem; color:rgba(255,255,255,.6); letter-spacing:.1em; text-transform:uppercase; }
+        .logo-main {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--metallic-blue);
+            letter-spacing: -0.02em;
+        }
 
-/* Hero visual */
-.hero-visual {
-    display:flex; align-items:center; justify-content:center;
-    position:relative;
-}
-.hero-logo-wrap {
-    width:320px; height:320px;
-    background:rgba(255,255,255,.08);
-    border:1px solid rgba(255,255,255,.2);
-    border-radius:50%; display:flex; align-items:center; justify-content:center;
-    position:relative;
-    box-shadow:0 0 0 20px rgba(255,255,255,.04), 0 0 0 40px rgba(255,255,255,.02);
-}
-.hero-logo-wrap img { width:220px; height:auto; filter:drop-shadow(0 8px 24px rgba(0,0,0,.3)); }
-.hero-float-tag {
-    position:absolute;
-    background:var(--white);
-    border-radius:12px;
-    padding:.65rem 1rem;
-    display:flex; align-items:center; gap:.6rem;
-    box-shadow:0 8px 30px rgba(0,0,0,.2);
-    font-size:.75rem; font-weight:500; color:var(--text-dark);
-    white-space:nowrap;
-}
-.hero-float-tag i { font-size:1rem; color:var(--teal); }
-.hero-float-tag:nth-child(2) { top:12%; right:-10%; }
-.hero-float-tag:nth-child(3) { bottom:15%; left:-12%; }
-.hero-float-tag:nth-child(4) { bottom:30%; right:-8%; }
+        .logo-main span {
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
 
-/* ─── SECTION COMMONS ─── */
-section { padding:5.5rem 2rem; }
-.container { max-width:1200px; margin:0 auto; }
-.sec-label {
-    font-size:.68rem; letter-spacing:.3em; text-transform:uppercase;
-    color:var(--gold); font-weight:600; display:flex; align-items:center; gap:.7rem;
-    margin-bottom:.75rem;
-}
-.sec-label::before { content:''; width:32px; height:1.5px; background:var(--gold); }
-.sec-title {
-    font-family:'Cormorant Garamond',serif;
-    font-size:clamp(1.8rem,3.5vw,2.6rem); font-weight:600;
-    color:var(--teal-dark); line-height:1.25; margin-bottom:.8rem;
-}
-.sec-sub { font-size:.95rem; color:var(--text-light); max-width:560px; }
-.sec-header { margin-bottom:3.5rem; }
-.sec-header.center { text-align:center; }
-.sec-header.center .sec-label { justify-content:center; }
-.sec-header.center .sec-label::before { display:none; }
-.sec-header.center .sec-label::after { content:''; width:32px; height:1.5px; background:var(--gold); }
-.sec-header.center .sec-sub { margin:0 auto; }
+        .logo-tagline {
+            font-size: 0.65rem;
+            font-weight: 500;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--text-light);
+        }
 
-/* ─── SERVICES ─── */
-#services { background:var(--off-white); }
-.services-grid {
-    display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(300px,1fr));
-    gap:1.5rem;
-}
-.service-card {
-    background:var(--white);
-    border:1px solid var(--border);
-    border-radius:12px;
-    padding:2.2rem;
-    position:relative;
-    overflow:hidden;
-    transition:all .3s cubic-bezier(.2,.8,.4,1);
-}
-.service-card::before {
-    content:'';
-    position:absolute; top:0; left:0; right:0; height:4px;
-    background:linear-gradient(90deg, var(--teal), var(--gold));
-    transform:scaleX(0); transform-origin:left;
-    transition:transform .35s ease;
-}
-.service-card:hover { transform:translateY(-6px); box-shadow:var(--shadow-lg); border-color:transparent; }
-.service-card:hover::before { transform:scaleX(1); }
-.service-icon {
-    width:58px; height:58px;
-    background:var(--teal-pale);
-    border-radius:14px;
-    display:flex; align-items:center; justify-content:center;
-    margin-bottom:1.5rem;
-    transition:background .3s;
-}
-.service-card:hover .service-icon { background:var(--teal); }
-.service-icon i { font-size:1.4rem; color:var(--teal); transition:color .3s; }
-.service-card:hover .service-icon i { color:#fff; }
-.service-card h3 {
-    font-family:'Cormorant Garamond',serif;
-    font-size:1.25rem; font-weight:600;
-    color:var(--teal-dark); margin-bottom:.4rem;
-}
-.service-card .service-sub {
-    font-size:.78rem; color:var(--gold); letter-spacing:.12em;
-    text-transform:uppercase; font-weight:600; margin-bottom:1.2rem;
-}
-.service-card ul { list-style:none; }
-.service-card li {
-    padding:.45rem 0; border-bottom:1px solid var(--border);
-    font-size:.88rem; color:var(--text-mid);
-    display:flex; align-items:center; gap:.6rem;
-    transition:color .2s;
-}
-.service-card li:last-child { border-bottom:none; }
-.service-card li::before { content:''; width:5px; height:5px; border-radius:50%; background:var(--gold); flex-shrink:0; }
-.service-card:hover li { color:var(--text-dark); }
+        /* ── Nav menu ── */
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
 
-/* ─── ABOUT ─── */
-#about { background:var(--white); }
-.about-grid {
-    display:grid; grid-template-columns:1fr 1fr;
-    gap:5rem; align-items:center;
-}
-.about-img-wrap { position:relative; }
-.about-img-main {
-    width:100%; border-radius:16px;
-    overflow:hidden; aspect-ratio:4/5;
-    background:linear-gradient(135deg, var(--teal-pale), var(--gold-pale));
-    display:flex; align-items:center; justify-content:center;
-    box-shadow:var(--shadow-lg);
-}
-.about-img-main .about-center-icon {
-    font-size:4rem; color:var(--teal);
-    opacity:.25;
-}
-.about-badge {
-    position:absolute; bottom:-20px; right:-20px;
-    background:var(--teal-dark); color:#fff;
-    width:120px; height:120px; border-radius:50%;
-    display:flex; flex-direction:column;
-    align-items:center; justify-content:center; text-align:center;
-    box-shadow:0 8px 30px rgba(16,70,72,.4);
-    border:4px solid var(--white);
-}
-.about-badge-num {
-    font-family:'Cormorant Garamond',serif;
-    font-size:1.8rem; font-weight:700; line-height:1; color:var(--gold-light);
-}
-.about-badge-txt { font-size:.55rem; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.7); }
-.about-text p {
-    font-size:.95rem; line-height:1.9; color:var(--text-mid);
-    margin-bottom:1.2rem;
-}
-.about-text p.sinhala {
-    font-family:'Noto Sans Sinhala',sans-serif;
-    font-size:.9rem;
-}
-.about-features {
-    display:grid; grid-template-columns:1fr 1fr;
-    gap:1rem; margin-top:2rem;
-}
-.about-feature {
-    display:flex; align-items:flex-start; gap:.75rem;
-    background:var(--off-white); border-radius:10px; padding:1rem 1.1rem;
-}
-.about-feature-icon {
-    width:36px; height:36px; flex-shrink:0;
-    background:var(--teal-pale); border-radius:8px;
-    display:flex; align-items:center; justify-content:center;
-}
-.about-feature-icon i { color:var(--teal); font-size:.85rem; }
-.about-feature h4 { font-size:.8rem; font-weight:600; color:var(--teal-dark); margin-bottom:.15rem; }
-.about-feature p { font-size:.75rem; color:var(--text-light); }
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
 
-/* ─── PROCESS ─── */
-#process { background:var(--teal-dark); }
-.process-grid {
-    display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-    gap:1px; background:rgba(255,255,255,.08);
-    border-radius:16px; overflow:hidden;
-}
-.process-step {
-    background:var(--teal-dark);
-    padding:2.5rem 1.8rem;
-    position:relative; text-align:center;
-    transition:background .3s;
-}
-.process-step:hover { background:rgba(255,255,255,.06); }
-.process-num {
-    font-family:'Cormorant Garamond',serif;
-    font-size:3rem; font-weight:700;
-    color:rgba(184,150,90,.2); line-height:1;
-    margin-bottom:1rem;
-}
-.process-icon { font-size:1.5rem; color:var(--gold-light); margin-bottom:.8rem; }
-.process-step h3 {
-    font-family:'Cormorant Garamond',serif;
-    font-size:1.1rem; color:#fff; margin-bottom:.5rem;
-}
-.process-step p { font-size:.8rem; color:rgba(255,255,255,.55); line-height:1.6; }
+        .nav-menu a:hover { color: var(--metallic-blue); }
 
-/* ─── PORTFOLIO ─── */
-#portfolio { background:var(--off-white); }
-.gallery-grid {
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-    gap:1.2rem;
-}
-.gallery-item {
-    border-radius:12px; overflow:hidden;
-    aspect-ratio:4/3; position:relative;
-    cursor:pointer; border:1px solid var(--border);
-    background:var(--teal-pale);
-}
-.gallery-item img {
-    width:100%; height:100%; object-fit:cover;
-    transition:transform .5s ease, filter .4s;
-    filter:brightness(.96);
-}
-.gallery-item:hover img { transform:scale(1.05); filter:brightness(.65); }
-.gallery-overlay {
-    position:absolute; inset:0;
-    background:linear-gradient(to top, rgba(16,70,72,.85), transparent);
-    display:flex; flex-direction:column;
-    justify-content:flex-end; padding:1.4rem;
-    opacity:0; transition:opacity .35s;
-}
-.gallery-item:hover .gallery-overlay { opacity:1; }
-.gallery-overlay p {
-    font-size:.8rem; color:#fff; font-weight:500;
-    letter-spacing:.06em; text-transform:uppercase;
-}
-.gallery-overlay span { font-size:.7rem; color:var(--gold-light); }
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gold-gradient);
+            transition: width 0.3s ease;
+        }
 
-/* ─── CONTACT ─── */
-#contact { background:var(--white); }
-.contact-grid {
-    display:grid; grid-template-columns:1.1fr .9fr;
-    gap:4rem; max-width:960px; margin:0 auto;
-}
-.contact-form-wrap {
-    background:var(--off-white);
-    border-radius:16px; padding:2.5rem;
-    border:1px solid var(--border);
-}
-.form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
-.form-group { margin-bottom:1.2rem; }
-.form-group label {
-    display:block; margin-bottom:.45rem;
-    font-size:.72rem; font-weight:600;
-    letter-spacing:.12em; text-transform:uppercase;
-    color:var(--text-mid);
-}
-.form-group input,
-.form-group textarea,
-.form-group select {
-    width:100%; padding:.8rem 1rem;
-    background:var(--white); border:1.5px solid var(--border);
-    border-radius:8px; color:var(--text-dark);
-    font-family:'DM Sans',sans-serif; font-size:.9rem;
-    transition:border-color .2s, box-shadow .2s;
-    appearance:none;
-}
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-    outline:none; border-color:var(--teal);
-    box-shadow:0 0 0 3px rgba(26,107,110,.1);
-}
-.form-group textarea { resize:vertical; min-height:110px; }
-.submit-btn {
-    width:100%; padding:.9rem;
-    background:var(--teal); color:#fff; border:none;
-    border-radius:8px; font-size:.83rem; font-weight:600;
-    letter-spacing:.1em; text-transform:uppercase;
-    cursor:pointer; transition:all .25s;
-    display:flex; align-items:center; justify-content:center; gap:.5rem;
-}
-.submit-btn:hover { background:var(--teal-dark); transform:translateY(-1px); box-shadow:0 6px 20px rgba(26,107,110,.25); }
+        .nav-menu a:hover::after { width: 100%; }
 
-.contact-info { display:flex; flex-direction:column; gap:1rem; justify-content:center; }
-.contact-info-title {
-    font-family:'Cormorant Garamond',serif;
-    font-size:1.8rem; color:var(--teal-dark);
-    margin-bottom:.3rem; line-height:1.25;
-}
-.contact-info-sub { font-size:.88rem; color:var(--text-light); margin-bottom:1.5rem; line-height:1.7; }
-.contact-item {
-    display:flex; align-items:center; gap:1rem;
-    padding:1.1rem 1.2rem;
-    background:var(--off-white); border-radius:10px;
-    border:1px solid var(--border);
-    transition:border-color .25s, box-shadow .25s;
-    text-decoration:none;
-}
-.contact-item:hover { border-color:var(--teal); box-shadow:var(--shadow-sm); }
-.contact-item-icon {
-    width:42px; height:42px; flex-shrink:0;
-    background:var(--teal-pale); border-radius:10px;
-    display:flex; align-items:center; justify-content:center;
-}
-.contact-item-icon i { color:var(--teal); font-size:1rem; }
-.contact-item-label { font-size:.65rem; letter-spacing:.15em; text-transform:uppercase; color:var(--silver); margin-bottom:.1rem; }
-.contact-item-val { font-size:.9rem; font-weight:500; color:var(--text-dark); }
-.cta-whatsapp {
-    display:flex; align-items:center; justify-content:center; gap:.65rem;
-    background:#25d366; color:#fff;
-    padding:.85rem 1.5rem; border-radius:10px;
-    text-decoration:none; font-weight:600; font-size:.85rem;
-    letter-spacing:.06em; text-transform:uppercase;
-    margin-top:.5rem;
-    transition:all .25s;
-    box-shadow:0 4px 18px rgba(37,211,102,.3);
-}
-.cta-whatsapp:hover { background:#1fba57; transform:translateY(-2px); box-shadow:0 8px 24px rgba(37,211,102,.4); }
-.social-row { display:flex; gap:.7rem; margin-top:.3rem; }
-.social-btn {
-    width:42px; height:42px;
-    background:var(--off-white); border:1px solid var(--border);
-    border-radius:10px; display:flex; align-items:center; justify-content:center;
-    color:var(--text-mid); font-size:.95rem;
-    text-decoration:none; transition:all .25s;
-}
-.social-btn:hover { background:var(--teal); color:#fff; border-color:var(--teal); }
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--metallic-blue);
+            cursor: pointer;
+        }
 
-/* ─── FOOTER ─── */
-footer {
-    background:var(--teal-dark);
-    color:rgba(255,255,255,.6);
-    padding:2rem;
-    text-align:center;
-    font-size:.78rem; letter-spacing:.08em;
-}
-footer a { color:var(--gold-light); text-decoration:none; }
+        /* ── Hero ── */
+        .hero {
+            background: linear-gradient(135deg, var(--metallic-blue) 0%, var(--metallic-blue-dark) 100%);
+            color: var(--white);
+            padding: 8rem 2rem 6rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
 
-/* ─── WHATSAPP FLOAT ─── */
-.wa-float {
-    position:fixed; bottom:28px; right:28px;
-    width:56px; height:56px;
-    background:#25d366; color:#fff;
-    border-radius:50%; display:flex; align-items:center; justify-content:center;
-    font-size:1.5rem; text-decoration:none; z-index:1000;
-    box-shadow:0 4px 20px rgba(37,211,102,.4);
-    animation:wa-pulse 2.5s infinite;
-    transition:transform .2s;
-}
-.wa-float:hover { transform:scale(1.1); }
-@keyframes wa-pulse {
-    0%{box-shadow:0 0 0 0 rgba(37,211,102,.4)}
-    70%{box-shadow:0 0 0 14px rgba(37,211,102,0)}
-    100%{box-shadow:0 0 0 0 rgba(37,211,102,0)}
-}
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100%25" height="100%25" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
 
-/* ─── REVEAL ─── */
-.reveal { opacity:0; transform:translateY(28px); transition:opacity .65s ease, transform .65s ease; }
-.reveal.up { opacity:1; transform:translateY(0); }
+        .hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 1s ease;
+        }
 
-/* ─── MOBILE ─── */
-@media(max-width:900px) {
-    .hero-inner { grid-template-columns:1fr; gap:3rem; }
-    .hero-visual { display:none; }
-    .about-grid { grid-template-columns:1fr; gap:2.5rem; }
-    .about-img-wrap { display:none; }
-    .contact-grid { grid-template-columns:1fr; }
-    .form-row { grid-template-columns:1fr; }
-}
-@media(max-width:768px) {
-    .topbar-left { display:none; }
-    .nav-links, .nav-cta { display:none; }
-    .nav-links.open {
-        display:flex; flex-direction:column;
-        position:fixed; top:70px; left:0; right:0;
-        background:var(--white); padding:1.5rem 2rem;
-        border-bottom:1px solid var(--border);
-        box-shadow:var(--shadow-md); z-index:998;
-        gap:1.2rem;
-    }
-    .nav-mobile-btn { display:block; }
-    .hero { padding:4rem 1.5rem 4rem; }
-    .process-grid { grid-template-columns:1fr 1fr; }
-    section { padding:4rem 1.5rem; }
-}
-@media(max-width:480px) {
-    .process-grid { grid-template-columns:1fr; }
-    .hero-stats { gap:1.5rem; }
-    .about-features { grid-template-columns:1fr; }
-}
-</style>
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-family: 'Noto Sans Sinhala','Poppins',sans-serif;
+            line-height: 1.3;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: var(--gold-gradient);
+            color: var(--metallic-blue-dark);
+            padding: 1rem 2.5rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(212,175,55,0.4);
+            border: 1px solid rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);
+            transition: 0.5s;
+        }
+
+        .cta-button:hover::before { left: 100%; }
+        .cta-button:hover { transform: translateY(-3px); box-shadow: 0 6px 25px rgba(212,175,55,0.6); }
+
+        /* ── Section base ── */
+        section { padding: 5rem 2rem; }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--metallic-blue);
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px; left: 50%;
+            transform: translateX(-50%);
+            width: 80px; height: 4px;
+            background: var(--gold-gradient);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-light);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        /* ═══════════════════════════════════════════════
+           SERVICES — 3-D icon cards
+           ═══════════════════════════════════════════════ */
+        #services { background-color: var(--light-gray); }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .service-category {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            transition: all 0.35s cubic-bezier(.22,.61,.36,1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-category::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: var(--gold-gradient);
+            border-radius: 16px 16px 0 0;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.35s ease;
+        }
+
+        .service-category:hover::before { transform: scaleX(1); }
+
+        .service-category:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(44,95,141,0.18);
+        }
+
+        /* ── 3-D Icon ── */
+        .service-icon-3d {
+            width: 72px;
+            height: 72px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.2rem;
+            position: relative;
+            transition: transform 0.35s ease, box-shadow 0.35s ease;
+        }
+
+        /* The raised 3-D look: layered box-shadows */
+        .service-icon-3d.icon-apparel {
+            background: linear-gradient(145deg, #3a7fc1, #2456a4);
+            box-shadow:
+                0 2px 0 #1a3f7f,
+                0 4px 0 #143060,
+                0 6px 0 #0e2144,
+                0 8px 12px rgba(20,48,96,0.45),
+                inset 0 1px 0 rgba(255,255,255,0.25);
+        }
+
+        .service-icon-3d.icon-fast {
+            background: linear-gradient(145deg, #e8b84b, #c8951e);
+            box-shadow:
+                0 2px 0 #a07010,
+                0 4px 0 #7a5508,
+                0 6px 0 #553c05,
+                0 8px 12px rgba(120,80,0,0.45),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+        }
+
+        .service-icon-3d.icon-promo {
+            background: linear-gradient(145deg, #3dba8a, #28976c);
+            box-shadow:
+                0 2px 0 #1e7554,
+                0 4px 0 #165740,
+                0 6px 0 #0e3a2b,
+                0 8px 12px rgba(14,58,43,0.45),
+                inset 0 1px 0 rgba(255,255,255,0.25);
+        }
+
+        .service-icon-3d i {
+            font-size: 2rem;
+            color: #fff;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.35));
+            transition: transform 0.3s ease;
+        }
+
+        .service-category:hover .service-icon-3d {
+            transform: translateY(-4px) rotate(-4deg);
+        }
+
+        .service-category:hover .service-icon-3d.icon-apparel {
+            box-shadow:
+                0 4px 0 #1a3f7f,
+                0 8px 0 #143060,
+                0 12px 0 #0e2144,
+                0 16px 20px rgba(20,48,96,0.40),
+                inset 0 1px 0 rgba(255,255,255,0.25);
+        }
+
+        .service-category:hover .service-icon-3d.icon-fast {
+            box-shadow:
+                0 4px 0 #a07010,
+                0 8px 0 #7a5508,
+                0 12px 0 #553c05,
+                0 16px 20px rgba(120,80,0,0.40),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+        }
+
+        .service-category:hover .service-icon-3d.icon-promo {
+            box-shadow:
+                0 4px 0 #1e7554,
+                0 8px 0 #165740,
+                0 12px 0 #0e3a2b,
+                0 16px 20px rgba(14,58,43,0.40),
+                inset 0 1px 0 rgba(255,255,255,0.25);
+        }
+
+        .service-category h3 {
+            color: var(--metallic-blue);
+            font-size: 1.2rem;
+            margin-bottom: 1.2rem;
+            font-family: 'Poppins','Noto Sans Sinhala',sans-serif;
+        }
+
+        .service-category ul { list-style: none; }
+
+        .service-category li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eeeeee;
+            font-family: 'Poppins','Noto Sans Sinhala',sans-serif;
+            font-size: 0.95rem;
+        }
+
+        .service-category li:last-child { border-bottom: none; }
+
+        .service-category li::before {
+            content: '✓';
+            color: var(--gold-accent);
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        /* ── About ── */
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .about-text {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: var(--text-dark);
+            font-family: 'Noto Sans Sinhala','Poppins',sans-serif;
+            margin-bottom: 1.5rem;
+        }
+
+        .about-highlights {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .highlight-box {
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--light-gray);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .highlight-box:hover {
+            background-color: var(--metallic-blue);
+            color: var(--white);
+            transform: translateY(-5px);
+        }
+
+        .highlight-box i {
+            font-size: 3rem;
+            color: var(--gold-accent);
+            margin-bottom: 1rem;
+        }
+
+        .highlight-box h4 { font-size: 1.2rem; margin-bottom: 0.5rem; }
+
+        /* ── Portfolio ── */
+        #portfolio { background-color: var(--light-gray); }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            height: 300px;
+            cursor: pointer;
+        }
+
+        .gallery-item img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover img { transform: scale(1.1); }
+
+        .gallery-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg,rgba(44,95,141,0.9),rgba(30,69,99,0.9));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .gallery-item:hover .gallery-overlay { opacity: 1; }
+
+        .gallery-overlay p {
+            color: var(--white);
+            font-size: 1.1rem;
+            font-weight: 500;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        /* ── Contact ── */
+        #contact { background-color: var(--white); }
+
+        .contact-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .contact-form {
+            background-color: var(--light-gray);
+            padding: 2rem;
+            border-radius: 10px;
+        }
+
+        .form-group { margin-bottom: 1.5rem; }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #999999;
+            background-color: #ffffff !important;
+            color: #333333 !important;
+            border-radius: 5px;
+            font-family: 'Poppins',sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--metallic-blue);
+            background-color: #ffffff !important;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #999999;
+            opacity: 1;
+        }
+
+        .form-group textarea { resize: vertical; min-height: 120px; }
+
+        .submit-button {
+            background-color: var(--metallic-blue);
+            color: var(--white);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .submit-button:hover {
+            background-color: var(--metallic-blue-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(44,95,141,0.3);
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .contact-detail {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .contact-detail i {
+            font-size: 1.5rem;
+            color: var(--metallic-blue);
+            margin-right: 1rem;
+            width: 30px;
+        }
+
+        .contact-detail a {
+            color: var(--metallic-blue);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .contact-detail a:hover {
+            color: var(--gold-accent);
+            text-decoration: underline;
+        }
+
+        .call-button {
+            display: inline-block;
+            background-color: var(--metallic-blue);
+            color: var(--white);
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .call-button:hover {
+            background-color: var(--metallic-blue-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(44,95,141,0.3);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px; height: 50px;
+            background-color: var(--light-gray);
+            color: var(--metallic-blue);
+            border-radius: 50%;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background-color: var(--metallic-blue);
+            color: var(--white);
+            transform: translateY(-3px);
+        }
+
+        /* ── Footer ── */
+        footer {
+            background-color: var(--metallic-blue-dark);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem;
+        }
+
+        footer p { margin: 0; opacity: 0.9; }
+
+        /* ── Animations ── */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse-gold {
+            0%   { box-shadow: 0 0 0 0 rgba(212,175,55,0.7); }
+            70%  { box-shadow: 0 0 0 15px rgba(212,175,55,0); }
+            100% { box-shadow: 0 0 0 0 rgba(212,175,55,0); }
+        }
+
+        .float-whatsapp {
+            position: fixed;
+            bottom: 30px; right: 30px;
+            background-color: #25d366;
+            color: white;
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            animation: pulse-gold 2s infinite;
+        }
+
+        .float-whatsapp:hover {
+            transform: scale(1.1);
+            background-color: #128c7e;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .top-bar-container {
+                flex-direction: column;
+                gap: 0.5rem;
+                text-align: center;
+            }
+
+            .top-bar-info {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .nav-menu {
+                position: fixed;
+                left: -100%;
+                top: 70px;
+                flex-direction: column;
+                background-color: var(--white);
+                width: 100%;
+                text-align: center;
+                transition: 0.3s;
+                box-shadow: 0 10px 27px rgba(0,0,0,0.05);
+                padding: 2rem 0;
+            }
+
+            .nav-menu.active { left: 0; }
+
+            .mobile-menu-toggle { display: block; }
+
+            .hero h1 { font-size: 2rem; }
+            .hero-subtitle { font-size: 1.1rem; }
+            .section-title { font-size: 2rem; }
+
+            .contact-container { grid-template-columns: 1fr; }
+
+            .services-grid,
+            .gallery-grid { grid-template-columns: 1fr; }
+
+            .logo-main { font-size: 1.1rem; }
+            .logo-icon { width: 42px; height: 42px; }
+        }
+
+        @media (max-width: 480px) {
+            .hero { padding: 5rem 1rem 4rem; }
+            .hero h1 { font-size: 1.6rem; }
+            .nav-container { padding: 1rem; }
+            section { padding: 3rem 1rem; }
+        }
+    </style>
 </head>
+
 <body>
 
-<!-- TOP BAR -->
-<div class="topbar">
-    <div class="topbar-inner">
-        <span class="topbar-left">Premium Printing & Fabrication — Dubai Standards</span>
-        <div class="topbar-right">
-            <a href="tel:+971524186102"><i class="fas fa-phone-alt"></i> +971 52 418 6102</a>
-            <a href="mailto:ashan.uae.123@gmail.com"><i class="fas fa-envelope"></i> ashan.uae.123@gmail.com</a>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="top-bar-container">
+            <div class="top-bar-info">
+                <span>Welcome to Janu Print | Fab</span>
+            </div>
+            <div class="top-bar-info">
+                <a href="tel:+971524186102"><i class="fas fa-phone-alt"></i> +971 52 418 6102</a>
+                <a href="mailto:ashan.uae.123@gmail.com"><i class="fas fa-envelope"></i> ashan.uae.123@gmail.com</a>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- NAV -->
-<nav id="main-nav">
-    <div class="nav-inner">
-        <a href="#home" class="nav-logo">
-          <div class="nav-logo-text">
-                <span class="nav-logo-name">Janu Print <span>| Fab</span></span>
-                <span class="nav-logo-tag">Premium Printing Solutions</span>
-            </div>
-        </a>
-        <ul class="nav-links" id="nav-links">
-            <li><a href="#home">Home</a></li>
-            <li><a href="shop.html" target="_blank">Shop</a></li>
-            <li><a href="#services">Services</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#portfolio">Portfolio</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
-        <a href="#contact" class="nav-cta">Get a Quote</a>
-        <button class="nav-mobile-btn" id="menu-btn" aria-label="Menu"><i class="fas fa-bars"></i></button>
-    </div>
-</nav>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
 
-<!-- HERO -->
-<section id="home" class="hero">
-    <div class="hero-inner">
-        <div class="hero-text">
-            <div class="hero-badge"><span></span>ජාත්‍යන්තර ප්‍රමිතියේ සේවාව — දැන් විවෘතයි</div>
-            <h1 class="hero-title">ඔබේ අවශ්‍යතාවය තේරුම් ගත් එයට සරිලන විශිෂ්ටම සේවාව.</h1>
-            <p class="hero-sub">PREMIUM PRINTING SOLUTIONS // INTERNATIONAL STANDARDS</p>
-            <div class="hero-actions">
-                <a href="#portfolio" class="btn-primary"><i class="fas fa-th-large"></i> නිෂ්පාදන බලන්න</a>
-                <a href="#contact" class="btn-outline"><i class="fas fa-paper-plane"></i> ඇණවුම් කරන්න</a>
-            </div>
-            <div class="hero-stats">
-                <div>
-                    <span class="hero-stat-num" data-target="500">0</span>
-                    <span class="hero-stat-lbl">Projects Done</span>
+            <!-- ══ LOGO ══ -->
+            <a href="#home" class="logo-wrap">
+                <!-- Inline SVG badge — printer / fabric cross mark -->
+                <svg class="logo-icon" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- outer shield / badge shape -->
+                    <path d="M26 2L6 10V26c0 12 8.5 22.5 20 26 11.5-3.5 20-14 20-26V10L26 2Z"
+                          fill="url(#logoGrad1)" stroke="url(#logoGold)" stroke-width="1.2"/>
+                    <!-- inner subtle shine -->
+                    <path d="M26 6L9 13V26c0 10.5 7.5 19.5 17 22.8 9.5-3.3 17-12.3 17-22.8V13L26 6Z"
+                          fill="url(#logoGrad2)" opacity="0.55"/>
+                    <!-- printer icon body -->
+                    <rect x="15" y="21" width="22" height="14" rx="2.5" fill="white" opacity="0.95"/>
+                    <rect x="18" y="17" width="16" height="6" rx="1.5" fill="url(#logoGold)"/>
+                    <rect x="18" y="28" width="16" height="3" rx="1" fill="url(#logoGold)"/>
+                    <!-- paper coming out -->
+                    <rect x="20" y="33" width="12" height="5" rx="1" fill="white" opacity="0.9"/>
+                    <!-- star accent top -->
+                    <circle cx="26" cy="11" r="3" fill="url(#logoGold)" opacity="0.9"/>
+                    <defs>
+                        <linearGradient id="logoGrad1" x1="6" y1="2" x2="46" y2="50" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#2c5f8d"/>
+                            <stop offset="100%" stop-color="#1e4563"/>
+                        </linearGradient>
+                        <linearGradient id="logoGrad2" x1="9" y1="6" x2="43" y2="49" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#4a90d9"/>
+                            <stop offset="100%" stop-color="#2c5f8d"/>
+                        </linearGradient>
+                        <linearGradient id="logoGold" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
+                            <stop offset="0%" stop-color="#b8860b"/>
+                            <stop offset="50%" stop-color="#d4af37"/>
+                            <stop offset="100%" stop-color="#f6d365"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+
+                <div class="logo-text-group">
+                    <span class="logo-main">Janu Print <span>| Fab</span></span>
+                    <span class="logo-tagline">Premium Printing Solutions</span>
                 </div>
-                <div>
-                    <span class="hero-stat-num" data-target="100">0</span>
-                    <span class="hero-stat-lbl">% Satisfaction</span>
-                </div>
-                <div>
-                    <span class="hero-stat-num" data-target="2">0</span>
-                    <span class="hero-stat-lbl">Countries Served</span>
-                </div>
-            </div>
-        </div>
-        <div class="hero-visual">
-    <div class="hero-logo-wrap">
-        <div class="j-letter-3d">J</div>
-      
+            </a>
+            <!-- ══ END LOGO ══ -->
 
-        <div class="hero-float-tag"><i class="fas fa-tshirt"></i> Custom Apparel</div>
-        <div class="hero-float-tag"><i class="fas fa-bolt"></i> Same-Day DTF</div>
-        <div class="hero-float-tag"><i class="fas fa-gift"></i> Promo Items</div>
-    </div>
-</div>
-    </div>
-</section>
-
-<!-- SERVICES -->
-<section id="services">
-    <div class="container">
-        <div class="sec-header center reveal">
-            <div class="sec-label">අපි මොනවද කරන්නේ</div>
-            <h2 class="sec-title">අපේ සේවාවන්</h2>
-            <p class="sec-sub">ගුණාත්මක බව සහ විශ්වාසය සමඟින්, ඔබට අවශ්‍ය දේ ඒ අයුරින්ම.</p>
+            <ul class="nav-menu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#about">About Us</a></li>
+                <li><a href="#portfolio">Portfolio</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <button class="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
-        <div class="services-grid">
-            <div class="service-card reveal">
-                <div class="service-icon"><i class="fas fa-tshirt"></i></div>
-                <h3>Custom Apparel Printing</h3>
-                <div class="service-sub">ඇඳුම් මුද්‍රණය</div>
-                <ul>
-                    <li>T-Shirts (Men, Women, Kids) | ටී-ෂර්ට්</li>
-                    <li>Hoodies &amp; Sweatshirts | හූඩීස් සහ ස්වීට්ෂර්ට්</li>
-                    <li>Polo Shirts | පෝලෝ ටී-ෂර්ට්</li>
-                    <li>Sportswear &amp; Uniforms | ක්‍රීඩා සහ නිල ඇඳුම්</li>
-                    <li>Safety Wear &amp; Aprons | ආරක්ෂිත ඇඳුම් සහ ඇප්‍රන්</li>
-                </ul>
-            </div>
-            <div class="service-card reveal" style="transition-delay:.1s">
-                <div class="service-icon"><i class="fas fa-bolt"></i></div>
-                <h3>Fast Turnaround Services</h3>
-                <div class="service-sub">කඩිනම් මුද්‍රණ සේවා</div>
-                <ul>
-                    <li>Same Day DTF Printing | එදිනම DTF මුද්‍රණය</li>
-                    <li>Premium Heat Transfer | හීට් ට්‍රාන්ස්ෆර් මුද්‍රණය</li>
-                    <li>Bulk Screen Printing | ස්ක්‍රීන් ප්‍රින්ටින් (තොග ඇණවුම්)</li>
-                </ul>
-            </div>
-            <div class="service-card reveal" style="transition-delay:.2s">
-                <div class="service-icon"><i class="fas fa-gift"></i></div>
-                <h3>Promotional Items</h3>
-                <div class="service-sub">ප්‍රවර්ධන ද්‍රව්‍ය</div>
-                <ul>
-                    <li>Custom Tote &amp; Drawstring Bags | රෙදි බෑග් වර්ග</li>
-                    <li>Personalized Cushion Covers | කුෂන් කවර්</li>
-                    <li>Caps Printing &amp; Custom Patches | තොප්පි සහ ලාංඡන</li>
-                    <li>Promotional Mugs | ප්‍රචාරක මග් කෝප්ප</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</section>
+    </nav>
 
-<!-- ABOUT -->
-<section id="about">
-    <div class="container">
-        <div class="about-text reveal" style="max-width: 900px; margin: 0 auto; text-align: center;">
-            <div class="sec-label" style="justify-content: center;">Who We Are</div>
-            <h2 class="sec-title">About Us</h2>
-            
-            <p class="sinhala">ජාත්‍යන්තර ප්‍රමිතියේ අමුද්‍රව්‍ය සහ අප සතු සුවිශේෂී පළපුරුද්ද එක්තැන් කරමින්, ඔබේ ඕනෑම මුද්‍රණ අවශ්‍යතාවයක් ඉහළම ගුණාත්මකභාවයෙන් යුතුව ඉටුකර දීමට අප සූදානම්. පරිපූර්ණ නිමාව - ඔබ කැමති විදිහටම!.</p>
-            
-            <p>As a service provider with years of international expertise, our primary mission is to deliver world-class printing solutions. We combine premium quality materials with global standards to ensure every finish meets the highest level of excellence.</p>
-            
-            <div class="about-features">
-                <div class="about-feature">
-                    <div class="about-feature-icon"><i class="fas fa-gem"></i></div>
-                    <div>
-                        <h4>Premium Materials</h4>
-                        <p>Dubai-standard quality inputs</p>
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>ඔබේ සිහින හැබෑ කරන, විශ්වාසනීය සහ විශිෂ්ටතම සේවාව.</h1>
+            <p class="hero-subtitle">Premium Printing Solutions with International Standards.</p>
+            <a href="#portfolio" class="cta-button">Explore Portfolio</a>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services">
+        <div class="container">
+            <h2 class="section-title">Our Services</h2>
+            <p class="section-subtitle">Comprehensive printing solutions tailored to your needs</p>
+
+            <div class="services-grid">
+
+                <!-- Category A — Apparel -->
+                <div class="service-category">
+                    <!-- 3-D blue icon -->
+                    <div class="service-icon-3d icon-apparel">
+                        <i class="fas fa-tshirt"></i>
                     </div>
+                    <h3>Custom Apparel Printing | ඇඳුම් මුද්‍රණය</h3>
+                    <ul>
+                        <li>T-Shirts (Men, Women, Kids) | ටී-ෂර්ට්</li>
+                        <li>Hoodies & Sweatshirts | හූඩීස් සහ ස්වීට්ෂර්ට්</li>
+                        <li>Polo Shirts | පෝලෝ ටී-ෂර්ට්</li>
+                        <li>Sportswear & Uniforms | ක්‍රීඩා සහ නිල ඇඳුම්</li>
+                        <li>Safety Wear & Aprons | ආරක්ෂිත ඇඳුම් සහ ඇප්‍රන්</li>
+                    </ul>
                 </div>
-                <div class="about-feature">
-                    <div class="about-feature-icon"><i class="fas fa-bolt"></i></div>
-                    <div>
-                        <h4>Fast Delivery</h4>
-                        <p>Same-day options available</p>
-                    </div>
-                </div>
-                <div class="about-feature">
-                    <div class="about-feature-icon"><i class="fas fa-users"></i></div>
-                    <div>
-                        <h4>Expert Team</h4>
-                        <p>Skilled professionals</p>
-                    </div>
-                </div>
-                <div class="about-feature">
-                    <div class="about-feature-icon"><i class="fas fa-star"></i></div>
-                    <div>
-                        <h4>100% Satisfaction</h4>
-                        <p>Quality guaranteed</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-            
 
-<!-- PROCESS -->
-<section id="process">
-    <div class="container">
-        <div class="sec-header center reveal">
-            <div class="sec-label" style="color:var(--gold-light);">How It Works</div>
-            <h2 class="sec-title" style="color:#fff;">Simple & Easy Process</h2>
-            <p class="sec-sub" style="color:rgba(255,255,255,.55);">From your idea to finished product in just 4 easy steps.</p>
-        </div>
-        <div class="process-grid reveal">
-            <div class="process-step">
-                <div class="process-num">01</div>
-                <div class="process-icon"><i class="fas fa-lightbulb"></i></div>
-                <h3>Share Your Idea</h3>
-                <p>Tell us what you need — design, quantity, and product type.</p>
-            </div>
-            <div class="process-step">
-                <div class="process-num">02</div>
-                <div class="process-icon"><i class="fas fa-pencil-ruler"></i></div>
-                <h3>Get a Quote</h3>
-                <p>We'll send you a fast, transparent price with no hidden fees.</p>
-            </div>
-            <div class="process-step">
-                <div class="process-num">03</div>
-                <div class="process-icon"><i class="fas fa-print"></i></div>
-                <h3>We Print</h3>
-                <p>Our team produces your order with precision and care.</p>
-            </div>
-            <div class="process-step">
-                <div class="process-num">04</div>
-                <div class="process-icon"><i class="fas fa-box-open"></i></div>
-                <h3>Delivered to You</h3>
-                <p>Receive your finished product, ready to use or sell.</p>
-            </div>
-        </div>
-    </div>
-</section>
+                <!-- Category B — Fast Turnaround -->
+                <div class="service-category">
+                    <!-- 3-D gold icon -->
+                    <div class="service-icon-3d icon-fast">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Fast Turnaround Services | කඩිනම් මුද්‍රණ සේවා</h3>
+                    <ul>
+                        <li>Same Day DTF Printing | එදිනම DTF මුද්‍රණය</li>
+                        <li>Premium Heat Transfer | හීට් ට්‍රාන්ස්ෆර් මුද්‍රණය</li>
+                        <li>Bulk Screen Printing | ස්ක්‍රීන් ප්‍රින්ටින් (තොග ඇණවුම්)</li>
+                    </ul>
+                </div>
 
-<!-- PORTFOLIO -->
-<section id="portfolio">
-    <div class="container">
-        <div class="sec-header center reveal">
-            <div class="sec-label">Our Work</div>
-            <h2 class="sec-title">Portfolio</h2>
-            <p class="sec-sub">Showcasing our finest work for happy clients.</p>
-        </div>
-        <div class="gallery-grid reveal" id="drive-gallery"></div>
-    </div>
-</section>
+                <!-- Category C — Promotional -->
+                <div class="service-category">
+                    <!-- 3-D green icon -->
+                    <div class="service-icon-3d icon-promo">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <h3>Promotional Items | ප්‍රවර්ධන ද්‍රව්‍ය</h3>
+                    <ul>
+                        <li>Custom Tote & Drawstring Bags | රෙදි බෑග් වර්ග</li>
+                        <li>Personalized Cushion Covers | කුෂන් කවර්</li>
+                        <li>Caps Printing & Custom Patches | තොප්පි සහ ලාංඡන</li>
+                    </ul>
+                </div>
 
-<!-- CONTACT -->
-<section id="contact">
-    <div class="container">
-        <div class="sec-header center reveal">
-            <div class="sec-label">Get In Touch</div>
-            <h2 class="sec-title">Contact Us</h2>
-            <p class="sec-sub">Let's bring your ideas to life. Reach out and we'll get back to you quickly.</p>
+            </div>
         </div>
-        <div class="contact-grid">
-            <div class="contact-form-wrap reveal">
-                <form action="https://formsubmit.co/ashan.uae.123@gmail.com" method="POST">
-                    <input type="hidden" name="_captcha" value="false">
-                    <input type="hidden" name="_template" value="table">
-                    <input type="hidden" name="_subject" value="New Inquiry from Janu Print Website">
-                    <div class="form-row">
+    </section>
+
+    <!-- About Us Section -->
+    <section id="about">
+        <div class="container">
+            <h2 class="section-title">About Us</h2>
+            <p class="section-subtitle">Excellence through experience and quality</p>
+
+            <div class="about-content">
+                <div class="about-text">
+                    අප ආයතනය ශ්‍රී ලාංකික බිම් මට්ටමේ සිට ක්‍රියාත්මක වන, ශ්‍රී ලංකාව සහ ඩුබායි (Dubai) යන දෙරටේම සේවා
+                    පළපුරුද්ද සහිත ආයතනයකි. අපගේ ප්‍රධානතම අරමුණ වන්නේ ඩුබායි රාජ්‍යයේ උසස් ප්‍රමිතියෙන් යුත්
+                    අමුද්‍රව්‍ය භාවිතා කරමින්, ශ්‍රී ලාංකීය පාරිභෝගිකයාට ඉහළම ගුණාත්මකභාවයෙන් යුත් නිමවුමක් ලබා දීමයි.
+                    දේශීය දැනුම සහ ජාත්‍යන්තර ප්‍රමිතිය අප සතු සුවිශේෂී හැකියාවයි.
+                </div>
+                <div class="about-text">
+                    We are a proudly Sri Lankan company operating with extensive experience in both Sri Lanka and Dubai.
+                    We specialize in delivering high-quality products crafted from premium Dubai-standard materials. By
+                    blending international standards with local expertise, Janu Print | Fab ensures that every project
+                    meets the highest benchmarks of durability and excellence.
+                </div>
+            </div>
+
+            <div class="about-highlights">
+                <div class="highlight-box">
+                    <i class="fas fa-gem"></i>
+                    <h4>Premium Materials</h4>
+                    <p>Dubai-standard quality</p>
+                </div>
+                <div class="highlight-box">
+                    <i class="fas fa-users"></i>
+                    <h4>Expert Team</h4>
+                    <p>Skilled professionals</p>
+                </div>
+                <div class="highlight-box">
+                    <i class="fas fa-star"></i>
+                    <h4>100% Satisfaction</h4>
+                    <p>Quality guaranteed</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio">
+        <div class="container">
+            <h2 class="section-title">Our Portfolio</h2>
+            <p class="section-subtitle">Showcasing our finest work</p>
+
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <img src="https://i.ibb.co/rTBS56K/Screenshot-2026-02-12-162303.png" alt="Portfolio Item 1">
+                    <div class="gallery-overlay"><p>Custom T-Shirt Design</p></div>
+                </div>
+                <div class="gallery-item">
+                    <img src="https://i.ibb.co/5WVsXWbY/Screenshot-2026-02-12-161621.png" alt="Portfolio Item 2">
+                    <div class="gallery-overlay"><p>Corporate Uniform Project</p></div>
+                </div>
+                <div class="gallery-item">
+                    <img src="https://i.ibb.co/FLWGJCRs/vector-sports-jerseys-racing-jerseys-running-jerseys-947814-59509.jpg" alt="Portfolio Item 3">
+                    <div class="gallery-overlay"><p>DTF Printing Sample</p></div>
+                </div>
+                <div class="gallery-item">
+                    <img src="https://i.ibb.co/wNHq19zb/Carhartt-Signature-Logo-Midweight-Sweatshirt-001-Black-1-ml.jpg" alt="Portfolio Item 4">
+                    <div class="gallery-overlay"><p>Promotional Tote Bags</p></div>
+                </div>
+                <div class="gallery-item">
+                    <img src="https://i.ibb.co/vg3W0qh/00588358-9f5c-44df-b1c5-23bd1cd914c1.png" alt="Portfolio Item 5">
+                    <div class="gallery-overlay"><p>Custom Hoodies</p></div>
+                </div>
+                <div class="gallery-item">
+                    <img src="https://i.ibb.co/rf5h53mq/DTF-print-example.jpg" alt="Portfolio Item 6">
+                    <div class="gallery-overlay"><p>Sportswear Collection</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+        <div class="container">
+            <h2 class="section-title">Contact Us</h2>
+            <p class="section-subtitle">Let's bring your ideas to life</p>
+
+            <div class="contact-container">
+                <div class="contact-form">
+                    <form action="https://formsubmit.co/ashan.uae.123@gmail.com" method="POST">
+                        <input type="hidden" name="_captcha" value="false">
+                        <input type="hidden" name="_template" value="table">
+                        <input type="hidden" name="_subject" value="New Inquiry from Janu Print Website">
+
                         <div class="form-group">
-                            <label>Your Name</label>
-                            <input type="text" name="name" required placeholder="Full name">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" required placeholder="Your Name">
                         </div>
                         <div class="form-group">
-                            <label>Phone Number</label>
-                            <input type="tel" name="phone" required placeholder="+971 xx xxx xxxx">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required placeholder="Your Email">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" required placeholder="Your Phone Number">
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" required placeholder="How can we help you?"></textarea>
+                        </div>
+                        <button type="submit" class="submit-button">Send Message</button>
+                    </form>
+                </div>
+
+                <div class="contact-info">
+                    <div class="contact-detail">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <strong>Phone:</strong><br>
+                            +971 52 418 6102
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>Email Address</label>
-                        <input type="email" name="email" required placeholder="your@email.com">
+
+                    <div class="contact-detail">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <strong>Email:</strong><br>
+                            <a href="mailto:ashan.uae.123@gmail.com">ashan.uae.123@gmail.com</a>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Service Needed</label>
-                        <select name="service">
-                            <option value="">Select a service...</option>
-                            <option>Custom T-Shirts / Apparel</option>
-                            <option>Hoodies / Sweatshirts</option>
-                            <option>Uniforms / Workwear</option>
-                            <option>DTF / Heat Transfer</option>
-                            <option>Promotional Bags</option>
-                            <option>Caps & Patches</option>
-                            <option>Cushion Covers / Mugs</option>
-                            <option>Other</option>
-                        </select>
+
+                    <a href="tel:+971524186102" class="call-button">
+                        <i class="fas fa-phone-alt"></i> Call Now
+                    </a>
+
+                    <div class="social-links">
+                        <a href="#" target="_blank" title="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://www.facebook.com/profile.php?id=61580183291668" target="_blank" title="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="https://wa.me/971524186102" target="_blank" title="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
                     </div>
-                    <div class="form-group">
-                        <label>Message</label>
-                        <textarea name="message" required placeholder="Tell us about your order — quantity, design details, deadline..."></textarea>
-                    </div>
-                    <button type="submit" class="submit-btn"><i class="fas fa-paper-plane"></i> Send Inquiry</button>
-                </form>
-            </div>
-            <div class="contact-info reveal" style="transition-delay:.15s">
-                <div>
-                    <h3 class="contact-info-title">Let's Talk About Your Project</h3>
-                    <p class="contact-info-sub">We're here to help. Reach out via phone, email, or WhatsApp — we respond fast.</p>
-                </div>
-                <a href="tel:+971524186102" class="contact-item">
-                    <div class="contact-item-icon"><i class="fas fa-phone"></i></div>
-                    <div>
-                        <div class="contact-item-label">Call Us</div>
-                        <div class="contact-item-val">+971 52 418 6102</div>
-                    </div>
-                </a>
-                <a href="mailto:ashan.uae.123@gmail.com" class="contact-item">
-                    <div class="contact-item-icon"><i class="fas fa-envelope"></i></div>
-                    <div>
-                        <div class="contact-item-label">Email Us</div>
-                        <div class="contact-item-val">ashan.uae.123@gmail.com</div>
-                    </div>
-                </a>
-                <a href="https://wa.me/971524186102?text=Hi%2C%20I%20would%20like%20to%20know%20more%20about%20your%20services." class="cta-whatsapp" target="_blank">
-                    <i class="fab fa-whatsapp" style="font-size:1.2rem;"></i> Chat on WhatsApp
-                </a>
-                <div class="social-row">
-                    <a href="#" target="_blank" class="social-btn" title="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="https://www.facebook.com/profile.php?id=61580183291668" target="_blank" class="social-btn" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://wa.me/971524186102" target="_blank" class="social-btn" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<footer>
-    <p>&copy; 2026 Janu Print | Fab — All Rights Reserved &nbsp;·&nbsp; <a href="mailto:ashan.uae.123@gmail.com">ashan.uae.123@gmail.com</a></p>
-</footer>
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Janu Print | Fab. All Rights Reserved.</p>
+    </footer>
 
-<a href="https://wa.me/971524186102?text=Hi%2C%20I%20visited%20your%20website%20and%20I%20would%20like%20to%20know%20more%20about%20your%20services." class="wa-float" target="_blank" title="Chat on WhatsApp"><i class="fab fa-whatsapp"></i></a>
+    <!-- WhatsApp Float Button -->
+    <a href="https://wa.me/971524186102?text=Hi%2C%20I%20visited%20your%20website%20and%20I%20would%20like%20to%20know%20more%20about%20your%20services."
+        class="float-whatsapp" target="_blank" title="Chat on WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 
-<!-- Gallery from Google Drive -->
-<script>
-fetch('https://script.google.com/macros/s/AKfycbxql-7lbmNE6-g5lqijwVvV5ssbHFQ4zYsbBdQnlkFRKWo0jAj4z-sX-zVXqjAqzYcjEA/exec')
-    .then(r => r.json())
-    .then(data => {
-        const g = document.getElementById('drive-gallery');
-        data.forEach(img => {
-            const d = document.createElement('div');
-            d.className = 'gallery-item';
-            d.innerHTML = `<img src="${img.url}" alt="${img.name}" loading="lazy">
-                <div class="gallery-overlay">
-                    <p>${img.name}</p>
-                    <span>Janu Print | Fab</span>
-                </div>`;
-            g.appendChild(d);
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+        const navMenu = document.querySelector('.nav-menu');
+
+        mobileMenuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            const icon = mobileMenuToggle.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
         });
-    })
-    .catch(e => console.error(e));
-</script>
 
-<script>
-// Mobile menu
-const menuBtn = document.getElementById('menu-btn');
-const navLinks = document.getElementById('nav-links');
-menuBtn.addEventListener('click', () => {
-    navLinks.classList.toggle('open');
-    const icon = menuBtn.querySelector('i');
-    icon.className = navLinks.classList.contains('open') ? 'fas fa-times' : 'fas fa-bars';
-});
-document.querySelectorAll('#nav-links a').forEach(a => a.addEventListener('click', () => {
-    navLinks.classList.remove('open');
-    menuBtn.querySelector('i').className = 'fas fa-bars';
-}));
+        document.querySelectorAll('.nav-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+                const icon = mobileMenuToggle.querySelector('i');
+                icon.classList.add('fa-bars');
+                icon.classList.remove('fa-times');
+            });
+        });
 
-// Nav scroll
-window.addEventListener('scroll', () => {
-    document.getElementById('main-nav').classList.toggle('scrolled', scrollY > 50);
-});
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
 
-// Smooth scroll
-document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', function(e) {
-    const t = document.querySelector(this.getAttribute('href'));
-    if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-}));
+        let lastScroll = 0;
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            const currentScroll = window.pageYOffset;
+            nav.style.boxShadow = currentScroll > 100
+                ? '0 2px 20px rgba(0,0,0,0.15)'
+                : '0 2px 10px rgba(0,0,0,0.1)';
+            lastScroll = currentScroll;
+        });
 
-// Reveal on scroll
-const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('up'); });
-}, { threshold: 0.1 });
-document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+        // Scroll-in animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -80px 0px' });
 
-// Counters
-const cObs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-        if (!e.isIntersecting) return;
-        const el = e.target, target = +el.dataset.target;
-        let count = 0;
-        const step = target / 55;
-        const iv = setInterval(() => {
-            count += step;
-            if (count >= target) {
-                el.textContent = target + (target === 2 ? '' : '+');
-                clearInterval(iv);
-            } else {
-                el.textContent = Math.floor(count) + (target === 2 ? '' : '+');
-            }
-        }, 22);
-        cObs.unobserve(el);
-    });
-}, { threshold: 0.5 });
-document.querySelectorAll('[data-target]').forEach(el => cObs.observe(el));
-</script>
+        document.querySelectorAll('.service-category, .highlight-box, .gallery-item').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+
 </body>
 </html>
