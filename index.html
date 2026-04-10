@@ -92,6 +92,86 @@
             }
         }
 
+        @keyframes floatLight1 {
+            0% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+            50% { transform: translate(8vw, -12vh) scale(1.2); opacity: 0.7; }
+            100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+        }
+
+        @keyframes floatLight2 {
+            0% { transform: translate(0, 0) scale(0.9); opacity: 0.3; }
+            50% { transform: translate(-10vw, 15vh) scale(1.1); opacity: 0.6; }
+            100% { transform: translate(0, 0) scale(0.9); opacity: 0.3; }
+        }
+
+        @keyframes floatLight3 {
+            0% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+            50% { transform: translate(12vw, 8vh) scale(1.15); opacity: 0.75; }
+            100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+        }
+
+        @keyframes floatLight4 {
+            0% { transform: translate(0, 0) scale(0.85); opacity: 0.35; }
+            50% { transform: translate(-6vw, -10vh) scale(1.05); opacity: 0.65; }
+            100% { transform: translate(0, 0) scale(0.85); opacity: 0.35; }
+        }
+
+        .floating-lights {
+            position: fixed;
+            width: 100%;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .light-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+        }
+
+        .light-orb.light1 {
+            width: 150px;
+            height: 150px;
+            top: 15%;
+            left: 20%;
+            background: radial-gradient(circle, rgba(0,195,221,0.5) 0%, rgba(0,195,221,0.15) 50%, transparent 80%);
+            animation: floatLight1 12s ease-in-out infinite;
+        }
+
+        .light-orb.light2 {
+            width: 120px;
+            height: 120px;
+            top: 60%;
+            right: 15%;
+            background: radial-gradient(circle, rgba(212,175,55,0.5) 0%, rgba(212,175,55,0.15) 50%, transparent 80%);
+            animation: floatLight2 14s ease-in-out infinite;
+            animation-delay: 2s;
+        }
+
+        .light-orb.light3 {
+            width: 180px;
+            height: 180px;
+            top: 35%;
+            right: 25%;
+            background: radial-gradient(circle, rgba(0,195,221,0.35) 0%, rgba(0,195,221,0.08) 45%, transparent 80%);
+            animation: floatLight3 16s ease-in-out infinite;
+            animation-delay: 4s;
+        }
+
+        .light-orb.light4 {
+            width: 140px;
+            height: 140px;
+            bottom: 20%;
+            left: 10%;
+            background: radial-gradient(circle, rgba(212,175,55,0.45) 0%, rgba(212,175,55,0.12) 50%, transparent 80%);
+            animation: floatLight4 13s ease-in-out infinite;
+            animation-delay: 1s;
+        }
+
         /* ── Top Bar ── */
         .top-bar {
             background-color: var(--metallic-blue-dark);
@@ -99,6 +179,8 @@
             padding: 0.5rem 0;
             font-size: 0.9rem;
             border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+            z-index: 1000;
         }
 
         .top-bar-container {
@@ -221,6 +303,73 @@
 
         .nav-menu a:hover::after { width: 100%; }
 
+        .nav-menu a[href="shop.html"] {
+            background: linear-gradient(135deg, #b8860b 0%, #d4af37 50%, #f6d365 100%);
+            color: var(--metallic-blue-dark);
+            padding: 0.7rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 700;
+            position: relative;
+            overflow: hidden;
+            background-size: 200% 200%;
+            animation: liquidGold 3s ease-in-out infinite;
+            box-shadow: none;
+        }
+
+        .nav-menu a[href="shop.html"]::after {
+            display: none;
+        }
+
+        .nav-menu a[href="shop.html"]::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 50%, rgba(255, 255, 255, 0.5) 0%, transparent 50%);
+            animation: liquidWave 2.5s ease-in-out infinite;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .nav-menu a[href="shop.html"] span {
+            position: relative;
+            z-index: 2;
+        }
+
+        .nav-menu a[href="shop.html"]:hover {
+            box-shadow: none;
+            transform: scale(1.08);
+        }
+
+        @keyframes liquidGold {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes liquidWave {
+            0% {
+                left: -100%;
+                opacity: 0.4;
+            }
+            50% {
+                left: 50%;
+                opacity: 0.8;
+            }
+            100% {
+                left: 100%;
+                opacity: 0.4;
+            }
+        }
+
         .mobile-menu-toggle {
             display: none;
             background: none;
@@ -299,7 +448,11 @@
         .cta-button:hover { transform: translateY(-3px); box-shadow: 0 6px 25px rgba(212,175,55,0.6); }
 
         /* ── Section base ── */
-        section { padding: 5rem 2rem; }
+        section {
+            padding: 5rem 2rem;
+            position: relative;
+            z-index: 1;
+        }
 
         .section-title {
             text-align: center;
@@ -311,6 +464,7 @@
             display: inline-block;
             left: 50%;
             transform: translateX(-50%);
+            z-index: 1;
         }
 
         .section-title::after {
@@ -328,9 +482,11 @@
             color: var(--text-light);
             margin-bottom: 3rem;
             font-size: 1.1rem;
+            position: relative;
+            z-index: 1;
         }
 
-        .container { max-width: 1200px; margin: 0 auto; }
+        .container { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
 
         /* ═══════════════════════════════════════════════
            SERVICES — 3-D icon cards
@@ -764,6 +920,8 @@
             color: var(--white);
             text-align: center;
             padding: 2rem;
+            position: relative;
+            z-index: 1;
         }
 
         footer p { margin: 0; opacity: 0.9; }
@@ -887,6 +1045,16 @@
             .logo-main { font-size: 1rem; }
             .logo-icon { width: 38px; height: 38px; }
 
+            .nav-menu a[href="shop.html"] {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.95rem;
+                box-shadow: none;
+            }
+
+            .nav-menu a[href="shop.html"]:hover {
+                box-shadow: none;
+            }
+
             body::before,
             body::after {
                 width: 240px;
@@ -904,6 +1072,34 @@
                 bottom: 5%;
                 right: 2%;
             }
+
+            .light-orb.light1 {
+                width: 100px;
+                height: 100px;
+                filter: blur(50px);
+                opacity: 0.3;
+            }
+
+            .light-orb.light2 {
+                width: 80px;
+                height: 80px;
+                filter: blur(45px);
+                opacity: 0.25;
+            }
+
+            .light-orb.light3 {
+                width: 120px;
+                height: 120px;
+                filter: blur(55px);
+                opacity: 0.2;
+            }
+
+            .light-orb.light4 {
+                width: 90px;
+                height: 90px;
+                filter: blur(48px);
+                opacity: 0.25;
+            }
         }
 
         @media (max-width: 480px) {
@@ -919,6 +1115,14 @@
 
     <!-- Smoky Effect එක පෙන්වන තැන (Canvas) -->
     <div id="app"></div>
+
+    <!-- Floating Light Effects -->
+    <div class="floating-lights">
+        <div class="light-orb light1"></div>
+        <div class="light-orb light2"></div>
+        <div class="light-orb light3"></div>
+        <div class="light-orb light4"></div>
+    </div>
 
     <!-- Top Bar -->
     <div class="top-bar">
@@ -950,7 +1154,7 @@
             <!-- ══ END LOGO ══ -->
 
             <ul class="nav-menu">
-                <li><a href="#home">Home</a></li>
+                <li><a href="shop.html"><span>Shop</span></a></li>
                 <li><a href="#services">Services</a></li>
                 <li><a href="#about">About Us</a></li>
                 <li><a href="#portfolio">Portfolio</a></li>
