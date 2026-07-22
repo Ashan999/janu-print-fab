@@ -556,32 +556,6 @@
             color: var(--danger);
         }
 
-        .whatsapp-float {
-            position: fixed;
-            bottom: 28px;
-            right: 28px;
-            width: 66px;
-            height: 66px;
-            background: linear-gradient(135deg, #25d366 0%, #20ba58 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 999;
-            box-shadow: 0 12px 35px rgba(37, 211, 102, 0.4);
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-
-        .whatsapp-float:hover {
-            transform: scale(1.08);
-        }
-
-        .whatsapp-float i {
-            font-size: 2.2rem;
-            color: var(--white);
-        }
-
         @media (max-width: 760px) {
             .container {
                 padding: 1rem;
@@ -615,12 +589,6 @@
                 flex-direction: column;
             }
 
-            .whatsapp-float {
-                width: 58px;
-                height: 58px;
-                right: 18px;
-                bottom: 18px;
-            }
         }
     </style>
 </head>
@@ -667,7 +635,7 @@
                             <input type="text" id="customerName" required placeholder="Your name">
                         </div>
                         <div class="field">
-                            <label for="customerPhone">Phone / WhatsApp <span class="required-mark">*</span></label>
+                            <label for="customerPhone">Phone Number <span class="required-mark">*</span></label>
                             <input type="tel" id="customerPhone" required placeholder="+971...">
                         </div>
                         <div class="field">
@@ -733,7 +701,7 @@
 
                 <div class="modal-actions">
                     <button type="submit" class="btn-send" id="submitOrderButton">
-                        <i class="fab fa-whatsapp"></i> Send Order Request
+                        <i class="fas fa-receipt"></i> Send Order to Dashboard
                     </button>
                     <button type="button" class="modal-secondary-button" onclick="closeOrder()">Cancel</button>
                 </div>
@@ -741,14 +709,9 @@
         </div>
     </div>
 
-    <a href="https://wa.me/971524186102" target="_blank" class="whatsapp-float" title="Chat on WhatsApp">
-        <i class="fab fa-whatsapp"></i>
-    </a>
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config/supabase-config.js"></script>
     <script>
-        const WHATSAPP_NUMBER = '971524186102';
         const state = {
             categories: [],
             products: [],
@@ -1147,9 +1110,10 @@
             return selections;
         }
 
-        function updateEstimate() {
-            if (!state.activeProduct) return;
-
+        function calculateEstimate() {
+            if (!state.activeProduct) {
+                return { quantity: 1, basePrice: 0, extras: 0, total: 0, selections: [] };
+            }
             const quantityInput = document.getElementById('quantityInput');
             const minQty = Number(quantityInput.min || 1);
             let quantity = Number(quantityInput.value || minQty);
@@ -1163,10 +1127,17 @@
             const extras = selections.reduce((sum, item) => sum + Number(item.price || 0), 0);
             const total = (basePrice + extras) * quantity;
 
-            document.getElementById('basePriceText').textContent = money(basePrice);
-            document.getElementById('extrasPriceText').textContent = money(extras);
-            document.getElementById('quantityText').textContent = quantity;
-            document.getElementById('totalPriceText').textContent = money(total);
+            return { quantity, basePrice, extras, total, selections };
+        }
+
+        function updateEstimate() {
+            if (!state.activeProduct) return;
+            const estimate = calculateEstimate();
+
+            document.getElementById('basePriceText').textContent = money(estimate.basePrice);
+            document.getElementById('extrasPriceText').textContent = money(estimate.extras);
+            document.getElementById('quantityText').textContent = estimate.quantity;
+            document.getElementById('totalPriceText').textContent = money(estimate.total);
         }
 
         function showFormMessage(message, type = '') {
@@ -1175,51 +1146,7 @@
             formMessage.style.display = 'block';
         }
 
-        function buildOrderMessage() {
-            const product = state.activeProduct;
-            const quantity = Number(document.getElementById('quantityInput').value || product.min_quantity || 1);
-            const selections = collectSelections();
-            const extras = selections.reduce((sum, item) => sum + Number(item.price || 0), 0);
-            const total = (productPrice(product) + extras) * quantity;
-
-            const lines = [
-                `NEW ORDER REQUEST`,
-                `------------------------------`,
-                `Product: ${product.name}`,
-                `Category: ${product.categories ? product.categories.name : '-'}`,
-                `Quantity: ${quantity}`,
-                `Estimated Total: ${money(total)}`,
-                ``
-            ];
-
-            if (selections.length) {
-                lines.push('Product Options:');
-                selections.forEach(item => {
-                    lines.push(`- ${item.label}: ${item.value}${item.meta ? ` (${item.meta})` : ''}${item.price ? ` | +${money(item.price)}` : ''}`);
-                });
-                lines.push('');
-            }
-
-            lines.push('Customer Details:');
-            lines.push(`Name: ${document.getElementById('customerName').value.trim()}`);
-            lines.push(`Phone: ${document.getElementById('customerPhone').value.trim()}`);
-            if (document.getElementById('customerEmail').value.trim()) lines.push(`Email: ${document.getElementById('customerEmail').value.trim()}`);
-            if (document.getElementById('customerCountry').value.trim()) lines.push(`Country: ${document.getElementById('customerCountry').value.trim()}`);
-            lines.push(`Delivery: ${document.getElementById('deliveryOption').value}`);
-            if (document.getElementById('deliveryDate').value) lines.push(`Needed Date: ${document.getElementById('deliveryDate').value}`);
-            lines.push(`Payment: ${document.getElementById('paymentMethod').value.replace('_', ' ')}`);
-
-            const notes = document.getElementById('specialInstructions').value.trim();
-            if (notes) {
-                lines.push('');
-                lines.push('Notes:');
-                lines.push(notes);
-            }
-
-            return lines.join('\n');
-        }
-
-        orderForm.addEventListener('submit', event => {
+        orderForm.addEventListener('submit', async event => {
             event.preventDefault();
             if (!state.activeProduct) return;
 
@@ -1228,10 +1155,79 @@
                 return;
             }
 
-            const message = buildOrderMessage();
-            const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-            showFormMessage('Opening WhatsApp with your order request...');
-            window.open(url, '_blank');
+            const submitButton = document.getElementById('submitOrderButton');
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending Order...';
+
+            try {
+                const product = state.activeProduct;
+                const estimate = calculateEstimate();
+                const customerId = crypto.randomUUID();
+                const orderId = crypto.randomUUID();
+                const orderItemId = crypto.randomUUID();
+                const notes = document.getElementById('specialInstructions').value.trim();
+
+                const customerPayload = {
+                    id: customerId,
+                    name: document.getElementById('customerName').value.trim(),
+                    phone: document.getElementById('customerPhone').value.trim(),
+                    email: document.getElementById('customerEmail').value.trim() || null,
+                    country: document.getElementById('customerCountry').value.trim() || null
+                };
+
+                const orderPayload = {
+                    id: orderId,
+                    customer_id: customerId,
+                    status: 'pending',
+                    total_amount: estimate.total,
+                    notes,
+                    payment_method: document.getElementById('paymentMethod').value,
+                    delivery_option: document.getElementById('deliveryOption').value,
+                    delivery_date: document.getElementById('deliveryDate').value || null,
+                    special_instructions: notes
+                };
+
+                const orderItemPayload = {
+                    id: orderItemId,
+                    order_id: orderId,
+                    product_id: product.id,
+                    product_name: product.name,
+                    quantity: estimate.quantity,
+                    unit_price: estimate.basePrice,
+                    selected_options: {
+                        product_category: product.categories ? product.categories.name : null,
+                        selections: estimate.selections,
+                        customer: customerPayload
+                    },
+                    artwork_urls: [],
+                    line_total: estimate.total
+                };
+
+                const customerResult = await window.db.from('customers').insert(customerPayload);
+                if (customerResult.error) throw customerResult.error;
+
+                const orderResult = await window.db.from('orders').insert(orderPayload);
+                if (orderResult.error) throw orderResult.error;
+
+                const itemResult = await window.db.from('order_items').insert(orderItemPayload);
+                if (itemResult.error) throw itemResult.error;
+
+                await window.db.from('order_status_history').insert({
+                    order_id: orderId,
+                    status: 'pending',
+                    note: 'Order created from public shop page.'
+                });
+
+                showFormMessage(`Order sent to dashboard. Estimated total: ${money(estimate.total)}`);
+                orderForm.reset();
+                document.getElementById('quantityInput').value = Math.max(Number(product.min_quantity || 1), 1);
+                updateEstimate();
+            } catch (error) {
+                showFormMessage(`Order could not be sent: ${error.message}`, 'error');
+            } finally {
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-receipt"></i> Send Order to Dashboard';
+            }
         });
 
         document.addEventListener('change', event => {
