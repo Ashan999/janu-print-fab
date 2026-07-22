@@ -25,7 +25,6 @@
         color: var(--text-dark);
     }
 
-    /* ---- Loading / auth guard screen ---- */
     #authGate {
         position: fixed; inset: 0;
         background: var(--metallic-blue-dark);
@@ -33,157 +32,70 @@
         color: var(--white); font-size: 1.1rem; z-index: 9999;
     }
 
-    /* ---- Layout ---- */
     #appShell { display: none; min-height: 100vh; }
 
     .sidebar {
         width: var(--sidebar-width);
         background: var(--metallic-blue-dark);
         color: var(--white);
-        position: fixed;
-        top: 0; left: 0; bottom: 0;
-        display: flex;
-        flex-direction: column;
-        z-index: 100;
-        transition: transform 0.3s ease;
+        position: fixed; top: 0; left: 0; bottom: 0;
+        display: flex; flex-direction: column;
+        z-index: 100; transition: transform 0.3s ease;
     }
-    .sidebar-brand {
-        padding: 1.6rem 1.4rem;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-    .sidebar-brand h1 {
-        font-size: 1.15rem;
-        font-weight: 700;
-    }
-    .sidebar-brand span {
-        font-size: 0.75rem;
-        color: rgba(255,255,255,0.6);
-    }
-    .nav-list {
-        list-style: none;
-        padding: 0.8rem 0;
-        flex: 1;
-        overflow-y: auto;
-    }
+    .sidebar-brand { padding: 1.6rem 1.4rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .sidebar-brand h1 { font-size: 1.15rem; font-weight: 700; }
+    .sidebar-brand span { font-size: 0.75rem; color: rgba(255,255,255,0.6); }
+    .nav-list { list-style: none; padding: 0.8rem 0; flex: 1; overflow-y: auto; }
     .nav-list li a {
-        display: flex;
-        align-items: center;
-        gap: 0.8rem;
-        padding: 0.85rem 1.4rem;
-        color: rgba(255,255,255,0.75);
-        text-decoration: none;
-        font-size: 0.92rem;
-        font-weight: 500;
-        cursor: pointer;
-        border-left: 3px solid transparent;
-        transition: 0.2s;
+        display: flex; align-items: center; gap: 0.8rem;
+        padding: 0.85rem 1.4rem; color: rgba(255,255,255,0.75);
+        text-decoration: none; font-size: 0.92rem; font-weight: 500;
+        cursor: pointer; border-left: 3px solid transparent; transition: 0.2s;
     }
     .nav-list li a i { width: 18px; text-align: center; }
-    .nav-list li a:hover {
-        background: rgba(255,255,255,0.06);
-        color: var(--white);
-    }
+    .nav-list li a:hover { background: rgba(255,255,255,0.06); color: var(--white); }
     .nav-list li a.active {
-        background: rgba(0,195,221,0.15);
-        border-left-color: var(--metallic-blue);
-        color: var(--white);
+        background: rgba(0,195,221,0.15); border-left-color: var(--metallic-blue); color: var(--white);
     }
     .nav-list li.logout-item { border-top: 1px solid rgba(255,255,255,0.1); margin-top: 0.5rem; }
     .nav-list li.logout-item a:hover { background: rgba(220,53,69,0.2); color: #ff8080; }
 
     .main-area {
-        margin-left: var(--sidebar-width);
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        width: calc(100% - var(--sidebar-width));
+        margin-left: var(--sidebar-width); flex: 1;
+        display: flex; flex-direction: column; width: calc(100% - var(--sidebar-width));
     }
     .topbar {
-        background: var(--white);
-        padding: 1rem 2rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        position: sticky;
-        top: 0;
-        z-index: 50;
+        background: var(--white); padding: 1rem 2rem;
+        display: flex; justify-content: space-between; align-items: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50;
     }
     .topbar h2 { font-size: 1.2rem; color: var(--metallic-blue-dark); }
     .topbar .admin-email { font-size: 0.85rem; color: var(--text-light); }
-    .menu-toggle {
-        display: none;
-        background: none; border: none; font-size: 1.3rem;
-        color: var(--metallic-blue-dark); cursor: pointer;
-    }
+    .menu-toggle { display: none; background: none; border: none; font-size: 1.3rem; color: var(--metallic-blue-dark); cursor: pointer; }
 
     .content { padding: 2rem; }
 
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 1.4rem;
-        margin-bottom: 2rem;
-    }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.4rem; margin-bottom: 2rem; }
     .stat-card {
-        background: var(--white);
-        border-radius: 14px;
-        padding: 1.6rem;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-        border-top: 4px solid var(--metallic-blue);
+        background: var(--white); border-radius: 14px; padding: 1.6rem;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.06); border-top: 4px solid var(--metallic-blue);
     }
     .stat-card .stat-label { font-size: 0.85rem; color: var(--text-light); margin-bottom: 0.4rem; }
     .stat-card .stat-value { font-size: 2rem; font-weight: 700; color: var(--metallic-blue-dark); }
 
-    .placeholder-box {
-        background: var(--white);
-        border-radius: 14px;
-        padding: 3rem 2rem;
-        text-align: center;
-        color: var(--text-light);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-    }
-    .placeholder-box i { font-size: 2.5rem; color: var(--metallic-blue); margin-bottom: 1rem; display: block; }
-
-    /* ---- Panels & Forms ---- */
-    .panel {
-        background: var(--white);
-        border-radius: 14px;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-        padding: 1.6rem;
-        margin-bottom: 1.6rem;
-    }
-    .panel h3 {
-        font-size: 1rem;
-        color: var(--metallic-blue-dark);
-        margin-bottom: 1rem;
-    }
-    .pm-form {
-        display: grid;
-        grid-template-columns: 1.2fr 2fr 0.7fr auto;
-        gap: 0.8rem;
-        align-items: end;
-    }
+    .panel { background: var(--white); border-radius: 14px; box-shadow: 0 6px 20px rgba(0,0,0,0.06); padding: 1.6rem; margin-bottom: 1.6rem; }
+    .panel h3 { font-size: 1rem; color: var(--metallic-blue-dark); margin-bottom: 1rem; }
+    .pm-form { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: end; }
     .pm-form .field { display: flex; flex-direction: column; }
     .pm-form label { font-size: 0.8rem; font-weight: 600; margin-bottom: 0.35rem; color: var(--text-dark); }
-    .pm-form input, .pm-form select {
-        padding: 10px 12px;
-        border: 2px solid var(--light-gray);
-        border-radius: 8px;
-        font-family: 'Poppins', sans-serif;
-        font-size: 0.9rem;
-        background: var(--white);
+    .pm-form input, .pm-form select, .pm-form textarea {
+        padding: 10px 12px; border: 2px solid var(--light-gray);
+        border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 0.9rem; background: var(--white);
     }
-    .pm-form input:focus, .pm-form select:focus { outline: none; border-color: var(--metallic-blue); }
-    .btn {
-        padding: 10px 18px;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 0.88rem;
-        cursor: pointer;
-        white-space: nowrap;
-    }
+    .pm-form textarea { resize: vertical; min-height: 80px; }
+    .pm-form input:focus, .pm-form select:focus, .pm-form textarea:focus { outline: none; border-color: var(--metallic-blue); }
+
+    .btn { padding: 10px 18px; border: none; border-radius: 8px; font-weight: 600; font-size: 0.88rem; cursor: pointer; white-space: nowrap; }
     .btn-primary { background: var(--gold-gradient); color: var(--metallic-blue-dark); }
     .btn-secondary { background: var(--light-gray); color: var(--text-dark); }
     .btn-danger { background: #fdecea; color: #c0392b; }
@@ -191,20 +103,10 @@
     .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
     table.pm-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
-    table.pm-table th, table.pm-table td {
-        text-align: left;
-        padding: 0.8rem 0.6rem;
-        border-bottom: 1px solid var(--light-gray);
-        font-size: 0.88rem;
-    }
+    table.pm-table th, table.pm-table td { text-align: left; padding: 0.8rem 0.6rem; border-bottom: 1px solid var(--light-gray); font-size: 0.88rem; }
     table.pm-table th { color: var(--text-light); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; }
-    .badge {
-        display: inline-block;
-        padding: 3px 10px;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
+
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
     .badge-active { background: #e6f9ea; color: #1e8a3c; }
     .badge-inactive { background: #f1f1f1; color: #888; }
     .badge-pending { background: #fff3cd; color: #856404; }
@@ -213,90 +115,25 @@
     .badge-cancelled { background: #f8d7da; color: #721c24; }
 
     .row-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-    #pmMsg, #ordMsg, #catMsg, #prodMsg, #pfMsg {
-        display: none;
-        padding: 10px 14px;
-        border-radius: 8px;
-        font-size: 0.85rem;
-        margin-bottom: 1rem;
-    }
+    .msg-box { display: none; padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 1rem; }
     .msg-success { background: #e6f9ea; color: #1e8a3c; display: block !important; }
     .msg-error { background: #fdecea; color: #c0392b; display: block !important; }
 
-    .pm-form input[type="file"] { padding: 8px 0; border: none; }
-    .prod-thumb {
-        width: 46px; height: 46px;
-        border-radius: 8px;
-        object-fit: cover;
-        background: var(--light-gray);
-        display: block;
-    }
-    .field-type-badge {
-        display: inline-block;
-        padding: 3px 10px;
-        border-radius: 20px;
-        font-size: 0.72rem;
-        font-weight: 600;
-        background: #eef7fb;
-        color: var(--metallic-blue-dark);
-    }
-    .subpanel {
-        margin-top: 1.4rem;
-        padding: 1.2rem;
-        background: var(--light-gray);
-        border-radius: 12px;
-        border: 1px dashed #ccc;
-    }
+    .prod-thumb { width: 46px; height: 46px; border-radius: 8px; object-fit: cover; background: var(--light-gray); display: block; }
+    .field-type-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; background: #eef7fb; color: var(--metallic-blue-dark); }
+
+    .subpanel { margin-top: 1.4rem; padding: 1.2rem; background: var(--light-gray); border-radius: 12px; border: 1px dashed #ccc; }
     .subpanel h4 { font-size: 0.9rem; color: var(--metallic-blue-dark); margin-bottom: 0.8rem; }
     .checkbox-row { display: flex; align-items: center; gap: 0.5rem; }
     .checkbox-row input { width: auto; margin: 0; }
 
-    /* ---- Filter Tabs ---- */
     .filter-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.2rem; flex-wrap: wrap; }
-    .filter-tab {
-        padding: 7px 16px;
-        border-radius: 20px;
-        border: 1px solid #ddd;
-        background: #fff;
-        cursor: pointer;
-        font-size: 0.85rem;
-        font-weight: 500;
-        transition: 0.2s;
-    }
+    .filter-tab { padding: 7px 16px; border-radius: 20px; border: 1px solid #ddd; background: #fff; cursor: pointer; font-size: 0.85rem; font-weight: 500; }
     .filter-tab.active { background: var(--metallic-blue-dark); color: #fff; border-color: var(--metallic-blue-dark); }
 
-    /* ---- Order Details Modal ---- */
-    .modal-overlay {
-        display: none;
-        position: fixed; inset: 0;
-        background: rgba(0,0,0,0.55);
-        backdrop-filter: blur(3px);
-        z-index: 1000;
-    }
-    .modal-card {
-        display: none;
-        position: fixed;
-        top: 50%; left: 50%;
-        transform: translate(-50%, -50%);
-        background: var(--white);
-        width: min(92vw, 680px);
-        max-height: 88vh;
-        overflow-y: auto;
-        padding: 2rem;
-        border-radius: 16px;
-        z-index: 1001;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-        border-top: 4px solid var(--metallic-blue);
-    }
-    .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.2rem;
-        padding-bottom: 0.8rem;
-        border-bottom: 1px solid var(--light-gray);
-    }
-    .modal-header h3 { color: var(--metallic-blue-dark); font-size: 1.2rem; }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); backdrop-filter: blur(3px); z-index: 1000; }
+    .modal-card { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--white); width: min(92vw, 680px); max-height: 88vh; overflow-y: auto; padding: 2rem; border-radius: 16px; z-index: 1001; box-shadow: 0 20px 60px rgba(0,0,0,0.25); border-top: 4px solid var(--metallic-blue); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--light-gray); }
     .close-modal-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #888; }
     .detail-section { margin-bottom: 1.2rem; }
     .detail-section h4 { font-size: 0.9rem; color: var(--metallic-blue-dark); margin-bottom: 0.5rem; border-bottom: 1px solid #eee; padding-bottom: 4px; }
@@ -305,7 +142,9 @@
     .detail-item span.label { font-size: 0.75rem; color: var(--text-light); font-weight: 600; }
     .detail-item span.val { color: var(--text-dark); font-weight: 500; }
     .options-list { background: var(--light-gray); padding: 0.8rem; border-radius: 8px; font-size: 0.85rem; margin-top: 0.5rem; }
-    .options-list div { margin-bottom: 0.3rem; }
+
+    .progress-bar-bg { background: var(--light-gray); border-radius: 10px; height: 12px; width: 100%; overflow: hidden; margin-top: 4px; }
+    .progress-bar-fill { height: 100%; background: var(--metallic-blue); border-radius: 10px; }
 
     @media (max-width: 900px) {
         .sidebar { transform: translateX(-100%); }
@@ -330,11 +169,11 @@
             <ul class="nav-list">
                 <li><a data-page="home" class="active"><i class="fas fa-house"></i> Home</a></li>
                 <li><a data-page="orders"><i class="fas fa-receipt"></i> Orders</a></li>
+                <li><a data-page="customers"><i class="fas fa-users"></i> Customers</a></li>
                 <li><a data-page="printingmethods"><i class="fas fa-print"></i> Printing Methods</a></li>
                 <li><a data-page="products"><i class="fas fa-tshirt"></i> Products</a></li>
                 <li><a data-page="productfields"><i class="fas fa-sliders"></i> Product Options</a></li>
                 <li><a data-page="categories"><i class="fas fa-layer-group"></i> Categories</a></li>
-                <li><a data-page="customers"><i class="fas fa-users"></i> Customers</a></li>
                 <li><a data-page="gallery"><i class="fas fa-images"></i> Gallery</a></li>
                 <li><a data-page="homepage"><i class="fas fa-house-laptop"></i> Homepage Settings</a></li>
                 <li><a data-page="contact"><i class="fas fa-envelope"></i> Contact Details</a></li>
@@ -354,7 +193,6 @@
             </div>
 
             <div class="content" id="pageContent">
-                <!-- Home page content (default) -->
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-label">Total Products</div>
@@ -373,15 +211,17 @@
                         <div class="stat-value" id="statCustomers">-</div>
                     </div>
                 </div>
-                <div class="placeholder-box">
-                    <i class="fas fa-screwdriver-wrench"></i>
-                    Welcome to your dashboard. Select any menu item on the left to manage your printing store.
+                <div class="panel">
+                    <h3><i class="fas fa-star" style="color:var(--gold-accent);"></i> Welcome to Janu Print Management System</h3>
+                    <p style="color:var(--text-light); font-size:0.95rem; line-height:1.6;">
+                        Your cloud dashboard is fully operational. Use the navigation panel on the left to handle customer orders, update catalog items, customize homepage texts, review performance analytics, and manage contact settings.
+                    </p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal Overlay & Card for Order Details -->
+    <!-- Modal Overlay & Card for Details -->
     <div class="modal-overlay" id="orderModalOverlay" onclick="closeOrderModal()"></div>
     <div class="modal-card" id="orderModalCard">
         <div class="modal-header">
@@ -391,10 +231,9 @@
         <div id="orderModalBody">Loading details...</div>
     </div>
 
-    <!-- Template for Orders page -->
+    <!-- Templates -->
     <template id="ordersTemplate">
-        <div id="ordMsg"></div>
-
+        <div id="ordMsg" class="msg-box"></div>
         <div class="filter-tabs">
             <button class="filter-tab active" data-status="all">All Orders</button>
             <button class="filter-tab" data-status="pending">Pending</button>
@@ -402,305 +241,224 @@
             <button class="filter-tab" data-status="completed">Completed</button>
             <button class="filter-tab" data-status="cancelled">Cancelled</button>
         </div>
-
         <div class="panel">
             <h3>Customer Orders</h3>
             <table class="pm-table">
                 <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Customer</th>
-                        <th>Phone</th>
-                        <th>Amount</th>
-                        <th>Payment</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
+                    <tr><th>Order ID</th><th>Customer</th><th>Phone</th><th>Amount</th><th>Payment</th><th>Status</th><th>Actions</th></tr>
                 </thead>
-                <tbody id="ordTableBody">
-                    <tr><td colspan="7">Loading orders...</td></tr>
-                </tbody>
+                <tbody id="ordTableBody"><tr><td colspan="7">Loading...</td></tr></tbody>
             </table>
         </div>
     </template>
 
-    <!-- Template for Printing Methods -->
-    <template id="printingMethodsTemplate">
-        <div id="pmMsg"></div>
+    <template id="customersTemplate">
+        <div id="custMsg" class="msg-box"></div>
+        <div class="panel">
+            <h3>Recorded Customers</h3>
+            <table class="pm-table">
+                <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Country</th><th>Orders</th><th>Actions</th></tr></thead>
+                <tbody id="custTableBody"><tr><td colspan="6">Loading...</td></tr></tbody>
+            </table>
+        </div>
+    </template>
 
+    <template id="printingMethodsTemplate">
+        <div id="pmMsg" class="msg-box"></div>
         <div class="panel">
             <h3 id="pmFormTitle">Add a New Printing Method</h3>
             <form class="pm-form" id="pmForm">
                 <input type="hidden" id="pmEditId" value="">
-                <div class="field">
-                    <label for="pmName">Name</label>
-                    <input type="text" id="pmName" placeholder="e.g. DTF Printing" required>
-                </div>
-                <div class="field">
-                    <label for="pmDescription">Description (optional)</label>
-                    <input type="text" id="pmDescription" placeholder="Short description">
-                </div>
-                <div class="field">
-                    <label for="pmOrder">Order</label>
-                    <input type="number" id="pmOrder" value="0" min="0">
-                </div>
+                <div class="field"><label for="pmName">Name</label><input type="text" id="pmName" placeholder="e.g. DTF Printing" required></div>
+                <div class="field"><label for="pmDescription">Description (optional)</label><input type="text" id="pmDescription" placeholder="Short description"></div>
+                <div class="field"><label for="pmOrder">Order</label><input type="number" id="pmOrder" value="0" min="0"></div>
                 <button type="submit" class="btn btn-primary" id="pmSubmitBtn">Add Method</button>
             </form>
-            <div style="margin-top:0.8rem;">
-                <button type="button" class="btn btn-secondary btn-small" id="pmCancelEdit" style="display:none;">Cancel Edit</button>
-            </div>
+            <div style="margin-top:0.8rem;"><button type="button" class="btn btn-secondary btn-small" id="pmCancelEdit" style="display:none;">Cancel Edit</button></div>
         </div>
-
         <div class="panel">
             <h3>Existing Printing Methods</h3>
             <table class="pm-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Order</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="pmTableBody">
-                    <tr><td colspan="5">Loading...</td></tr>
-                </tbody>
+                <thead><tr><th>Name</th><th>Description</th><th>Order</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody id="pmTableBody"><tr><td colspan="5">Loading...</td></tr></tbody>
             </table>
         </div>
     </template>
 
-    <!-- Template for Categories -->
     <template id="categoriesTemplate">
-        <div id="catMsg"></div>
-
+        <div id="catMsg" class="msg-box"></div>
         <div class="panel">
             <h3 id="catFormTitle">Add a New Category</h3>
-            <form class="pm-form" id="catForm" style="grid-template-columns: 1.2fr 1.2fr 0.7fr auto;">
+            <form class="pm-form" id="catForm">
                 <input type="hidden" id="catEditId" value="">
-                <div class="field">
-                    <label for="catName">Name</label>
-                    <input type="text" id="catName" placeholder="e.g. T-Shirts" required>
-                </div>
-                <div class="field">
-                    <label for="catParent">Parent Category (optional)</label>
-                    <select id="catParent">
-                        <option value="">None (top level)</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="catOrder">Order</label>
-                    <input type="number" id="catOrder" value="0" min="0">
-                </div>
+                <div class="field"><label for="catName">Name</label><input type="text" id="catName" placeholder="e.g. T-Shirts" required></div>
+                <div class="field"><label for="catParent">Parent Category (optional)</label><select id="catParent"><option value="">None (top level)</option></select></div>
+                <div class="field"><label for="catOrder">Order</label><input type="number" id="catOrder" value="0" min="0"></div>
                 <button type="submit" class="btn btn-primary" id="catSubmitBtn">Add Category</button>
             </form>
-            <div style="margin-top:0.8rem;">
-                <button type="button" class="btn btn-secondary btn-small" id="catCancelEdit" style="display:none;">Cancel Edit</button>
-            </div>
+            <div style="margin-top:0.8rem;"><button type="button" class="btn btn-secondary btn-small" id="catCancelEdit" style="display:none;">Cancel Edit</button></div>
         </div>
-
         <div class="panel">
             <h3>Existing Categories</h3>
             <table class="pm-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Parent</th>
-                        <th>Order</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="catTableBody">
-                    <tr><td colspan="5">Loading...</td></tr>
-                </tbody>
+                <thead><tr><th>Name</th><th>Parent</th><th>Order</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody id="catTableBody"><tr><td colspan="5">Loading...</td></tr></tbody>
             </table>
         </div>
     </template>
 
-    <!-- Template for Products -->
     <template id="productsTemplate">
-        <div id="prodMsg"></div>
-
+        <div id="prodMsg" class="msg-box"></div>
         <div class="panel">
             <h3 id="prodFormTitle">Add a New Product</h3>
-            <form class="pm-form" id="prodForm" style="grid-template-columns: 1fr 1fr; row-gap: 1rem;">
+            <form class="pm-form" id="prodForm">
                 <input type="hidden" id="prodEditId" value="">
-                <div class="field">
-                    <label for="prodName">Product Name</label>
-                    <input type="text" id="prodName" placeholder="e.g. Custom DTF T-Shirt" required>
-                </div>
-                <div class="field">
-                    <label for="prodCategory">Category</label>
-                    <select id="prodCategory" required>
-                        <option value="">Select a category</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="prodPrice">Price per Unit (AED)</label>
-                    <input type="number" id="prodPrice" step="0.01" min="0" placeholder="e.g. 25.00" required>
-                </div>
-                <div class="field">
-                    <label for="prodMinQty">Minimum Order Quantity</label>
-                    <input type="number" id="prodMinQty" min="1" value="1" required>
-                </div>
-                <div class="field" style="grid-column: 1 / -1;">
-                    <label for="prodDescription">Description (optional)</label>
-                    <input type="text" id="prodDescription" placeholder="Short description shown to customers">
-                </div>
-                <div class="field">
-                    <label for="prodImage">Product Photo (optional)</label>
-                    <input type="file" id="prodImage" accept="image/*">
-                    <small id="prodExistingImageNote" style="color:#888; font-size:0.78rem; margin-top:0.3rem;"></small>
-                </div>
-                <div class="field">
-                    <label for="prodOrder">Display Order</label>
-                    <input type="number" id="prodOrder" value="0" min="0">
-                </div>
-                <div style="grid-column: 1 / -1; display:flex; gap:0.8rem;">
-                    <button type="submit" class="btn btn-primary" id="prodSubmitBtn">Add Product</button>
-                    <button type="button" class="btn btn-secondary" id="prodCancelEdit" style="display:none;">Cancel Edit</button>
-                </div>
+                <div class="field"><label for="prodName">Product Name</label><input type="text" id="prodName" placeholder="e.g. Custom DTF T-Shirt" required></div>
+                <div class="field"><label for="prodCategory">Category</label><select id="prodCategory" required><option value="">Select a category</option></select></div>
+                <div class="field"><label for="prodPrice">Price per Unit (AED)</label><input type="number" id="prodPrice" step="0.01" min="0" required></div>
+                <div class="field"><label for="prodMinQty">Minimum Order Quantity</label><input type="number" id="prodMinQty" min="1" value="1" required></div>
+                <div class="field" style="grid-column: 1 / -1;"><label for="prodDescription">Description</label><input type="text" id="prodDescription"></div>
+                <div class="field"><label for="prodImage">Product Photo</label><input type="file" id="prodImage" accept="image/*"><small id="prodExistingImageNote" style="color:#888; font-size:0.78rem;"></small></div>
+                <div class="field"><label for="prodOrder">Display Order</label><input type="number" id="prodOrder" value="0" min="0"></div>
+                <div style="grid-column: 1 / -1; display:flex; gap:0.8rem;"><button type="submit" class="btn btn-primary" id="prodSubmitBtn">Add Product</button><button type="button" class="btn btn-secondary" id="prodCancelEdit" style="display:none;">Cancel Edit</button></div>
             </form>
         </div>
-
         <div class="panel">
             <h3>Existing Products</h3>
             <table class="pm-table">
-                <thead>
-                    <tr>
-                        <th>Photo</th>
-                        <th>Name</th>
-                        <th>Category</th>
-                        <th>Price</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="prodTableBody">
-                    <tr><td colspan="6">Loading...</td></tr>
-                </tbody>
+                <thead><tr><th>Photo</th><th>Name</th><th>Category</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody id="prodTableBody"><tr><td colspan="6">Loading...</td></tr></tbody>
             </table>
         </div>
     </template>
 
-    <!-- Template for Product Options -->
     <template id="productFieldsTemplate">
-        <div id="pfMsg"></div>
-
+        <div id="pfMsg" class="msg-box"></div>
         <div class="panel">
             <h3>Select a Product</h3>
-            <div class="field" style="max-width:420px;">
-                <label for="pfProductSelect">Product</label>
-                <select id="pfProductSelect">
-                    <option value="">-- Choose a product --</option>
-                </select>
-            </div>
+            <div class="field" style="max-width:420px;"><label for="pfProductSelect">Product</label><select id="pfProductSelect"><option value="">-- Choose a product --</option></select></div>
         </div>
-
         <div id="pfFieldsArea" style="display:none;">
             <div class="panel">
                 <h3 id="pfFormTitle">Add a New Option</h3>
-                <form class="pm-form" id="pfForm" style="grid-template-columns: 1fr 1fr; row-gap: 1rem;">
+                <form class="pm-form" id="pfForm">
                     <input type="hidden" id="pfEditId" value="">
-                    <div class="field">
-                        <label for="pfLabel">Option Label (shown to customer)</label>
-                        <input type="text" id="pfLabel" placeholder="e.g. Size, Design Size, Urgent Order" required>
-                    </div>
+                    <div class="field"><label for="pfLabel">Option Label</label><input type="text" id="pfLabel" placeholder="e.g. Size" required></div>
                     <div class="field">
                         <label for="pfType">Option Type</label>
                         <select id="pfType" required>
-                            <option value="select">Size / Color List (customer picks one)</option>
-                            <option value="dimension">Dimension Calculator (Width x Height)</option>
-                            <option value="toggle">Extra Charge Switch (e.g. Urgent Order)</option>
-                            <option value="file">File Upload (e.g. Artwork)</option>
-                            <option value="text">Text Box (e.g. Notes)</option>
+                            <option value="select">Size / Color List</option>
+                            <option value="dimension">Dimension Calculator</option>
+                            <option value="toggle">Extra Charge Switch</option>
+                            <option value="file">File Upload</option>
+                            <option value="text">Text Box</option>
                         </select>
                     </div>
-                    <div class="field" id="pfPriceWrap">
-                        <label id="pfPriceLabel" for="pfPrice">Extra Charge (AED)</label>
-                        <input type="number" id="pfPrice" step="0.01" min="0" value="0">
-                    </div>
-                    <div class="field">
-                        <label>&nbsp;</label>
-                        <div class="checkbox-row">
-                            <input type="checkbox" id="pfRequired">
-                            <label for="pfRequired" style="margin:0;">Customer must fill this in</label>
-                        </div>
-                    </div>
-                    <div style="grid-column: 1 / -1; display:flex; gap:0.8rem;">
-                        <button type="submit" class="btn btn-primary" id="pfSubmitBtn">Add Option</button>
-                        <button type="button" class="btn btn-secondary" id="pfCancelEdit" style="display:none;">Cancel Edit</button>
-                    </div>
+                    <div class="field" id="pfPriceWrap"><label id="pfPriceLabel" for="pfPrice">Extra Charge (AED)</label><input type="number" id="pfPrice" step="0.01" min="0" value="0"></div>
+                    <div class="field"><label>&nbsp;</label><div class="checkbox-row"><input type="checkbox" id="pfRequired"><label for="pfRequired" style="margin:0;">Required</label></div></div>
+                    <div style="grid-column: 1 / -1; display:flex; gap:0.8rem;"><button type="submit" class="btn btn-primary" id="pfSubmitBtn">Add Option</button><button type="button" class="btn btn-secondary" id="pfCancelEdit" style="display:none;">Cancel Edit</button></div>
                 </form>
             </div>
-
             <div class="panel">
                 <h3>Options on This Product</h3>
                 <table class="pm-table">
-                    <thead>
-                        <tr>
-                            <th>Label</th>
-                            <th>Type</th>
-                            <th>Required</th>
-                            <th>Charge</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="pfTableBody">
-                        <tr><td colspan="5">Loading...</td></tr>
-                    </tbody>
+                    <thead><tr><th>Label</th><th>Type</th><th>Required</th><th>Charge</th><th>Actions</th></tr></thead>
+                    <tbody id="pfTableBody"><tr><td colspan="5">Loading...</td></tr></tbody>
                 </table>
-
                 <div class="subpanel" id="pfSubItemsPanel" style="display:none;">
                     <h4 id="pfSubItemsTitle">Manage Choices</h4>
-
                     <form class="pm-form" id="pfSubItemForm" style="grid-template-columns: repeat(4, 1fr); margin-bottom:1rem;">
-                        <div class="field" id="pfSubLabelWrap">
-                            <label for="pfSubLabel">Label</label>
-                            <input type="text" id="pfSubLabel" placeholder="e.g. Small, A4" required>
-                        </div>
-                        <div class="field" id="pfSubPriceWrap">
-                            <label for="pfSubPrice">Extra Charge (AED)</label>
-                            <input type="number" id="pfSubPrice" step="0.01" min="0" value="0">
-                        </div>
-                        <div class="field" id="pfSubWidthWrap" style="display:none;">
-                            <label for="pfSubWidth">Width</label>
-                            <input type="number" id="pfSubWidth" step="0.01" min="0">
-                        </div>
-                        <div class="field" id="pfSubHeightWrap" style="display:none;">
-                            <label for="pfSubHeight">Height</label>
-                            <input type="number" id="pfSubHeight" step="0.01" min="0">
-                        </div>
-                        <div class="field" id="pfSubUnitWrap" style="display:none;">
-                            <label for="pfSubUnit">Unit</label>
-                            <select id="pfSubUnit">
-                                <option value="cm">cm</option>
-                                <option value="mm">mm</option>
-                                <option value="inch">inch</option>
-                                <option value="ft">ft</option>
-                            </select>
-                        </div>
-                        <div style="grid-column: 1 / -1; display:flex; gap:0.8rem; margin-top:0.4rem;">
-                            <button type="submit" class="btn btn-primary btn-small" id="pfSubSubmitBtn">Add</button>
-                            <button type="button" class="btn btn-secondary btn-small" id="pfSubCloseBtn">Close</button>
-                        </div>
+                        <div class="field" id="pfSubLabelWrap"><label for="pfSubLabel">Label</label><input type="text" id="pfSubLabel" placeholder="e.g. Small" required></div>
+                        <div class="field" id="pfSubPriceWrap"><label for="pfSubPrice">Extra Charge (AED)</label><input type="number" id="pfSubPrice" step="0.01" min="0" value="0"></div>
+                        <div class="field" id="pfSubWidthWrap" style="display:none;"><label for="pfSubWidth">Width</label><input type="number" id="pfSubWidth" step="0.01" min="0"></div>
+                        <div class="field" id="pfSubHeightWrap" style="display:none;"><label for="pfSubHeight">Height</label><input type="number" id="pfSubHeight" step="0.01" min="0"></div>
+                        <div class="field" id="pfSubUnitWrap" style="display:none;"><label for="pfSubUnit">Unit</label><select id="pfSubUnit"><option value="cm">cm</option><option value="mm">mm</option><option value="inch">inch</option><option value="ft">ft</option></select></div>
+                        <div style="grid-column: 1 / -1; display:flex; gap:0.8rem; margin-top:0.4rem;"><button type="submit" class="btn btn-primary btn-small" id="pfSubSubmitBtn">Add</button><button type="button" class="btn btn-secondary btn-small" id="pfSubCloseBtn">Close</button></div>
                     </form>
-
                     <table class="pm-table" id="pfSubTable">
-                        <thead>
-                            <tr>
-                                <th>Label</th>
-                                <th id="pfSubColHeader3">Charge / Size</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="pfSubTableBody">
-                            <tr><td colspan="3">Loading...</td></tr>
-                        </tbody>
+                        <thead><tr><th>Label</th><th id="pfSubColHeader3">Charge / Size</th><th>Actions</th></tr></thead>
+                        <tbody id="pfSubTableBody"><tr><td colspan="3">Loading...</td></tr></tbody>
                     </table>
                 </div>
             </div>
+        </div>
+    </template>
+
+    <template id="galleryTemplate">
+        <div id="galMsg" class="msg-box"></div>
+        <div class="panel">
+            <h3 id="galFormTitle">Add Portfolio Photo</h3>
+            <form class="pm-form" id="galForm">
+                <input type="hidden" id="galEditId" value="">
+                <div class="field"><label for="galTitle">Title / Caption</label><input type="text" id="galTitle" placeholder="e.g. DTF Print Sample" required></div>
+                <div class="field"><label for="galCategory">Category Tag</label><input type="text" id="galCategory" placeholder="e.g. Apparel" value="Apparel"></div>
+                <div class="field"><label for="galImage">Photo File</label><input type="file" id="galImage" accept="image/*"></div>
+                <div class="field"><label for="galOrder">Display Order</label><input type="number" id="galOrder" value="0" min="0"></div>
+                <div style="grid-column:1 / -1; display:flex; gap:0.8rem;"><button type="submit" class="btn btn-primary" id="galSubmitBtn">Upload Item</button><button type="button" class="btn btn-secondary" id="galCancelEdit" style="display:none;">Cancel Edit</button></div>
+            </form>
+        </div>
+        <div class="panel">
+            <h3>Gallery Items</h3>
+            <table class="pm-table">
+                <thead><tr><th>Photo</th><th>Title</th><th>Category</th><th>Order</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody id="galTableBody"><tr><td colspan="6">Loading...</td></tr></tbody>
+            </table>
+        </div>
+    </template>
+
+    <template id="homepageTemplate">
+        <div id="hpMsg" class="msg-box"></div>
+        <div class="panel">
+            <h3>Edit Main Website Content</h3>
+            <form class="pm-form" id="hpForm" style="grid-template-columns: 1fr;">
+                <div class="field"><label for="hpHeroTitle">Hero Headline (Sinhala / English)</label><input type="text" id="hpHeroTitle" placeholder="Hero title text"></div>
+                <div class="field"><label for="hpHeroSubtitle">Hero Subtitle</label><input type="text" id="hpHeroSubtitle" placeholder="Hero subtitle text"></div>
+                <div class="field"><label for="hpCtaText">CTA Button Text</label><input type="text" id="hpCtaText" placeholder="Explore Portfolio"></div>
+                <div class="field"><label for="hpAboutSinhala">About Us Text (Sinhala)</label><textarea id="hpAboutSinhala" rows="4"></textarea></div>
+                <div class="field"><label for="hpAboutEnglish">About Us Text (English)</label><textarea id="hpAboutEnglish" rows="4"></textarea></div>
+                <div><button type="submit" class="btn btn-primary" id="hpSubmitBtn">Save Changes</button></div>
+            </form>
+        </div>
+    </template>
+
+    <template id="contactTemplate">
+        <div id="contactMsg" class="msg-box"></div>
+        <div class="panel">
+            <h3>Edit Business Contact Details</h3>
+            <form class="pm-form" id="contactForm" style="grid-template-columns: 1fr 1fr;">
+                <div class="field"><label for="cntPhone">Phone Number</label><input type="text" id="cntPhone" placeholder="+94713296006"></div>
+                <div class="field"><label for="cntEmail">Email Address</label><input type="email" id="cntEmail" placeholder="JanuPrintFab@gmail.com"></div>
+                <div class="field"><label for="cntWhatsapp">WhatsApp Number</label><input type="text" id="cntWhatsapp" placeholder="94713296006"></div>
+                <div class="field"><label for="cntAddress">Address / Location</label><input type="text" id="cntAddress" placeholder="Matara, Sri Lanka"></div>
+                <div class="field"><label for="cntFacebook">Facebook Page Link</label><input type="text" id="cntFacebook"></div>
+                <div class="field"><label for="cntInstagram">Instagram Link</label><input type="text" id="cntInstagram"></div>
+                <div style="grid-column: 1 / -1;"><button type="submit" class="btn btn-primary" id="cntSubmitBtn">Save Contact Details</button></div>
+            </form>
+        </div>
+    </template>
+
+    <template id="analyticsTemplate">
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value" id="anTotalRev">AED 0.00</div></div>
+            <div class="stat-card"><div class="stat-label">Completed Orders</div><div class="stat-value" id="anCompleted">0</div></div>
+            <div class="stat-card"><div class="stat-label">Average Order Value</div><div class="stat-value" id="anAvgOrder">AED 0.00</div></div>
+        </div>
+        <div class="panel">
+            <h3>Orders Breakdown by Status</h3>
+            <div id="anStatusBars" style="display:flex; flex-direction:column; gap:1rem; margin-top:1rem;">Loading...</div>
+        </div>
+    </template>
+
+    <template id="settingsTemplate">
+        <div id="stgMsg" class="msg-box"></div>
+        <div class="panel">
+            <h3>Store & System Preferences</h3>
+            <form class="pm-form" id="stgForm" style="grid-template-columns: 1fr 1fr;">
+                <div class="field"><label for="stgStoreName">Store Name</label><input type="text" id="stgStoreName" value="Janu Print | FAB"></div>
+                <div class="field"><label for="stgCurrency">Currency Symbol</label><input type="text" id="stgCurrency" value="AED"></div>
+                <div class="field"><label for="stgMinQty">Default Minimum Order Qty</label><input type="number" id="stgMinQty" value="1" min="1"></div>
+                <div style="grid-column:1 / -1;"><button type="submit" class="btn btn-primary" id="stgSubmitBtn">Save Settings</button></div>
+            </form>
         </div>
     </template>
 
@@ -712,23 +470,10 @@
 
         async function checkAuth() {
             const { data: { session } } = await window.db.auth.getSession();
+            if (!session) { window.location.href = 'login.html'; return; }
 
-            if (!session) {
-                window.location.href = 'login.html';
-                return;
-            }
-
-            const { data: adminRow } = await window.db
-                .from('admin_profiles')
-                .select('id')
-                .eq('id', session.user.id)
-                .maybeSingle();
-
-            if (!adminRow) {
-                await window.db.auth.signOut();
-                window.location.href = 'login.html';
-                return;
-            }
+            const { data: adminRow } = await window.db.from('admin_profiles').select('id').eq('id', session.user.id).maybeSingle();
+            if (!adminRow) { await window.db.auth.signOut(); window.location.href = 'login.html'; return; }
 
             document.getElementById('adminEmail').textContent = session.user.email;
             authGate.style.display = 'none';
@@ -737,14 +482,12 @@
         }
 
         async function loadStats() {
-            const [{ count: productCount }, { count: orderCount }, { count: pendingCount }, { count: customerCount }] =
-                await Promise.all([
-                    window.db.from('products').select('*', { count: 'exact', head: true }),
-                    window.db.from('orders').select('*', { count: 'exact', head: true }),
-                    window.db.from('orders').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
-                    window.db.from('customers').select('*', { count: 'exact', head: true })
-                ]);
-
+            const [{ count: productCount }, { count: orderCount }, { count: pendingCount }, { count: customerCount }] = await Promise.all([
+                window.db.from('products').select('*', { count: 'exact', head: true }),
+                window.db.from('orders').select('*', { count: 'exact', head: true }),
+                window.db.from('orders').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+                window.db.from('customers').select('*', { count: 'exact', head: true })
+            ]);
             document.getElementById('statProducts').textContent = productCount ?? 0;
             document.getElementById('statOrders').textContent = orderCount ?? 0;
             document.getElementById('statPending').textContent = pendingCount ?? 0;
@@ -763,12 +506,10 @@
             return div.innerHTML;
         }
 
-        // ------------------------------------------------------------
-        // Sidebar Navigation
-        // ------------------------------------------------------------
         const pageLabels = {
-            home: 'Home', orders: 'Orders', printingmethods: 'Printing Methods', products: 'Products', productfields: 'Product Options', categories: 'Categories',
-            customers: 'Customers', gallery: 'Gallery', homepage: 'Homepage Settings', contact: 'Contact Details',
+            home: 'Home', orders: 'Orders', customers: 'Customers', printingmethods: 'Printing Methods',
+            products: 'Products', productfields: 'Product Options', categories: 'Categories',
+            gallery: 'Gallery', homepage: 'Homepage Settings', contact: 'Contact Details',
             analytics: 'Analytics', settings: 'Settings'
         };
         const homeContentHTML = document.getElementById('pageContent').innerHTML;
@@ -781,1089 +522,420 @@
                 document.getElementById('pageTitle').textContent = pageLabels[page];
                 document.getElementById('sidebar').classList.remove('open');
 
-                if (page === 'home') {
-                    document.getElementById('pageContent').innerHTML = homeContentHTML;
-                    loadStats();
-                } else if (page === 'orders') {
-                    const tpl = document.getElementById('ordersTemplate');
-                    document.getElementById('pageContent').innerHTML = '';
-                    document.getElementById('pageContent').appendChild(tpl.content.cloneNode(true));
-                    initOrdersPage();
-                } else if (page === 'printingmethods') {
-                    const tpl = document.getElementById('printingMethodsTemplate');
-                    document.getElementById('pageContent').innerHTML = '';
-                    document.getElementById('pageContent').appendChild(tpl.content.cloneNode(true));
-                    initPrintingMethodsPage();
-                } else if (page === 'categories') {
-                    const tpl = document.getElementById('categoriesTemplate');
-                    document.getElementById('pageContent').innerHTML = '';
-                    document.getElementById('pageContent').appendChild(tpl.content.cloneNode(true));
-                    initCategoriesPage();
-                } else if (page === 'products') {
-                    const tpl = document.getElementById('productsTemplate');
-                    document.getElementById('pageContent').innerHTML = '';
-                    document.getElementById('pageContent').appendChild(tpl.content.cloneNode(true));
-                    initProductsPage();
-                } else if (page === 'productfields') {
-                    const tpl = document.getElementById('productFieldsTemplate');
-                    document.getElementById('pageContent').innerHTML = '';
-                    document.getElementById('pageContent').appendChild(tpl.content.cloneNode(true));
-                    initProductFieldsPage();
-                } else {
-                    document.getElementById('pageContent').innerHTML = `
-                        <div class="placeholder-box">
-                            <i class="fas fa-hammer"></i>
-                            The "${pageLabels[page]}" section will be built in an upcoming module.
-                        </div>`;
-                }
+                const pageContent = document.getElementById('pageContent');
+                pageContent.innerHTML = '';
+
+                if (page === 'home') { pageContent.innerHTML = homeContentHTML; loadStats(); }
+                else if (page === 'orders') { renderTpl('ordersTemplate'); initOrdersPage(); }
+                else if (page === 'customers') { renderTpl('customersTemplate'); initCustomersPage(); }
+                else if (page === 'printingmethods') { renderTpl('printingMethodsTemplate'); initPrintingMethodsPage(); }
+                else if (page === 'categories') { renderTpl('categoriesTemplate'); initCategoriesPage(); }
+                else if (page === 'products') { renderTpl('productsTemplate'); initProductsPage(); }
+                else if (page === 'productfields') { renderTpl('productFieldsTemplate'); initProductFieldsPage(); }
+                else if (page === 'gallery') { renderTpl('galleryTemplate'); initGalleryPage(); }
+                else if (page === 'homepage') { renderTpl('homepageTemplate'); initHomepageSettingsPage(); }
+                else if (page === 'contact') { renderTpl('contactTemplate'); initContactDetailsPage(); }
+                else if (page === 'analytics') { renderTpl('analyticsTemplate'); initAnalyticsPage(); }
+                else if (page === 'settings') { renderTpl('settingsTemplate'); initSettingsPage(); }
             });
         });
+
+        function renderTpl(id) {
+            const tpl = document.getElementById(id);
+            document.getElementById('pageContent').appendChild(tpl.content.cloneNode(true));
+        }
 
         document.getElementById('menuToggle').addEventListener('click', () => {
             document.getElementById('sidebar').classList.toggle('open');
         });
 
-        // ------------------------------------------------------------
-        // Orders Page Logic
-        // ------------------------------------------------------------
+        // --- Orders Logic ---
         let currentOrdersFilter = 'all';
-
-        function ordShowMessage(text, type) {
-            const box = document.getElementById('ordMsg');
-            if (!box) return;
-            box.textContent = text;
-            box.className = type === 'error' ? 'msg-error' : 'msg-success';
-            setTimeout(() => { box.className = ''; box.style.display = 'none'; }, 4000);
-        }
-
         async function ordLoadList(filterStatus = 'all') {
-            const tbody = document.getElementById('ordTableBody');
-            if (!tbody) return;
-            tbody.innerHTML = '<tr><td colspan="7">Loading orders...</td></tr>';
-
+            const tbody = document.getElementById('ordTableBody'); if (!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="7">Loading...</td></tr>';
             let query = window.db.from('orders').select('*, customers(*)');
-            if (filterStatus !== 'all') {
-                query = query.eq('status', filterStatus);
-            }
-
+            if (filterStatus !== 'all') query = query.eq('status', filterStatus);
             const { data, error } = await query;
-
-            if (error) {
-                tbody.innerHTML = `<tr><td colspan="7">Error loading orders: ${error.message}</td></tr>`;
-                return;
-            }
-
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7">No orders found.</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = data.map(order => {
-                const customerName = order.customers ? order.customers.name : 'Guest';
-                const customerPhone = order.customers ? order.customers.phone : '-';
-                const shortId = order.id.slice(0, 8);
-                const badgeClass = `badge-${order.status || 'pending'}`;
-
-                return `
-                    <tr>
-                        <td><strong>#${shortId}</strong></td>
-                        <td>${escapeHtml(customerName)}</td>
-                        <td>${escapeHtml(customerPhone)}</td>
-                        <td>AED ${Number(order.total_amount || 0).toFixed(2)}</td>
-                        <td>${escapeHtml(order.payment_method || '-')}</td>
-                        <td><span class="badge ${badgeClass}">${order.status || 'pending'}</span></td>
-                        <td>
-                            <div class="row-actions">
-                                <button class="btn btn-secondary btn-small" onclick="ordViewDetails('${order.id}')">Details</button>
-                                <button class="btn btn-danger btn-small" onclick="ordDelete('${order.id}')">Delete</button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+            if (error) { tbody.innerHTML = `<tr><td colspan="7">Error: ${error.message}</td></tr>`; return; }
+            if (!data || data.length === 0) { tbody.innerHTML = '<tr><td colspan="7">No orders found.</td></tr>'; return; }
+            tbody.innerHTML = data.map(o => `
+                <tr>
+                    <td><strong>#${o.id.slice(0, 8)}</strong></td>
+                    <td>${escapeHtml(o.customers ? o.customers.name : 'Guest')}</td>
+                    <td>${escapeHtml(o.customers ? o.customers.phone : '-')}</td>
+                    <td>AED ${Number(o.total_amount || 0).toFixed(2)}</td>
+                    <td>${escapeHtml(o.payment_method || '-')}</td>
+                    <td><span class="badge badge-${o.status || 'pending'}">${o.status || 'pending'}</span></td>
+                    <td>
+                        <div class="row-actions">
+                            <button class="btn btn-secondary btn-small" onclick="ordViewDetails('${o.id}')">Details</button>
+                            <button class="btn btn-danger btn-small" onclick="ordDelete('${o.id}')">Delete</button>
+                        </div>
+                    </td>
+                </tr>`).join('');
         }
-
         async function ordViewDetails(orderId) {
             const modalBody = document.getElementById('orderModalBody');
-            modalBody.innerHTML = 'Loading order details...';
+            modalBody.innerHTML = 'Loading...';
             document.getElementById('orderModalOverlay').style.display = 'block';
             document.getElementById('orderModalCard').style.display = 'block';
-
             const [{ data: order }, { data: items }] = await Promise.all([
                 window.db.from('orders').select('*, customers(*)').eq('id', orderId).single(),
                 window.db.from('order_items').select('*').eq('order_id', orderId)
             ]);
-
-            if (!order) {
-                modalBody.innerHTML = 'Could not load order details.';
-                return;
-            }
-
-            const customer = order.customers || {};
-            const item = (items && items.length > 0) ? items[0] : {};
-            const selections = item.selected_options?.selections || [];
-
+            if (!order) return;
+            const c = order.customers || {}; const item = items?.[0] || {}; const sel = item.selected_options?.selections || [];
             modalBody.innerHTML = `
                 <div class="detail-section">
                     <h4>Customer Information</h4>
                     <div class="detail-grid">
-                        <div class="detail-item"><span class="label">Name</span><span class="val">${escapeHtml(customer.name || '-')}</span></div>
-                        <div class="detail-item"><span class="label">Phone</span><span class="val">${escapeHtml(customer.phone || '-')}</span></div>
-                        <div class="detail-item"><span class="label">Email</span><span class="val">${escapeHtml(customer.email || '-')}</span></div>
-                        <div class="detail-item"><span class="label">Country</span><span class="val">${escapeHtml(customer.country || '-')}</span></div>
+                        <div class="detail-item"><span class="label">Name</span><span class="val">${escapeHtml(c.name || '-')}</span></div>
+                        <div class="detail-item"><span class="label">Phone</span><span class="val">${escapeHtml(c.phone || '-')}</span></div>
+                        <div class="detail-item"><span class="label">Email</span><span class="val">${escapeHtml(c.email || '-')}</span></div>
+                        <div class="detail-item"><span class="label">Country</span><span class="val">${escapeHtml(c.country || '-')}</span></div>
                     </div>
                 </div>
-
                 <div class="detail-section">
                     <h4>Product & Selections</h4>
                     <div class="detail-grid">
                         <div class="detail-item"><span class="label">Product Name</span><span class="val">${escapeHtml(item.product_name || '-')}</span></div>
                         <div class="detail-item"><span class="label">Quantity</span><span class="val">${item.quantity || 1}</span></div>
                         <div class="detail-item"><span class="label">Total Price</span><span class="val">AED ${Number(order.total_amount || 0).toFixed(2)}</span></div>
-                        <div class="detail-item"><span class="label">Delivery Option</span><span class="val">${escapeHtml(order.delivery_option || '-')}</span></div>
                     </div>
-
-                    ${selections.length > 0 ? `
-                        <div class="options-list">
-                            <strong>Custom Selected Options:</strong>
-                            ${selections.map(s => `<div>• <strong>${escapeHtml(s.label)}:</strong> ${escapeHtml(s.value)} ${s.price ? `(+AED ${Number(s.price).toFixed(2)})` : ''}</div>`).join('')}
-                        </div>
-                    ` : ''}
+                    ${sel.length > 0 ? `<div class="options-list">${sel.map(s => `<div>• <strong>${escapeHtml(s.label)}:</strong> ${escapeHtml(s.value)}</div>`).join('')}</div>` : ''}
                 </div>
-
                 <div class="detail-section">
-                    <h4>Special Instructions / Notes</h4>
-                    <p style="font-size:0.88rem; background:var(--light-gray); padding:0.8rem; border-radius:8px;">${escapeHtml(order.notes || order.special_instructions || 'No special notes.')}</p>
-                </div>
-
-                <div class="detail-section">
-                    <h4>Update Order Status</h4>
-                    <div style="display:flex; gap:0.8rem; align-items:center;">
-                        <select id="ordStatusSelect" style="padding:8px 12px; border-radius:8px; border:1px solid #ccc;">
-                            <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
-                            <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Processing</option>
-                            <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Completed</option>
-                            <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                    <h4>Update Status</h4>
+                    <div style="display:flex; gap:0.8rem;">
+                        <select id="ordStatusSelect">
+                            <option value="pending" ${order.status==='pending'?'selected':''}>Pending</option>
+                            <option value="processing" ${order.status==='processing'?'selected':''}>Processing</option>
+                            <option value="completed" ${order.status==='completed'?'selected':''}>Completed</option>
+                            <option value="cancelled" ${order.status==='cancelled'?'selected':''}>Cancelled</option>
                         </select>
-                        <button class="btn btn-primary btn-small" onclick="ordSaveStatus('${order.id}')">Save Status</button>
+                        <button class="btn btn-primary btn-small" onclick="ordSaveStatus('${order.id}')">Save</button>
                     </div>
-                </div>
-            `;
+                </div>`;
         }
-
         async function ordSaveStatus(orderId) {
-            const newStatus = document.getElementById('ordStatusSelect').value;
-            const { error } = await window.db.from('orders').update({ status: newStatus }).eq('id', orderId);
-
-            if (error) {
-                alert('Error updating status: ' + error.message);
-                return;
-            }
-
-            closeOrderModal();
-            ordShowMessage('Order status updated successfully.', 'success');
-            ordLoadList(currentOrdersFilter);
-            loadStats();
+            const s = document.getElementById('ordStatusSelect').value;
+            await window.db.from('orders').update({ status: s }).eq('id', orderId);
+            closeOrderModal(); ordLoadList(currentOrdersFilter); loadStats();
         }
-
         async function ordDelete(orderId) {
-            if (!confirm('Are you sure you want to delete this order?')) return;
-            
-            // Delete order items first
+            if (!confirm('Delete this order?')) return;
             await window.db.from('order_items').delete().eq('order_id', orderId);
-            const { error } = await window.db.from('orders').delete().eq('id', orderId);
-
-            if (error) {
-                ordShowMessage('Error deleting order: ' + error.message, 'error');
-                return;
-            }
-
-            ordShowMessage('Order deleted.', 'success');
-            ordLoadList(currentOrdersFilter);
-            loadStats();
+            await window.db.from('orders').delete().eq('id', orderId);
+            ordLoadList(currentOrdersFilter); loadStats();
         }
-
-        function closeOrderModal() {
-            document.getElementById('orderModalOverlay').style.display = 'none';
-            document.getElementById('orderModalCard').style.display = 'none';
-        }
-
+        function closeOrderModal() { document.getElementById('orderModalOverlay').style.display='none'; document.getElementById('orderModalCard').style.display='none'; }
         function initOrdersPage() {
             ordLoadList(currentOrdersFilter);
-
             document.querySelectorAll('.filter-tab').forEach(tab => {
                 tab.addEventListener('click', () => {
-                    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    currentOrdersFilter = tab.getAttribute('data-status');
-                    ordLoadList(currentOrdersFilter);
+                    document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
+                    tab.classList.add('active'); currentOrdersFilter = tab.getAttribute('data-status'); ordLoadList(currentOrdersFilter);
                 });
             });
         }
 
-        // ------------------------------------------------------------
-        // Printing Methods page logic
-        // ------------------------------------------------------------
-        function pmShowMessage(text, type) {
-            const box = document.getElementById('pmMsg');
-            if (!box) return;
-            box.textContent = text;
-            box.className = type === 'error' ? 'msg-error' : 'msg-success';
-            setTimeout(() => { box.className = ''; box.style.display = 'none'; }, 4000);
+        // --- Customers Logic ---
+        async function custLoadList() {
+            const tbody = document.getElementById('custTableBody'); if (!tbody) return;
+            const { data } = await window.db.from('customers').select('*, orders(id)');
+            if (!data || data.length===0) { tbody.innerHTML='<tr><td colspan="6">No customers recorded yet.</td></tr>'; return; }
+            tbody.innerHTML = data.map(c => `
+                <tr>
+                    <td>${escapeHtml(c.name || 'Unnamed')}</td>
+                    <td>${escapeHtml(c.phone || '-')}</td>
+                    <td>${escapeHtml(c.email || '-')}</td>
+                    <td>${escapeHtml(c.country || '-')}</td>
+                    <td>${c.orders ? c.orders.length : 0} order(s)</td>
+                    <td><button class="btn btn-danger btn-small" onclick="custDelete('${c.id}')">Delete</button></td>
+                </tr>`).join('');
+        }
+        async function custDelete(id) {
+            if (!confirm('Delete customer profile?')) return;
+            await window.db.from('customers').delete().eq('id', id);
+            custLoadList(); loadStats();
+        }
+        function initCustomersPage() { custLoadList(); }
+
+        // --- Gallery Logic ---
+        async function galLoadList() {
+            const tbody = document.getElementById('galTableBody'); if (!tbody) return;
+            const { data } = await window.db.from('gallery').select('*').order('display_order', { ascending: true });
+            if (!data || data.length === 0) { tbody.innerHTML='<tr><td colspan="6">No portfolio photos uploaded yet.</td></tr>'; return; }
+            tbody.innerHTML = data.map(g => `
+                <tr>
+                    <td><img class="prod-thumb" src="${g.image_url}" alt=""></td>
+                    <td>${escapeHtml(g.title)}</td>
+                    <td>${escapeHtml(g.category)}</td>
+                    <td>${g.display_order}</td>
+                    <td><span class="badge ${g.is_visible?'badge-active':'badge-inactive'}">${g.is_visible?'Visible':'Hidden'}</span></td>
+                    <td>
+                        <button class="btn btn-secondary btn-small" onclick="galToggle('${g.id}', ${!g.is_visible})">${g.is_visible?'Hide':'Show'}</button>
+                        <button class="btn btn-danger btn-small" onclick="galDelete('${g.id}')">Delete</button>
+                    </td>
+                </tr>`).join('');
+        }
+        async function galToggle(id, status) { await window.db.from('gallery').update({ is_visible: status }).eq('id', id); galLoadList(); }
+        async function galDelete(id) { if(confirm('Delete photo?')) { await window.db.from('gallery').delete().eq('id', id); galLoadList(); } }
+        function initGalleryPage() {
+            galLoadList();
+            document.getElementById('galForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const title = document.getElementById('galTitle').value.trim();
+                const category = document.getElementById('galCategory').value.trim();
+                const order = parseInt(document.getElementById('galOrder').value, 10) || 0;
+                const file = document.getElementById('galImage').files[0];
+                if (!file) { alert('Please select a photo file.'); return; }
+
+                const path = `gallery-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.]/g, '-')}`;
+                const { error: upErr } = await window.db.storage.from('products').upload(path, file);
+                if (upErr) { alert('Upload error: ' + upErr.message); return; }
+                const { data: pUrl } = window.db.storage.from('products').getPublicUrl(path);
+
+                await window.db.from('gallery').insert({ title, category, display_order: order, image_url: pUrl.publicUrl });
+                document.getElementById('galForm').reset();
+                galLoadList();
+            });
         }
 
+        // --- Homepage Settings Logic ---
+        async function initHomepageSettingsPage() {
+            const { data } = await window.db.from('homepage_settings').select('*').eq('id', 'main').maybeSingle();
+            if (data) {
+                document.getElementById('hpHeroTitle').value = data.hero_title || '';
+                document.getElementById('hpHeroSubtitle').value = data.hero_subtitle || '';
+                document.getElementById('hpCtaText').value = data.cta_text || '';
+                document.getElementById('hpAboutSinhala').value = data.about_sinhala || '';
+                document.getElementById('hpAboutEnglish').value = data.about_english || '';
+            }
+            document.getElementById('hpForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const payload = {
+                    id: 'main',
+                    hero_title: document.getElementById('hpHeroTitle').value,
+                    hero_subtitle: document.getElementById('hpHeroSubtitle').value,
+                    cta_text: document.getElementById('hpCtaText').value,
+                    about_sinhala: document.getElementById('hpAboutSinhala').value,
+                    about_english: document.getElementById('hpAboutEnglish').value
+                };
+                await window.db.from('homepage_settings').upsert(payload);
+                document.getElementById('hpMsg').textContent = 'Homepage content updated successfully!';
+                document.getElementById('hpMsg').className = 'msg-box msg-success';
+            });
+        }
+
+        // --- Contact Details Logic ---
+        async function initContactDetailsPage() {
+            const { data } = await window.db.from('contact_details').select('*').eq('id', 'main').maybeSingle();
+            if (data) {
+                document.getElementById('cntPhone').value = data.phone || '';
+                document.getElementById('cntEmail').value = data.email || '';
+                document.getElementById('cntWhatsapp').value = data.whatsapp || '';
+                document.getElementById('cntAddress').value = data.address || '';
+                document.getElementById('cntFacebook').value = data.facebook || '';
+                document.getElementById('cntInstagram').value = data.instagram || '';
+            }
+            document.getElementById('contactForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const payload = {
+                    id: 'main',
+                    phone: document.getElementById('cntPhone').value,
+                    email: document.getElementById('cntEmail').value,
+                    whatsapp: document.getElementById('cntWhatsapp').value,
+                    address: document.getElementById('cntAddress').value,
+                    facebook: document.getElementById('cntFacebook').value,
+                    instagram: document.getElementById('cntInstagram').value
+                };
+                await window.db.from('contact_details').upsert(payload);
+                document.getElementById('contactMsg').textContent = 'Contact details updated!';
+                document.getElementById('contactMsg').className = 'msg-box msg-success';
+            });
+        }
+
+        // --- Analytics Logic ---
+        async function initAnalyticsPage() {
+            const { data: orders } = await window.db.from('orders').select('*');
+            if (!orders) return;
+            const completed = orders.filter(o => o.status === 'completed');
+            const totalRev = completed.reduce((sum, o) => sum + Number(o.total_amount || 0), 0);
+            const avgOrder = completed.length ? (totalRev / completed.length) : 0;
+
+            document.getElementById('anTotalRev').textContent = `AED ${totalRev.toFixed(2)}`;
+            document.getElementById('anCompleted').textContent = completed.length;
+            document.getElementById('anAvgOrder').textContent = `AED ${avgOrder.toFixed(2)}`;
+
+            const statuses = ['pending', 'processing', 'completed', 'cancelled'];
+            const bars = statuses.map(s => {
+                const count = orders.filter(o => o.status === s).length;
+                const pct = orders.length ? ((count / orders.length) * 100).toFixed(1) : 0;
+                return `<div>
+                    <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:600;">
+                        <span>${s.toUpperCase()} (${count})</span><span>${pct}%</span>
+                    </div>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%;"></div></div>
+                </div>`;
+            }).join('');
+            document.getElementById('anStatusBars').innerHTML = bars;
+        }
+
+        // --- System Settings Logic ---
+        async function initSettingsPage() {
+            const { data } = await window.db.from('site_settings').select('*').eq('id', 'main').maybeSingle();
+            if (data) {
+                document.getElementById('stgStoreName').value = data.store_name || '';
+                document.getElementById('stgCurrency').value = data.currency_symbol || '';
+                document.getElementById('stgMinQty').value = data.default_min_qty || 1;
+            }
+            document.getElementById('stgForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await window.db.from('site_settings').upsert({
+                    id: 'main',
+                    store_name: document.getElementById('stgStoreName').value,
+                    currency_symbol: document.getElementById('stgCurrency').value,
+                    default_min_qty: parseInt(document.getElementById('stgMinQty').value, 10) || 1
+                });
+                document.getElementById('stgMsg').textContent = 'System settings saved!';
+                document.getElementById('stgMsg').className = 'msg-box msg-success';
+            });
+        }
+
+        // --- Printing Methods, Categories, Products, Product Options Existing Logic ---
+        function pmShowMessage(text, type) { const box = document.getElementById('pmMsg'); if(!box)return; box.textContent = text; box.className = type==='error'?'msg-box msg-error':'msg-box msg-success'; }
         async function pmLoadList() {
-            const tbody = document.getElementById('pmTableBody');
-            if (!tbody) return;
-            tbody.innerHTML = '<tr><td colspan="5">Loading...</td></tr>';
-
-            const { data, error } = await window.db
-                .from('printing_methods')
-                .select('*')
-                .order('display_order', { ascending: true });
-
-            if (error) {
-                tbody.innerHTML = `<tr><td colspan="5">Error loading: ${error.message}</td></tr>`;
-                return;
-            }
-
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5">No printing methods yet. Add your first one above.</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = data.map(row => `
+            const tbody = document.getElementById('pmTableBody'); if(!tbody)return;
+            const { data } = await window.db.from('printing_methods').select('*').order('display_order', { ascending: true });
+            if(!data||data.length===0){ tbody.innerHTML='<tr><td colspan="5">No printing methods yet.</td></tr>'; return;}
+            tbody.innerHTML = data.map(r => `
                 <tr>
-                    <td>${escapeHtml(row.name)}</td>
-                    <td>${escapeHtml(row.description || '-')}</td>
-                    <td>${row.display_order}</td>
+                    <td>${escapeHtml(r.name)}</td><td>${escapeHtml(r.description||'-')}</td><td>${r.display_order}</td>
+                    <td><span class="badge ${r.is_active?'badge-active':'badge-inactive'}">${r.is_active?'Active':'Inactive'}</span></td>
                     <td>
-                        <span class="badge ${row.is_active ? 'badge-active' : 'badge-inactive'}">
-                            ${row.is_active ? 'Active' : 'Inactive'}
-                        </span>
+                        <button class="btn btn-secondary btn-small" onclick="pmEdit('${r.id}','${escapeHtml(r.name)}','${escapeHtml(r.description||'')}',${r.display_order})">Edit</button>
+                        <button class="btn btn-danger btn-small" onclick="pmDelete('${r.id}')">Delete</button>
                     </td>
-                    <td>
-                        <div class="row-actions">
-                            <button class="btn btn-secondary btn-small" data-action="edit" data-id="${row.id}">Edit</button>
-                            <button class="btn btn-secondary btn-small" data-action="toggle" data-id="${row.id}" data-active="${row.is_active}">
-                                ${row.is_active ? 'Deactivate' : 'Activate'}
-                            </button>
-                            <button class="btn btn-danger btn-small" data-action="delete" data-id="${row.id}">Delete</button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
-
-            tbody.querySelectorAll('button[data-action]').forEach(btn => {
-                btn.addEventListener('click', () => pmHandleRowAction(btn, data));
-            });
+                </tr>`).join('');
         }
-
-        async function pmHandleRowAction(btn, data) {
-            const id = btn.getAttribute('data-id');
-            const action = btn.getAttribute('data-action');
-            const row = data.find(r => r.id === id);
-
-            if (action === 'edit') {
-                document.getElementById('pmEditId').value = row.id;
-                document.getElementById('pmName').value = row.name;
-                document.getElementById('pmDescription').value = row.description || '';
-                document.getElementById('pmOrder').value = row.display_order;
-                document.getElementById('pmFormTitle').textContent = 'Edit Printing Method';
-                document.getElementById('pmSubmitBtn').textContent = 'Save Changes';
-                document.getElementById('pmCancelEdit').style.display = 'inline-block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-
-            if (action === 'toggle') {
-                const newActive = !(btn.getAttribute('data-active') === 'true');
-                const { error } = await window.db
-                    .from('printing_methods')
-                    .update({ is_active: newActive })
-                    .eq('id', id);
-                if (error) { pmShowMessage('Error updating status: ' + error.message, 'error'); return; }
-                pmShowMessage('Status updated.', 'success');
-                pmLoadList();
-            }
-
-            if (action === 'delete') {
-                if (!confirm(`Delete "${row.name}"? This cannot be undone.`)) return;
-                const { error } = await window.db
-                    .from('printing_methods')
-                    .delete()
-                    .eq('id', id);
-                if (error) { pmShowMessage('Error deleting: ' + error.message, 'error'); return; }
-                pmShowMessage('Printing method deleted.', 'success');
-                pmLoadList();
-            }
-        }
-
-        function pmResetForm() {
-            document.getElementById('pmForm').reset();
-            document.getElementById('pmEditId').value = '';
-            document.getElementById('pmOrder').value = 0;
-            document.getElementById('pmFormTitle').textContent = 'Add a New Printing Method';
-            document.getElementById('pmSubmitBtn').textContent = 'Add Method';
-            document.getElementById('pmCancelEdit').style.display = 'none';
-        }
-
-        function initPrintingMethodsPage() {
+        function pmEdit(id, name, desc, order){ document.getElementById('pmEditId').value=id; document.getElementById('pmName').value=name; document.getElementById('pmDescription').value=desc; document.getElementById('pmOrder').value=order; }
+        async function pmDelete(id){ if(confirm('Delete printing method?')){ await window.db.from('printing_methods').delete().eq('id',id); pmLoadList(); } }
+        function initPrintingMethodsPage(){
             pmLoadList();
-
-            document.getElementById('pmForm').addEventListener('submit', async (e) => {
+            document.getElementById('pmForm').addEventListener('submit', async(e)=>{
                 e.preventDefault();
-                const editId = document.getElementById('pmEditId').value;
-                const name = document.getElementById('pmName').value.trim();
-                const description = document.getElementById('pmDescription').value.trim();
-                const display_order = parseInt(document.getElementById('pmOrder').value, 10) || 0;
-
-                if (!name) { pmShowMessage('Name is required.', 'error'); return; }
-
-                const submitBtn = document.getElementById('pmSubmitBtn');
-                submitBtn.disabled = true;
-
-                let error;
-                if (editId) {
-                    ({ error } = await window.db
-                        .from('printing_methods')
-                        .update({ name, description, display_order })
-                        .eq('id', editId));
-                } else {
-                    ({ error } = await window.db
-                        .from('printing_methods')
-                        .insert({ name, description, display_order }));
-                }
-
-                submitBtn.disabled = false;
-
-                if (error) {
-                    pmShowMessage('Error saving: ' + error.message, 'error');
-                    return;
-                }
-
-                pmShowMessage(editId ? 'Printing method updated.' : 'Printing method added.', 'success');
-                pmResetForm();
-                pmLoadList();
+                const editId=document.getElementById('pmEditId').value;
+                const name=document.getElementById('pmName').value.trim();
+                const description=document.getElementById('pmDescription').value.trim();
+                const display_order=parseInt(document.getElementById('pmOrder').value, 10)||0;
+                if(editId) await window.db.from('printing_methods').update({name, description, display_order}).eq('id', editId);
+                else await window.db.from('printing_methods').insert({name, description, display_order});
+                document.getElementById('pmForm').reset(); pmLoadList();
             });
-
-            document.getElementById('pmCancelEdit').addEventListener('click', pmResetForm);
         }
 
-        // ------------------------------------------------------------
-        // Categories page logic
-        // ------------------------------------------------------------
-        function catShowMessage(text, type) {
-            const box = document.getElementById('catMsg');
-            if (!box) return;
-            box.textContent = text;
-            box.className = type === 'error' ? 'msg-error' : 'msg-success';
-            setTimeout(() => { box.className = ''; box.style.display = 'none'; }, 4000);
-        }
-
-        function catSlugify(name) {
-            return name
-                .toLowerCase()
-                .trim()
-                .replace(/[^a-z0-9]+/g, '-')
-                .replace(/(^-|-$)/g, '');
-        }
-
+        function catShowMessage(text, type) { const box = document.getElementById('catMsg'); if(!box)return; box.textContent = text; box.className = type==='error'?'msg-box msg-error':'msg-box msg-success'; }
         async function catLoadList() {
-            const tbody = document.getElementById('catTableBody');
-            if (!tbody) return;
-            tbody.innerHTML = '<tr><td colspan="5">Loading...</td></tr>';
-
-            const { data, error } = await window.db
-                .from('categories')
-                .select('*')
-                .order('display_order', { ascending: true });
-
-            if (error) {
-                tbody.innerHTML = `<tr><td colspan="5">Error loading: ${error.message}</td></tr>`;
-                return;
-            }
-
-            const parentSelect = document.getElementById('catParent');
-            const currentEditId = document.getElementById('catEditId').value;
-            if (parentSelect) {
-                parentSelect.innerHTML = '<option value="">None (top level)</option>' +
-                    data
-                        .filter(c => c.id !== currentEditId)
-                        .map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`)
-                        .join('');
-            }
-
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5">No categories yet. Add your first one above.</td></tr>';
-                return;
-            }
-
-            const nameById = {};
-            data.forEach(c => { nameById[c.id] = c.name; });
-
-            tbody.innerHTML = data.map(row => `
+            const tbody = document.getElementById('catTableBody'); if(!tbody)return;
+            const { data } = await window.db.from('categories').select('*').order('display_order', { ascending: true });
+            if(!data||data.length===0){ tbody.innerHTML='<tr><td colspan="5">No categories yet.</td></tr>'; return;}
+            tbody.innerHTML = data.map(r => `
                 <tr>
-                    <td>${escapeHtml(row.name)}</td>
-                    <td>${row.parent_id ? escapeHtml(nameById[row.parent_id] || '-') : '-'}</td>
-                    <td>${row.display_order}</td>
-                    <td>
-                        <span class="badge ${row.is_visible ? 'badge-active' : 'badge-inactive'}">
-                            ${row.is_visible ? 'Visible' : 'Hidden'}
-                        </span>
-                    </td>
-                    <td>
-                        <div class="row-actions">
-                            <button class="btn btn-secondary btn-small" data-action="edit" data-id="${row.id}">Edit</button>
-                            <button class="btn btn-secondary btn-small" data-action="toggle" data-id="${row.id}" data-visible="${row.is_visible}">
-                                ${row.is_visible ? 'Hide' : 'Show'}
-                            </button>
-                            <button class="btn btn-danger btn-small" data-action="delete" data-id="${row.id}">Delete</button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
-
-            tbody.querySelectorAll('button[data-action]').forEach(btn => {
-                btn.addEventListener('click', () => catHandleRowAction(btn, data));
-            });
+                    <td>${escapeHtml(r.name)}</td><td>-</td><td>${r.display_order}</td>
+                    <td><span class="badge ${r.is_visible?'badge-active':'badge-inactive'}">${r.is_visible?'Visible':'Hidden'}</span></td>
+                    <td><button class="btn btn-danger btn-small" onclick="catDelete('${r.id}')">Delete</button></td>
+                </tr>`).join('');
         }
-
-        async function catHandleRowAction(btn, data) {
-            const id = btn.getAttribute('data-id');
-            const action = btn.getAttribute('data-action');
-            const row = data.find(r => r.id === id);
-
-            if (action === 'edit') {
-                document.getElementById('catEditId').value = row.id;
-                document.getElementById('catName').value = row.name;
-                document.getElementById('catOrder').value = row.display_order;
-                document.getElementById('catFormTitle').textContent = 'Edit Category';
-                document.getElementById('catSubmitBtn').textContent = 'Save Changes';
-                document.getElementById('catCancelEdit').style.display = 'inline-block';
-                await catLoadList();
-                document.getElementById('catParent').value = row.parent_id || '';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                return;
-            }
-
-            if (action === 'toggle') {
-                const newVisible = !(btn.getAttribute('data-visible') === 'true');
-                const { error } = await window.db
-                    .from('categories')
-                    .update({ is_visible: newVisible })
-                    .eq('id', id);
-                if (error) { catShowMessage('Error updating status: ' + error.message, 'error'); return; }
-                catShowMessage('Status updated.', 'success');
-                catLoadList();
-            }
-
-            if (action === 'delete') {
-                if (!confirm(`Delete "${row.name}"? This cannot be undone.`)) return;
-                const { error } = await window.db
-                    .from('categories')
-                    .delete()
-                    .eq('id', id);
-                if (error) { catShowMessage('Error deleting: ' + error.message, 'error'); return; }
-                catShowMessage('Category deleted.', 'success');
-                catLoadList();
-            }
-        }
-
-        function catResetForm() {
-            document.getElementById('catForm').reset();
-            document.getElementById('catEditId').value = '';
-            document.getElementById('catOrder').value = 0;
-            document.getElementById('catFormTitle').textContent = 'Add a New Category';
-            document.getElementById('catSubmitBtn').textContent = 'Add Category';
-            document.getElementById('catCancelEdit').style.display = 'none';
+        async function catDelete(id){ if(confirm('Delete category?')){ await window.db.from('categories').delete().eq('id',id); catLoadList(); } }
+        function initCategoriesPage(){
             catLoadList();
-        }
-
-        function initCategoriesPage() {
-            catLoadList();
-
-            document.getElementById('catForm').addEventListener('submit', async (e) => {
+            document.getElementById('catForm').addEventListener('submit', async(e)=>{
                 e.preventDefault();
-                const editId = document.getElementById('catEditId').value;
-                const name = document.getElementById('catName').value.trim();
-                const parent_id = document.getElementById('catParent').value || null;
-                const display_order = parseInt(document.getElementById('catOrder').value, 10) || 0;
-
-                if (!name) { catShowMessage('Name is required.', 'error'); return; }
-
-                const submitBtn = document.getElementById('catSubmitBtn');
-                submitBtn.disabled = true;
-
-                let error;
-                if (editId) {
-                    ({ error } = await window.db
-                        .from('categories')
-                        .update({ name, parent_id, display_order })
-                        .eq('id', editId));
-                } else {
-                    let slug = catSlugify(name);
-                    const { data: existing } = await window.db
-                        .from('categories')
-                        .select('id')
-                        .eq('slug', slug)
-                        .maybeSingle();
-                    if (existing) {
-                        slug = slug + '-' + Date.now().toString().slice(-5);
-                    }
-                    ({ error } = await window.db
-                        .from('categories')
-                        .insert({ name, slug, parent_id, display_order }));
-                }
-
-                submitBtn.disabled = false;
-
-                if (error) {
-                    catShowMessage('Error saving: ' + error.message, 'error');
-                    return;
-                }
-
-                catShowMessage(editId ? 'Category updated.' : 'Category added.', 'success');
-                catResetForm();
+                const name=document.getElementById('catName').value.trim();
+                const display_order=parseInt(document.getElementById('catOrder').value, 10)||0;
+                const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                await window.db.from('categories').insert({name, slug, display_order});
+                document.getElementById('catForm').reset(); catLoadList();
             });
-
-            document.getElementById('catCancelEdit').addEventListener('click', catResetForm);
-        }
-
-        // ------------------------------------------------------------
-        // Products page logic
-        // ------------------------------------------------------------
-        function prodShowMessage(text, type) {
-            const box = document.getElementById('prodMsg');
-            if (!box) return;
-            box.textContent = text;
-            box.className = type === 'error' ? 'msg-error' : 'msg-success';
-            setTimeout(() => { box.className = ''; box.style.display = 'none'; }, 4000);
-        }
-
-        async function prodLoadCategoryOptions() {
-            const { data, error } = await window.db
-                .from('categories')
-                .select('id, name')
-                .order('display_order', { ascending: true });
-
-            const select = document.getElementById('prodCategory');
-            if (!select) return;
-            const currentValue = select.value;
-            select.innerHTML = '<option value="">Select a category</option>' +
-                (data || []).map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
-            if (currentValue) select.value = currentValue;
-
-            if (error) prodShowMessage('Error loading categories: ' + error.message, 'error');
         }
 
         async function prodLoadList() {
-            const tbody = document.getElementById('prodTableBody');
-            if (!tbody) return;
-            tbody.innerHTML = '<tr><td colspan="6">Loading...</td></tr>';
-
-            const { data, error } = await window.db
-                .from('products')
-                .select('*, categories(name)')
-                .order('display_order', { ascending: true });
-
-            if (error) {
-                tbody.innerHTML = `<tr><td colspan="6">Error loading: ${error.message}</td></tr>`;
-                return;
-            }
-
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6">No products yet. Add your first one above.</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = data.map(row => `
+            const tbody = document.getElementById('prodTableBody'); if(!tbody)return;
+            const { data } = await window.db.from('products').select('*, categories(name)').order('display_order', { ascending: true });
+            if(!data||data.length===0){ tbody.innerHTML='<tr><td colspan="6">No products yet.</td></tr>'; return;}
+            tbody.innerHTML = data.map(r => `
                 <tr>
-                    <td>
-                        ${row.featured_image
-                            ? `<img class="prod-thumb" src="${row.featured_image}" alt="">`
-                            : `<div class="prod-thumb"></div>`}
-                    </td>
-                    <td>${escapeHtml(row.name)}</td>
-                    <td>${row.categories ? escapeHtml(row.categories.name) : '-'}</td>
-                    <td>AED ${Number(row.price_per_unit).toFixed(2)}</td>
-                    <td>
-                        <span class="badge ${row.is_visible ? 'badge-active' : 'badge-inactive'}">
-                            ${row.is_visible ? 'Visible' : 'Hidden'}
-                        </span>
-                    </td>
-                    <td>
-                        <div class="row-actions">
-                            <button class="btn btn-secondary btn-small" data-action="edit" data-id="${row.id}">Edit</button>
-                            <button class="btn btn-secondary btn-small" data-action="toggle" data-id="${row.id}" data-visible="${row.is_visible}">
-                                ${row.is_visible ? 'Hide' : 'Show'}
-                            </button>
-                            <button class="btn btn-danger btn-small" data-action="delete" data-id="${row.id}">Delete</button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
-
-            tbody.querySelectorAll('button[data-action]').forEach(btn => {
-                btn.addEventListener('click', () => prodHandleRowAction(btn, data));
-            });
+                    <td><img class="prod-thumb" src="${r.featured_image||''}" alt=""></td>
+                    <td>${escapeHtml(r.name)}</td><td>${escapeHtml(r.categories?.name||'-')}</td>
+                    <td>AED ${Number(r.price_per_unit).toFixed(2)}</td>
+                    <td><span class="badge ${r.is_visible?'badge-active':'badge-inactive'}">${r.is_visible?'Visible':'Hidden'}</span></td>
+                    <td><button class="btn btn-danger btn-small" onclick="prodDelete('${r.id}')">Delete</button></td>
+                </tr>`).join('');
         }
-
-        async function prodHandleRowAction(btn, data) {
-            const id = btn.getAttribute('data-id');
-            const action = btn.getAttribute('data-action');
-            const row = data.find(r => r.id === id);
-
-            if (action === 'edit') {
-                document.getElementById('prodEditId').value = row.id;
-                document.getElementById('prodName').value = row.name;
-                document.getElementById('prodCategory').value = row.category_id || '';
-                document.getElementById('prodPrice').value = row.price_per_unit;
-                document.getElementById('prodMinQty').value = row.min_quantity;
-                document.getElementById('prodDescription').value = row.description || '';
-                document.getElementById('prodOrder').value = row.display_order;
-                document.getElementById('prodExistingImageNote').textContent = row.featured_image
-                    ? 'A photo is already set. Choose a new file only if you want to replace it.'
-                    : '';
-                document.getElementById('prodFormTitle').textContent = 'Edit Product';
-                document.getElementById('prodSubmitBtn').textContent = 'Save Changes';
-                document.getElementById('prodCancelEdit').style.display = 'inline-block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-
-            if (action === 'toggle') {
-                const newVisible = !(btn.getAttribute('data-visible') === 'true');
-                const { error } = await window.db
-                    .from('products')
-                    .update({ is_visible: newVisible })
-                    .eq('id', id);
-                if (error) { prodShowMessage('Error updating status: ' + error.message, 'error'); return; }
-                prodShowMessage('Status updated.', 'success');
-                prodLoadList();
-            }
-
-            if (action === 'delete') {
-                if (!confirm(`Delete "${row.name}"? This cannot be undone.`)) return;
-                const { error } = await window.db
-                    .from('products')
-                    .delete()
-                    .eq('id', id);
-                if (error) { prodShowMessage('Error deleting: ' + error.message, 'error'); return; }
-                prodShowMessage('Product deleted.', 'success');
-                prodLoadList();
-            }
-        }
-
-        function prodResetForm() {
-            document.getElementById('prodForm').reset();
-            document.getElementById('prodEditId').value = '';
-            document.getElementById('prodMinQty').value = 1;
-            document.getElementById('prodOrder').value = 0;
-            document.getElementById('prodExistingImageNote').textContent = '';
-            document.getElementById('prodFormTitle').textContent = 'Add a New Product';
-            document.getElementById('prodSubmitBtn').textContent = 'Add Product';
-            document.getElementById('prodCancelEdit').style.display = 'none';
+        async function prodDelete(id){ if(confirm('Delete product?')){ await window.db.from('products').delete().eq('id',id); prodLoadList(); } }
+        async function initProductsPage(){
+            const { data: cats } = await window.db.from('categories').select('*');
+            const select = document.getElementById('prodCategory');
+            if(select) select.innerHTML = '<option value="">Select category</option>' + (cats||[]).map(c=>`<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
             prodLoadList();
-        }
-
-        async function prodUploadImage(file) {
-            const cleanName = file.name.replace(/[^a-zA-Z0-9.]/g, '-');
-            const path = `${Date.now()}-${cleanName}`;
-            const { error: uploadError } = await window.db.storage
-                .from('products')
-                .upload(path, file);
-            if (uploadError) throw uploadError;
-            const { data } = window.db.storage.from('products').getPublicUrl(path);
-            return data.publicUrl;
-        }
-
-        function initProductsPage() {
-            prodLoadCategoryOptions();
-            prodLoadList();
-
-            document.getElementById('prodForm').addEventListener('submit', async (e) => {
+            document.getElementById('prodForm').addEventListener('submit', async(e)=>{
                 e.preventDefault();
-                const editId = document.getElementById('prodEditId').value;
-                const name = document.getElementById('prodName').value.trim();
-                const category_id = document.getElementById('prodCategory').value;
-                const price_per_unit = parseFloat(document.getElementById('prodPrice').value);
-                const min_quantity = parseInt(document.getElementById('prodMinQty').value, 10) || 1;
-                const description = document.getElementById('prodDescription').value.trim();
-                const display_order = parseInt(document.getElementById('prodOrder').value, 10) || 0;
-                const fileInput = document.getElementById('prodImage');
-                const file = fileInput.files[0];
-
-                if (!name) { prodShowMessage('Product name is required.', 'error'); return; }
-                if (!category_id) { prodShowMessage('Please select a category.', 'error'); return; }
-                if (isNaN(price_per_unit)) { prodShowMessage('Please enter a valid price.', 'error'); return; }
-
-                const submitBtn = document.getElementById('prodSubmitBtn');
-                submitBtn.disabled = true;
-                submitBtn.textContent = file ? 'Uploading photo...' : 'Saving...';
-
-                try {
-                    let featured_image;
-                    if (file) {
-                        featured_image = await prodUploadImage(file);
-                    }
-
-                    const payload = { name, category_id, price_per_unit, min_quantity, description, display_order };
-                    if (featured_image) payload.featured_image = featured_image;
-
-                    let error;
-                    if (editId) {
-                        ({ error } = await window.db.from('products').update(payload).eq('id', editId));
-                    } else {
-                        payload.price = price_per_unit;
-                        ({ error } = await window.db.from('products').insert(payload));
-                    }
-
-                    if (error) throw error;
-
-                    prodShowMessage(editId ? 'Product updated.' : 'Product added.', 'success');
-                    prodResetForm();
-                } catch (err) {
-                    prodShowMessage('Error saving product: ' + err.message, 'error');
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = editId ? 'Save Changes' : 'Add Product';
+                const name=document.getElementById('prodName').value.trim();
+                const category_id=document.getElementById('prodCategory').value;
+                const price_per_unit=parseFloat(document.getElementById('prodPrice').value)||0;
+                const min_quantity=parseInt(document.getElementById('prodMinQty').value,10)||1;
+                const description=document.getElementById('prodDescription').value.trim();
+                const file = document.getElementById('prodImage').files[0];
+                let featured_image = '';
+                if(file) {
+                    const path = `prod-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.]/g, '-')}`;
+                    await window.db.storage.from('products').upload(path, file);
+                    const { data: pUrl } = window.db.storage.from('products').getPublicUrl(path);
+                    featured_image = pUrl.publicUrl;
                 }
-            });
-
-            document.getElementById('prodCancelEdit').addEventListener('click', prodResetForm);
-        }
-
-        // ------------------------------------------------------------
-        // Product Options (product_fields) page logic
-        // ------------------------------------------------------------
-        const pfState = { productId: null, fields: [], manageFieldId: null, manageFieldType: null, subEditId: null };
-
-        function pfShowMessage(text, type) {
-            const box = document.getElementById('pfMsg');
-            if (!box) return;
-            box.textContent = text;
-            box.className = type === 'error' ? 'msg-error' : 'msg-success';
-            setTimeout(() => { box.className = ''; box.style.display = 'none'; }, 4000);
-        }
-
-        function pfSlugify(label) {
-            return label.toLowerCase().trim().replace(/[^a-z0-9]+/g, '_').replace(/(^_|_$)/g, '');
-        }
-
-        function pfTypeLabel(type) {
-            return {
-                select: 'Size / Color List',
-                dimension: 'Dimension Calculator',
-                toggle: 'Extra Charge Switch',
-                file: 'File Upload',
-                text: 'Text Box'
-            }[type] || type;
-        }
-
-        async function pfLoadProductOptions() {
-            const { data, error } = await window.db
-                .from('products')
-                .select('id, name')
-                .order('display_order', { ascending: true });
-
-            const select = document.getElementById('pfProductSelect');
-            if (!select) return;
-            select.innerHTML = '<option value="">-- Choose a product --</option>' +
-                (data || []).map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
-
-            if (error) pfShowMessage('Error loading products: ' + error.message, 'error');
-        }
-
-        function pfUpdateFormForType() {
-            const type = document.getElementById('pfType').value;
-            const priceWrap = document.getElementById('pfPriceWrap');
-            const priceLabel = document.getElementById('pfPriceLabel');
-
-            if (type === 'toggle') {
-                priceWrap.style.display = '';
-                priceLabel.textContent = 'Extra Charge (AED)';
-            } else if (type === 'dimension') {
-                priceWrap.style.display = '';
-                priceLabel.textContent = 'Price per SQM (AED)';
-            } else {
-                priceWrap.style.display = 'none';
-            }
-        }
-
-        async function pfLoadFieldsForProduct(productId) {
-            const tbody = document.getElementById('pfTableBody');
-            if (!tbody) return;
-            tbody.innerHTML = '<tr><td colspan="5">Loading...</td></tr>';
-
-            const { data, error } = await window.db
-                .from('product_fields')
-                .select('*')
-                .eq('product_id', productId)
-                .order('display_order', { ascending: true });
-
-            if (error) {
-                tbody.innerHTML = `<tr><td colspan="5">Error loading: ${error.message}</td></tr>`;
-                return;
-            }
-
-            pfState.fields = data || [];
-
-            if (pfState.fields.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5">No options added yet. Use the form above to add one.</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = pfState.fields.map(f => `
-                <tr>
-                    <td>${escapeHtml(f.field_label)}</td>
-                    <td><span class="field-type-badge">${pfTypeLabel(f.field_type)}</span></td>
-                    <td>${f.is_required ? 'Yes' : 'No'}</td>
-                    <td>${(f.field_type === 'toggle' || f.field_type === 'dimension') ? 'AED ' + Number(f.price_modifier).toFixed(2) : '-'}</td>
-                    <td>
-                        <div class="row-actions">
-                            ${(f.field_type === 'select' || f.field_type === 'dimension')
-                                ? `<button class="btn btn-secondary btn-small" data-action="manage" data-id="${f.id}">${f.field_type === 'select' ? 'Manage Choices' : 'Manage Presets'}</button>`
-                                : ''}
-                            <button class="btn btn-secondary btn-small" data-action="edit" data-id="${f.id}">Edit</button>
-                            <button class="btn btn-danger btn-small" data-action="delete" data-id="${f.id}">Delete</button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
-
-            tbody.querySelectorAll('button[data-action]').forEach(btn => {
-                btn.addEventListener('click', () => pfHandleRowAction(btn));
+                await window.db.from('products').insert({name, category_id, price_per_unit, price: price_per_unit, min_quantity, description, featured_image});
+                document.getElementById('prodForm').reset(); prodLoadList();
             });
         }
 
-        async function pfHandleRowAction(btn) {
-            const id = btn.getAttribute('data-id');
-            const action = btn.getAttribute('data-action');
-            const field = pfState.fields.find(f => f.id === id);
-
-            if (action === 'edit') {
-                document.getElementById('pfEditId').value = field.id;
-                document.getElementById('pfLabel').value = field.field_label;
-                document.getElementById('pfType').value = field.field_type;
-                document.getElementById('pfType').disabled = true;
-                document.getElementById('pfPrice').value = field.price_modifier;
-                document.getElementById('pfRequired').checked = field.is_required;
-                pfUpdateFormForType();
-                document.getElementById('pfFormTitle').textContent = 'Edit Option';
-                document.getElementById('pfSubmitBtn').textContent = 'Save Changes';
-                document.getElementById('pfCancelEdit').style.display = 'inline-block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-
-            if (action === 'delete') {
-                if (!confirm(`Delete "${field.field_label}"? Any choices/presets under it will also be deleted.`)) return;
-                const { error } = await window.db.from('product_fields').delete().eq('id', id);
-                if (error) { pfShowMessage('Error deleting: ' + error.message, 'error'); return; }
-                pfShowMessage('Option deleted.', 'success');
-                pfLoadFieldsForProduct(pfState.productId);
-                document.getElementById('pfSubItemsPanel').style.display = 'none';
-            }
-
-            if (action === 'manage') {
-                pfState.manageFieldId = field.id;
-                pfState.manageFieldType = field.field_type;
-                document.getElementById('pfSubItemsTitle').textContent =
-                    field.field_type === 'select' ? `Manage Choices for "${field.field_label}"` : `Manage Presets for "${field.field_label}"`;
-
-                const isSelect = field.field_type === 'select';
-                document.getElementById('pfSubPriceWrap').style.display = isSelect ? '' : 'none';
-                document.getElementById('pfSubWidthWrap').style.display = isSelect ? 'none' : '';
-                document.getElementById('pfSubHeightWrap').style.display = isSelect ? 'none' : '';
-                document.getElementById('pfSubUnitWrap').style.display = isSelect ? 'none' : '';
-                document.getElementById('pfSubColHeader3').textContent = isSelect ? 'Charge' : 'Size';
-
-                document.getElementById('pfSubItemsPanel').style.display = 'block';
-                pfSubResetForm();
-                pfLoadSubItems();
-                document.getElementById('pfSubItemsPanel').scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-
-        async function pfLoadSubItems() {
-            const tbody = document.getElementById('pfSubTableBody');
-            if (!tbody) return;
-            tbody.innerHTML = '<tr><td colspan="3">Loading...</td></tr>';
-
-            const { data, error } = await window.db
-                .from('product_field_options')
-                .select('*')
-                .eq('product_field_id', pfState.manageFieldId)
-                .order('display_order', { ascending: true });
-
-            if (error) {
-                tbody.innerHTML = `<tr><td colspan="3">Error loading: ${error.message}</td></tr>`;
-                return;
-            }
-
-            pfState.subItems = data || [];
-
-            if (pfState.subItems.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3">Nothing added yet.</td></tr>';
-                return;
-            }
-
-            const isSelect = pfState.manageFieldType === 'select';
-
-            tbody.innerHTML = pfState.subItems.map(item => `
-                <tr>
-                    <td>${escapeHtml(item.label)}</td>
-                    <td>${isSelect
-                        ? 'AED ' + Number(item.price_modifier).toFixed(2)
-                        : `${item.preset_width} x ${item.preset_height} ${item.preset_unit}`}</td>
-                    <td>
-                        <div class="row-actions">
-                            <button class="btn btn-secondary btn-small" data-subaction="edit" data-id="${item.id}">Edit</button>
-                            <button class="btn btn-danger btn-small" data-subaction="delete" data-id="${item.id}">Delete</button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
-
-            tbody.querySelectorAll('button[data-subaction]').forEach(btn => {
-                btn.addEventListener('click', () => pfHandleSubAction(btn));
-            });
-        }
-
-        async function pfHandleSubAction(btn) {
-            const id = btn.getAttribute('data-id');
-            const action = btn.getAttribute('data-subaction');
-            const item = pfState.subItems.find(i => i.id === id);
-
-            if (action === 'edit') {
-                pfState.subEditId = item.id;
-                document.getElementById('pfSubLabel').value = item.label;
-                if (pfState.manageFieldType === 'select') {
-                    document.getElementById('pfSubPrice').value = item.price_modifier;
-                } else {
-                    document.getElementById('pfSubWidth').value = item.preset_width;
-                    document.getElementById('pfSubHeight').value = item.preset_height;
-                    document.getElementById('pfSubUnit').value = item.preset_unit;
-                }
-                document.getElementById('pfSubSubmitBtn').textContent = 'Save Changes';
-            }
-
-            if (action === 'delete') {
-                if (!confirm(`Delete "${item.label}"?`)) return;
-                const { error } = await window.db.from('product_field_options').delete().eq('id', id);
-                if (error) { pfShowMessage('Error deleting: ' + error.message, 'error'); return; }
-                pfLoadSubItems();
-            }
-        }
-
-        function pfSubResetForm() {
-            document.getElementById('pfSubItemForm').reset();
-            pfState.subEditId = null;
-            document.getElementById('pfSubSubmitBtn').textContent = 'Add';
-        }
-
-        function initProductFieldsPage() {
-            pfLoadProductOptions();
-
-            document.getElementById('pfProductSelect').addEventListener('change', (e) => {
+        const pfState = { productId: null, fields: [] };
+        async function initProductFieldsPage(){
+            const { data } = await window.db.from('products').select('id, name');
+            const sel = document.getElementById('pfProductSelect');
+            if(sel) sel.innerHTML = '<option value="">-- Choose product --</option>' + (data||[]).map(p=>`<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
+            sel.addEventListener('change', async (e) => {
                 pfState.productId = e.target.value;
-                document.getElementById('pfSubItemsPanel').style.display = 'none';
-                if (!pfState.productId) {
-                    document.getElementById('pfFieldsArea').style.display = 'none';
-                    return;
-                }
-                document.getElementById('pfFieldsArea').style.display = 'block';
-                pfFieldResetForm();
-                pfLoadFieldsForProduct(pfState.productId);
+                if(!pfState.productId) { document.getElementById('pfFieldsArea').style.display='none'; return; }
+                document.getElementById('pfFieldsArea').style.display='block';
+                pfLoadFields();
             });
-
-            document.getElementById('pfType').addEventListener('change', pfUpdateFormForType);
-            pfUpdateFormForType();
-
-            document.getElementById('pfForm').addEventListener('submit', async (e) => {
+            document.getElementById('pfForm').addEventListener('submit', async(e)=>{
                 e.preventDefault();
-                const editId = document.getElementById('pfEditId').value;
                 const field_label = document.getElementById('pfLabel').value.trim();
                 const field_type = document.getElementById('pfType').value;
+                const price_modifier = parseFloat(document.getElementById('pfPrice').value)||0;
                 const is_required = document.getElementById('pfRequired').checked;
-                const priceVal = parseFloat(document.getElementById('pfPrice').value) || 0;
-
-                if (!field_label) { pfShowMessage('Label is required.', 'error'); return; }
-
-                const submitBtn = document.getElementById('pfSubmitBtn');
-                submitBtn.disabled = true;
-
-                let error;
-                if (editId) {
-                    ({ error } = await window.db
-                        .from('product_fields')
-                        .update({ field_label, is_required, price_modifier: priceVal })
-                        .eq('id', editId));
-                } else {
-                    ({ error } = await window.db
-                        .from('product_fields')
-                        .insert({
-                            product_id: pfState.productId,
-                            field_key: pfSlugify(field_label),
-                            field_label,
-                            field_type,
-                            is_required,
-                            price_modifier: priceVal
-                        }));
-                }
-
-                submitBtn.disabled = false;
-
-                if (error) { pfShowMessage('Error saving: ' + error.message, 'error'); return; }
-
-                pfShowMessage(editId ? 'Option updated.' : 'Option added.', 'success');
-                pfFieldResetForm();
-                pfLoadFieldsForProduct(pfState.productId);
-            });
-
-            document.getElementById('pfCancelEdit').addEventListener('click', pfFieldResetForm);
-
-            document.getElementById('pfSubItemForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const label = document.getElementById('pfSubLabel').value.trim();
-                if (!label) { pfShowMessage('Label is required.', 'error'); return; }
-
-                const isSelect = pfState.manageFieldType === 'select';
-                const payload = { product_field_id: pfState.manageFieldId, label };
-
-                if (isSelect) {
-                    payload.price_modifier = parseFloat(document.getElementById('pfSubPrice').value) || 0;
-                } else {
-                    payload.preset_width = parseFloat(document.getElementById('pfSubWidth').value) || 0;
-                    payload.preset_height = parseFloat(document.getElementById('pfSubHeight').value) || 0;
-                    payload.preset_unit = document.getElementById('pfSubUnit').value;
-                }
-
-                let error;
-                if (pfState.subEditId) {
-                    ({ error } = await window.db.from('product_field_options').update(payload).eq('id', pfState.subEditId));
-                } else {
-                    ({ error } = await window.db.from('product_field_options').insert(payload));
-                }
-
-                if (error) { pfShowMessage('Error saving: ' + error.message, 'error'); return; }
-
-                pfSubResetForm();
-                pfLoadSubItems();
-            });
-
-            document.getElementById('pfSubCloseBtn').addEventListener('click', () => {
-                document.getElementById('pfSubItemsPanel').style.display = 'none';
+                await window.db.from('product_fields').insert({
+                    product_id: pfState.productId, field_key: field_label.toLowerCase().replace(/[^a-z0-9]+/g,'_'),
+                    field_label, field_type, price_modifier, is_required
+                });
+                document.getElementById('pfForm').reset(); pfLoadFields();
             });
         }
-
-        function pfFieldResetForm() {
-            document.getElementById('pfForm').reset();
-            document.getElementById('pfEditId').value = '';
-            document.getElementById('pfType').disabled = false;
-            document.getElementById('pfFormTitle').textContent = 'Add a New Option';
-            document.getElementById('pfSubmitBtn').textContent = 'Add Option';
-            document.getElementById('pfCancelEdit').style.display = 'none';
-            pfUpdateFormForType();
+        async function pfLoadFields(){
+            const tbody = document.getElementById('pfTableBody'); if(!tbody) return;
+            const { data } = await window.db.from('product_fields').select('*').eq('product_id', pfState.productId);
+            if(!data||data.length===0){ tbody.innerHTML='<tr><td colspan="5">No options added yet.</td></tr>'; return; }
+            tbody.innerHTML = data.map(f => `
+                <tr>
+                    <td>${escapeHtml(f.field_label)}</td><td><span class="field-type-badge">${f.field_type}</span></td>
+                    <td>${f.is_required?'Yes':'No'}</td><td>AED ${Number(f.price_modifier).toFixed(2)}</td>
+                    <td><button class="btn btn-danger btn-small" onclick="pfDeleteField('${f.id}')">Delete</button></td>
+                </tr>`).join('');
         }
+        async function pfDeleteField(id){ await window.db.from('product_fields').delete().eq('id', id); pfLoadFields(); }
 
         checkAuth();
     </script>
