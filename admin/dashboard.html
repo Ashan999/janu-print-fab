@@ -239,6 +239,26 @@
         display: block;
     }
 
+    .field-type-badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        background: #eef7fb;
+        color: var(--metallic-blue-dark);
+    }
+    .subpanel {
+        margin-top: 1.4rem;
+        padding: 1.2rem;
+        background: var(--light-gray);
+        border-radius: 12px;
+        border: 1px dashed #ccc;
+    }
+    .subpanel h4 { font-size: 0.9rem; color: var(--metallic-blue-dark); margin-bottom: 0.8rem; }
+    .checkbox-row { display: flex; align-items: center; gap: 0.5rem; }
+    .checkbox-row input { width: auto; margin: 0; }
+
     @media (max-width: 900px) {
         .sidebar { transform: translateX(-100%); }
         .sidebar.open { transform: translateX(0); }
@@ -262,6 +282,7 @@
                 <li><a data-page="home" class="active"><i class="fas fa-house"></i> Home</a></li>
                 <li><a data-page="printingmethods"><i class="fas fa-print"></i> Printing Methods</a></li>
                 <li><a data-page="products"><i class="fas fa-tshirt"></i> Products</a></li>
+                <li><a data-page="productfields"><i class="fas fa-sliders"></i> Product Options</a></li>
                 <li><a data-page="categories"><i class="fas fa-layer-group"></i> Categories</a></li>
                 <li><a data-page="orders"><i class="fas fa-receipt"></i> Orders</a></li>
                 <li><a data-page="customers"><i class="fas fa-users"></i> Customers</a></li>
@@ -472,6 +493,126 @@
         </div>
     </template>
 
+    <!-- Template for the Product Options page (filled in by JS) -->
+    <template id="productFieldsTemplate">
+        <div id="pfMsg"></div>
+
+        <div class="panel">
+            <h3>Select a Product</h3>
+            <div class="field" style="max-width:420px;">
+                <label for="pfProductSelect">Product</label>
+                <select id="pfProductSelect">
+                    <option value="">-- Choose a product --</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="pfFieldsArea" style="display:none;">
+            <div class="panel">
+                <h3 id="pfFormTitle">Add a New Option</h3>
+                <form class="pm-form" id="pfForm" style="grid-template-columns: 1fr 1fr; row-gap: 1rem;">
+                    <input type="hidden" id="pfEditId" value="">
+                    <div class="field">
+                        <label for="pfLabel">Option Label (shown to customer)</label>
+                        <input type="text" id="pfLabel" placeholder="e.g. Size, Design Size, Urgent Order" required>
+                    </div>
+                    <div class="field">
+                        <label for="pfType">Option Type</label>
+                        <select id="pfType" required>
+                            <option value="select">Size / Color List (customer picks one)</option>
+                            <option value="dimension">Dimension Calculator (Width x Height)</option>
+                            <option value="toggle">Extra Charge Switch (e.g. Urgent Order)</option>
+                            <option value="file">File Upload (e.g. Artwork)</option>
+                            <option value="text">Text Box (e.g. Notes)</option>
+                        </select>
+                    </div>
+                    <div class="field" id="pfPriceWrap">
+                        <label id="pfPriceLabel" for="pfPrice">Extra Charge (AED)</label>
+                        <input type="number" id="pfPrice" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="field">
+                        <label>&nbsp;</label>
+                        <div class="checkbox-row">
+                            <input type="checkbox" id="pfRequired">
+                            <label for="pfRequired" style="margin:0;">Customer must fill this in</label>
+                        </div>
+                    </div>
+                    <div style="grid-column: 1 / -1; display:flex; gap:0.8rem;">
+                        <button type="submit" class="btn btn-primary" id="pfSubmitBtn">Add Option</button>
+                        <button type="button" class="btn btn-secondary" id="pfCancelEdit" style="display:none;">Cancel Edit</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="panel">
+                <h3>Options on This Product</h3>
+                <table class="pm-table">
+                    <thead>
+                        <tr>
+                            <th>Label</th>
+                            <th>Type</th>
+                            <th>Required</th>
+                            <th>Charge</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pfTableBody">
+                        <tr><td colspan="5">Loading...</td></tr>
+                    </tbody>
+                </table>
+
+                <div class="subpanel" id="pfSubItemsPanel" style="display:none;">
+                    <h4 id="pfSubItemsTitle">Manage Choices</h4>
+
+                    <form class="pm-form" id="pfSubItemForm" style="grid-template-columns: repeat(4, 1fr); margin-bottom:1rem;">
+                        <div class="field" id="pfSubLabelWrap">
+                            <label for="pfSubLabel">Label</label>
+                            <input type="text" id="pfSubLabel" placeholder="e.g. Small, A4" required>
+                        </div>
+                        <div class="field" id="pfSubPriceWrap">
+                            <label for="pfSubPrice">Extra Charge (AED)</label>
+                            <input type="number" id="pfSubPrice" step="0.01" min="0" value="0">
+                        </div>
+                        <div class="field" id="pfSubWidthWrap" style="display:none;">
+                            <label for="pfSubWidth">Width</label>
+                            <input type="number" id="pfSubWidth" step="0.01" min="0">
+                        </div>
+                        <div class="field" id="pfSubHeightWrap" style="display:none;">
+                            <label for="pfSubHeight">Height</label>
+                            <input type="number" id="pfSubHeight" step="0.01" min="0">
+                        </div>
+                        <div class="field" id="pfSubUnitWrap" style="display:none;">
+                            <label for="pfSubUnit">Unit</label>
+                            <select id="pfSubUnit">
+                                <option value="cm">cm</option>
+                                <option value="mm">mm</option>
+                                <option value="inch">inch</option>
+                                <option value="ft">ft</option>
+                            </select>
+                        </div>
+                        <div style="grid-column: 1 / -1; display:flex; gap:0.8rem; margin-top:0.4rem;">
+                            <button type="submit" class="btn btn-primary btn-small" id="pfSubSubmitBtn">Add</button>
+                            <button type="button" class="btn btn-secondary btn-small" id="pfSubCloseBtn">Close</button>
+                        </div>
+                    </form>
+
+                    <table class="pm-table" id="pfSubTable">
+                        <thead>
+                            <tr>
+                                <th>Label</th>
+                                <th id="pfSubColHeader3">Charge / Size</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pfSubTableBody">
+                            <tr><td colspan="3">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </template>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../config/supabase-config.js"></script>
     <script>
@@ -528,7 +669,7 @@
         // Sidebar navigation
         // ------------------------------------------------------------
         const pageLabels = {
-            home: 'Home', printingmethods: 'Printing Methods', products: 'Products', categories: 'Categories',
+            home: 'Home', printingmethods: 'Printing Methods', products: 'Products', productfields: 'Product Options', categories: 'Categories',
             orders: 'Orders', customers: 'Customers', gallery: 'Gallery',
             homepage: 'Homepage Settings', contact: 'Contact Details',
             analytics: 'Analytics', settings: 'Settings'
@@ -561,6 +702,11 @@
                     document.getElementById('pageContent').innerHTML = '';
                     document.getElementById('pageContent').appendChild(tpl.content.cloneNode(true));
                     initProductsPage();
+                } else if (page === 'productfields') {
+                    const tpl = document.getElementById('productFieldsTemplate');
+                    document.getElementById('pageContent').innerHTML = '';
+                    document.getElementById('pageContent').appendChild(tpl.content.cloneNode(true));
+                    initProductFieldsPage();
                 } else {
                     document.getElementById('pageContent').innerHTML = `
                         <div class="placeholder-box">
@@ -1108,6 +1254,336 @@
             });
 
             document.getElementById('prodCancelEdit').addEventListener('click', prodResetForm);
+        }
+
+        // ------------------------------------------------------------
+        // Product Options (product_fields) page logic
+        // ------------------------------------------------------------
+        const pfState = { productId: null, fields: [], manageFieldId: null, manageFieldType: null, subEditId: null };
+
+        function pfShowMessage(text, type) {
+            const box = document.getElementById('pfMsg');
+            box.textContent = text;
+            box.className = type;
+            setTimeout(() => { box.style.display = 'none'; box.className = ''; }, 4000);
+        }
+
+        function pfSlugify(label) {
+            return label.toLowerCase().trim().replace(/[^a-z0-9]+/g, '_').replace(/(^_|_$)/g, '');
+        }
+
+        function pfTypeLabel(type) {
+            return {
+                select: 'Size / Color List',
+                dimension: 'Dimension Calculator',
+                toggle: 'Extra Charge Switch',
+                file: 'File Upload',
+                text: 'Text Box'
+            }[type] || type;
+        }
+
+        async function pfLoadProductOptions() {
+            const { data, error } = await window.db
+                .from('products')
+                .select('id, name')
+                .order('display_order', { ascending: true });
+
+            const select = document.getElementById('pfProductSelect');
+            select.innerHTML = '<option value="">-- Choose a product --</option>' +
+                (data || []).map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
+
+            if (error) pfShowMessage('Error loading products: ' + error.message, 'error');
+            if (!data || data.length === 0) pfShowMessage('You have no products yet. Add a product first.', 'error');
+        }
+
+        function pfUpdateFormForType() {
+            const type = document.getElementById('pfType').value;
+            const priceWrap = document.getElementById('pfPriceWrap');
+            const priceLabel = document.getElementById('pfPriceLabel');
+
+            if (type === 'toggle') {
+                priceWrap.style.display = '';
+                priceLabel.textContent = 'Extra Charge (AED)';
+            } else if (type === 'dimension') {
+                priceWrap.style.display = '';
+                priceLabel.textContent = 'Price per SQM (AED)';
+            } else {
+                priceWrap.style.display = 'none';
+            }
+        }
+
+        async function pfLoadFieldsForProduct(productId) {
+            const tbody = document.getElementById('pfTableBody');
+            tbody.innerHTML = '<tr><td colspan="5">Loading...</td></tr>';
+
+            const { data, error } = await window.db
+                .from('product_fields')
+                .select('*')
+                .eq('product_id', productId)
+                .order('display_order', { ascending: true });
+
+            if (error) {
+                tbody.innerHTML = `<tr><td colspan="5">Error loading: ${error.message}</td></tr>`;
+                return;
+            }
+
+            pfState.fields = data || [];
+
+            if (pfState.fields.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5">No options added yet. Use the form above to add one.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = pfState.fields.map(f => `
+                <tr>
+                    <td>${escapeHtml(f.field_label)}</td>
+                    <td><span class="field-type-badge">${pfTypeLabel(f.field_type)}</span></td>
+                    <td>${f.is_required ? 'Yes' : 'No'}</td>
+                    <td>${(f.field_type === 'toggle' || f.field_type === 'dimension') ? 'AED ' + Number(f.price_modifier).toFixed(2) : '-'}</td>
+                    <td>
+                        <div class="row-actions">
+                            ${(f.field_type === 'select' || f.field_type === 'dimension')
+                                ? `<button class="btn btn-secondary btn-small" data-action="manage" data-id="${f.id}">${f.field_type === 'select' ? 'Manage Choices' : 'Manage Presets'}</button>`
+                                : ''}
+                            <button class="btn btn-secondary btn-small" data-action="edit" data-id="${f.id}">Edit</button>
+                            <button class="btn btn-danger btn-small" data-action="delete" data-id="${f.id}">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            tbody.querySelectorAll('button[data-action]').forEach(btn => {
+                btn.addEventListener('click', () => pfHandleRowAction(btn));
+            });
+        }
+
+        async function pfHandleRowAction(btn) {
+            const id = btn.getAttribute('data-id');
+            const action = btn.getAttribute('data-action');
+            const field = pfState.fields.find(f => f.id === id);
+
+            if (action === 'edit') {
+                document.getElementById('pfEditId').value = field.id;
+                document.getElementById('pfLabel').value = field.field_label;
+                document.getElementById('pfType').value = field.field_type;
+                document.getElementById('pfType').disabled = true;
+                document.getElementById('pfPrice').value = field.price_modifier;
+                document.getElementById('pfRequired').checked = field.is_required;
+                pfUpdateFormForType();
+                document.getElementById('pfFormTitle').textContent = 'Edit Option';
+                document.getElementById('pfSubmitBtn').textContent = 'Save Changes';
+                document.getElementById('pfCancelEdit').style.display = 'inline-block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            if (action === 'delete') {
+                if (!confirm(`Delete "${field.field_label}"? Any choices/presets under it will also be deleted.`)) return;
+                const { error } = await window.db.from('product_fields').delete().eq('id', id);
+                if (error) { pfShowMessage('Error deleting: ' + error.message, 'error'); return; }
+                pfShowMessage('Option deleted.', 'success');
+                pfLoadFieldsForProduct(pfState.productId);
+                document.getElementById('pfSubItemsPanel').style.display = 'none';
+            }
+
+            if (action === 'manage') {
+                pfState.manageFieldId = field.id;
+                pfState.manageFieldType = field.field_type;
+                document.getElementById('pfSubItemsTitle').textContent =
+                    field.field_type === 'select' ? `Manage Choices for "${field.field_label}"` : `Manage Presets for "${field.field_label}"`;
+
+                const isSelect = field.field_type === 'select';
+                document.getElementById('pfSubPriceWrap').style.display = isSelect ? '' : 'none';
+                document.getElementById('pfSubWidthWrap').style.display = isSelect ? 'none' : '';
+                document.getElementById('pfSubHeightWrap').style.display = isSelect ? 'none' : '';
+                document.getElementById('pfSubUnitWrap').style.display = isSelect ? 'none' : '';
+                document.getElementById('pfSubColHeader3').textContent = isSelect ? 'Charge' : 'Size';
+
+                document.getElementById('pfSubItemsPanel').style.display = 'block';
+                pfSubResetForm();
+                pfLoadSubItems();
+                document.getElementById('pfSubItemsPanel').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        async function pfLoadSubItems() {
+            const tbody = document.getElementById('pfSubTableBody');
+            tbody.innerHTML = '<tr><td colspan="3">Loading...</td></tr>';
+
+            const { data, error } = await window.db
+                .from('product_field_options')
+                .select('*')
+                .eq('product_field_id', pfState.manageFieldId)
+                .order('display_order', { ascending: true });
+
+            if (error) {
+                tbody.innerHTML = `<tr><td colspan="3">Error loading: ${error.message}</td></tr>`;
+                return;
+            }
+
+            pfState.subItems = data || [];
+
+            if (pfState.subItems.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3">Nothing added yet.</td></tr>';
+                return;
+            }
+
+            const isSelect = pfState.manageFieldType === 'select';
+
+            tbody.innerHTML = pfState.subItems.map(item => `
+                <tr>
+                    <td>${escapeHtml(item.label)}</td>
+                    <td>${isSelect
+                        ? 'AED ' + Number(item.price_modifier).toFixed(2)
+                        : `${item.preset_width} x ${item.preset_height} ${item.preset_unit}`}</td>
+                    <td>
+                        <div class="row-actions">
+                            <button class="btn btn-secondary btn-small" data-subaction="edit" data-id="${item.id}">Edit</button>
+                            <button class="btn btn-danger btn-small" data-subaction="delete" data-id="${item.id}">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            tbody.querySelectorAll('button[data-subaction]').forEach(btn => {
+                btn.addEventListener('click', () => pfHandleSubAction(btn));
+            });
+        }
+
+        async function pfHandleSubAction(btn) {
+            const id = btn.getAttribute('data-id');
+            const action = btn.getAttribute('data-subaction');
+            const item = pfState.subItems.find(i => i.id === id);
+
+            if (action === 'edit') {
+                pfState.subEditId = item.id;
+                document.getElementById('pfSubLabel').value = item.label;
+                if (pfState.manageFieldType === 'select') {
+                    document.getElementById('pfSubPrice').value = item.price_modifier;
+                } else {
+                    document.getElementById('pfSubWidth').value = item.preset_width;
+                    document.getElementById('pfSubHeight').value = item.preset_height;
+                    document.getElementById('pfSubUnit').value = item.preset_unit;
+                }
+                document.getElementById('pfSubSubmitBtn').textContent = 'Save Changes';
+            }
+
+            if (action === 'delete') {
+                if (!confirm(`Delete "${item.label}"?`)) return;
+                const { error } = await window.db.from('product_field_options').delete().eq('id', id);
+                if (error) { pfShowMessage('Error deleting: ' + error.message, 'error'); return; }
+                pfLoadSubItems();
+            }
+        }
+
+        function pfSubResetForm() {
+            document.getElementById('pfSubItemForm').reset();
+            pfState.subEditId = null;
+            document.getElementById('pfSubSubmitBtn').textContent = 'Add';
+        }
+
+        function initProductFieldsPage() {
+            pfLoadProductOptions();
+
+            document.getElementById('pfProductSelect').addEventListener('change', (e) => {
+                pfState.productId = e.target.value;
+                document.getElementById('pfSubItemsPanel').style.display = 'none';
+                if (!pfState.productId) {
+                    document.getElementById('pfFieldsArea').style.display = 'none';
+                    return;
+                }
+                document.getElementById('pfFieldsArea').style.display = 'block';
+                pfFieldResetForm();
+                pfLoadFieldsForProduct(pfState.productId);
+            });
+
+            document.getElementById('pfType').addEventListener('change', pfUpdateFormForType);
+            pfUpdateFormForType();
+
+            document.getElementById('pfForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const editId = document.getElementById('pfEditId').value;
+                const field_label = document.getElementById('pfLabel').value.trim();
+                const field_type = document.getElementById('pfType').value;
+                const is_required = document.getElementById('pfRequired').checked;
+                const priceVal = parseFloat(document.getElementById('pfPrice').value) || 0;
+
+                if (!field_label) { pfShowMessage('Label is required.', 'error'); return; }
+
+                const submitBtn = document.getElementById('pfSubmitBtn');
+                submitBtn.disabled = true;
+
+                let error;
+                if (editId) {
+                    ({ error } = await window.db
+                        .from('product_fields')
+                        .update({ field_label, is_required, price_modifier: priceVal })
+                        .eq('id', editId));
+                } else {
+                    ({ error } = await window.db
+                        .from('product_fields')
+                        .insert({
+                            product_id: pfState.productId,
+                            field_key: pfSlugify(field_label),
+                            field_label,
+                            field_type,
+                            is_required,
+                            price_modifier: priceVal
+                        }));
+                }
+
+                submitBtn.disabled = false;
+
+                if (error) { pfShowMessage('Error saving: ' + error.message, 'error'); return; }
+
+                pfShowMessage(editId ? 'Option updated.' : 'Option added.', 'success');
+                pfFieldResetForm();
+                pfLoadFieldsForProduct(pfState.productId);
+            });
+
+            document.getElementById('pfCancelEdit').addEventListener('click', pfFieldResetForm);
+
+            document.getElementById('pfSubItemForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const label = document.getElementById('pfSubLabel').value.trim();
+                if (!label) { pfShowMessage('Label is required.', 'error'); return; }
+
+                const isSelect = pfState.manageFieldType === 'select';
+                const payload = { product_field_id: pfState.manageFieldId, label };
+
+                if (isSelect) {
+                    payload.price_modifier = parseFloat(document.getElementById('pfSubPrice').value) || 0;
+                } else {
+                    payload.preset_width = parseFloat(document.getElementById('pfSubWidth').value) || 0;
+                    payload.preset_height = parseFloat(document.getElementById('pfSubHeight').value) || 0;
+                    payload.preset_unit = document.getElementById('pfSubUnit').value;
+                }
+
+                let error;
+                if (pfState.subEditId) {
+                    ({ error } = await window.db.from('product_field_options').update(payload).eq('id', pfState.subEditId));
+                } else {
+                    ({ error } = await window.db.from('product_field_options').insert(payload));
+                }
+
+                if (error) { pfShowMessage('Error saving: ' + error.message, 'error'); return; }
+
+                pfSubResetForm();
+                pfLoadSubItems();
+            });
+
+            document.getElementById('pfSubCloseBtn').addEventListener('click', () => {
+                document.getElementById('pfSubItemsPanel').style.display = 'none';
+            });
+        }
+
+        function pfFieldResetForm() {
+            document.getElementById('pfForm').reset();
+            document.getElementById('pfEditId').value = '';
+            document.getElementById('pfType').disabled = false;
+            document.getElementById('pfFormTitle').textContent = 'Add a New Option';
+            document.getElementById('pfSubmitBtn').textContent = 'Add Option';
+            document.getElementById('pfCancelEdit').style.display = 'none';
+            pfUpdateFormForType();
         }
 
         checkAuth();
