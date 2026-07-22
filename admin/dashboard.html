@@ -227,6 +227,18 @@
     }
     .pm-form select:focus { outline: none; border-color: var(--metallic-blue); }
 
+    .pm-form input[type="file"] {
+        padding: 8px 0;
+        border: none;
+    }
+    .prod-thumb {
+        width: 46px; height: 46px;
+        border-radius: 8px;
+        object-fit: cover;
+        background: var(--light-gray);
+        display: block;
+    }
+
     @media (max-width: 900px) {
         .sidebar { transform: translateX(-100%); }
         .sidebar.open { transform: translateX(0); }
@@ -394,6 +406,72 @@
         </div>
     </template>
 
+    <!-- Template for the Products page (filled in by JS) -->
+    <template id="productsTemplate">
+        <div id="prodMsg"></div>
+
+        <div class="panel">
+            <h3 id="prodFormTitle">Add a New Product</h3>
+            <form class="pm-form" id="prodForm" style="grid-template-columns: 1fr 1fr; row-gap: 1rem;">
+                <input type="hidden" id="prodEditId" value="">
+                <div class="field">
+                    <label for="prodName">Product Name</label>
+                    <input type="text" id="prodName" placeholder="e.g. Custom DTF T-Shirt" required>
+                </div>
+                <div class="field">
+                    <label for="prodCategory">Category</label>
+                    <select id="prodCategory" required>
+                        <option value="">Select a category</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="prodPrice">Price per Unit (AED)</label>
+                    <input type="number" id="prodPrice" step="0.01" min="0" placeholder="e.g. 25.00" required>
+                </div>
+                <div class="field">
+                    <label for="prodMinQty">Minimum Order Quantity</label>
+                    <input type="number" id="prodMinQty" min="1" value="1" required>
+                </div>
+                <div class="field" style="grid-column: 1 / -1;">
+                    <label for="prodDescription">Description (optional)</label>
+                    <input type="text" id="prodDescription" placeholder="Short description shown to customers">
+                </div>
+                <div class="field">
+                    <label for="prodImage">Product Photo (optional)</label>
+                    <input type="file" id="prodImage" accept="image/*">
+                    <small id="prodExistingImageNote" style="color:#888; font-size:0.78rem; margin-top:0.3rem;"></small>
+                </div>
+                <div class="field">
+                    <label for="prodOrder">Display Order</label>
+                    <input type="number" id="prodOrder" value="0" min="0">
+                </div>
+                <div style="grid-column: 1 / -1; display:flex; gap:0.8rem;">
+                    <button type="submit" class="btn btn-primary" id="prodSubmitBtn">Add Product</button>
+                    <button type="button" class="btn btn-secondary" id="prodCancelEdit" style="display:none;">Cancel Edit</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="panel">
+            <h3>Existing Products</h3>
+            <table class="pm-table">
+                <thead>
+                    <tr>
+                        <th>Photo</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="prodTableBody">
+                    <tr><td colspan="6">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </template>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../config/supabase-config.js"></script>
     <script>
@@ -478,6 +556,11 @@
                     document.getElementById('pageContent').innerHTML = '';
                     document.getElementById('pageContent').appendChild(tpl.content.cloneNode(true));
                     initCategoriesPage();
+                } else if (page === 'products') {
+                    const tpl = document.getElementById('productsTemplate');
+                    document.getElementById('pageContent').innerHTML = '';
+                    document.getElementById('pageContent').appendChild(tpl.content.cloneNode(true));
+                    initProductsPage();
                 } else {
                     document.getElementById('pageContent').innerHTML = `
                         <div class="placeholder-box">
@@ -820,6 +903,211 @@
             });
 
             document.getElementById('catCancelEdit').addEventListener('click', catResetForm);
+        }
+
+        // ------------------------------------------------------------
+        // Products page logic
+        // ------------------------------------------------------------
+        function prodShowMessage(text, type) {
+            const box = document.getElementById('prodMsg');
+            box.textContent = text;
+            box.className = type;
+            setTimeout(() => { box.style.display = 'none'; box.className = ''; }, 4000);
+        }
+
+        async function prodLoadCategoryOptions() {
+            const { data, error } = await window.db
+                .from('categories')
+                .select('id, name')
+                .order('display_order', { ascending: true });
+
+            const select = document.getElementById('prodCategory');
+            const currentValue = select.value;
+            select.innerHTML = '<option value="">Select a category</option>' +
+                (data || []).map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
+            if (currentValue) select.value = currentValue;
+
+            if (error) {
+                prodShowMessage('Error loading categories: ' + error.message, 'error');
+            }
+            if (!data || data.length === 0) {
+                prodShowMessage('You have no categories yet. Please add a category first before adding products.', 'error');
+            }
+        }
+
+        async function prodLoadList() {
+            const tbody = document.getElementById('prodTableBody');
+            tbody.innerHTML = '<tr><td colspan="6">Loading...</td></tr>';
+
+            const { data, error } = await window.db
+                .from('products')
+                .select('*, categories(name)')
+                .order('display_order', { ascending: true });
+
+            if (error) {
+                tbody.innerHTML = `<tr><td colspan="6">Error loading: ${error.message}</td></tr>`;
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6">No products yet. Add your first one above.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map(row => `
+                <tr>
+                    <td>
+                        ${row.featured_image
+                            ? `<img class="prod-thumb" src="${row.featured_image}" alt="">`
+                            : `<div class="prod-thumb"></div>`}
+                    </td>
+                    <td>${escapeHtml(row.name)}</td>
+                    <td>${row.categories ? escapeHtml(row.categories.name) : '-'}</td>
+                    <td>AED ${Number(row.price_per_unit).toFixed(2)}</td>
+                    <td>
+                        <span class="badge ${row.is_visible ? 'badge-active' : 'badge-inactive'}">
+                            ${row.is_visible ? 'Visible' : 'Hidden'}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="row-actions">
+                            <button class="btn btn-secondary btn-small" data-action="edit" data-id="${row.id}">Edit</button>
+                            <button class="btn btn-secondary btn-small" data-action="toggle" data-id="${row.id}" data-visible="${row.is_visible}">
+                                ${row.is_visible ? 'Hide' : 'Show'}
+                            </button>
+                            <button class="btn btn-danger btn-small" data-action="delete" data-id="${row.id}">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            tbody.querySelectorAll('button[data-action]').forEach(btn => {
+                btn.addEventListener('click', () => prodHandleRowAction(btn, data));
+            });
+        }
+
+        async function prodHandleRowAction(btn, data) {
+            const id = btn.getAttribute('data-id');
+            const action = btn.getAttribute('data-action');
+            const row = data.find(r => r.id === id);
+
+            if (action === 'edit') {
+                document.getElementById('prodEditId').value = row.id;
+                document.getElementById('prodName').value = row.name;
+                document.getElementById('prodCategory').value = row.category_id || '';
+                document.getElementById('prodPrice').value = row.price_per_unit;
+                document.getElementById('prodMinQty').value = row.min_quantity;
+                document.getElementById('prodDescription').value = row.description || '';
+                document.getElementById('prodOrder').value = row.display_order;
+                document.getElementById('prodExistingImageNote').textContent = row.featured_image
+                    ? 'A photo is already set. Choose a new file only if you want to replace it.'
+                    : '';
+                document.getElementById('prodFormTitle').textContent = 'Edit Product';
+                document.getElementById('prodSubmitBtn').textContent = 'Save Changes';
+                document.getElementById('prodCancelEdit').style.display = 'inline-block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            if (action === 'toggle') {
+                const newVisible = !(btn.getAttribute('data-visible') === 'true');
+                const { error } = await window.db
+                    .from('products')
+                    .update({ is_visible: newVisible })
+                    .eq('id', id);
+                if (error) { prodShowMessage('Error updating status: ' + error.message, 'error'); return; }
+                prodShowMessage('Status updated.', 'success');
+                prodLoadList();
+            }
+
+            if (action === 'delete') {
+                if (!confirm(`Delete "${row.name}"? This cannot be undone.`)) return;
+                const { error } = await window.db
+                    .from('products')
+                    .delete()
+                    .eq('id', id);
+                if (error) { prodShowMessage('Error deleting: ' + error.message, 'error'); return; }
+                prodShowMessage('Product deleted.', 'success');
+                prodLoadList();
+            }
+        }
+
+        function prodResetForm() {
+            document.getElementById('prodForm').reset();
+            document.getElementById('prodEditId').value = '';
+            document.getElementById('prodMinQty').value = 1;
+            document.getElementById('prodOrder').value = 0;
+            document.getElementById('prodExistingImageNote').textContent = '';
+            document.getElementById('prodFormTitle').textContent = 'Add a New Product';
+            document.getElementById('prodSubmitBtn').textContent = 'Add Product';
+            document.getElementById('prodCancelEdit').style.display = 'none';
+            prodLoadList();
+        }
+
+        async function prodUploadImage(file) {
+            const cleanName = file.name.replace(/[^a-zA-Z0-9.]/g, '-');
+            const path = `${Date.now()}-${cleanName}`;
+            const { error: uploadError } = await window.db.storage
+                .from('products')
+                .upload(path, file);
+            if (uploadError) throw uploadError;
+            const { data } = window.db.storage.from('products').getPublicUrl(path);
+            return data.publicUrl;
+        }
+
+        function initProductsPage() {
+            prodLoadCategoryOptions();
+            prodLoadList();
+
+            document.getElementById('prodForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const editId = document.getElementById('prodEditId').value;
+                const name = document.getElementById('prodName').value.trim();
+                const category_id = document.getElementById('prodCategory').value;
+                const price_per_unit = parseFloat(document.getElementById('prodPrice').value);
+                const min_quantity = parseInt(document.getElementById('prodMinQty').value, 10) || 1;
+                const description = document.getElementById('prodDescription').value.trim();
+                const display_order = parseInt(document.getElementById('prodOrder').value, 10) || 0;
+                const fileInput = document.getElementById('prodImage');
+                const file = fileInput.files[0];
+
+                if (!name) { prodShowMessage('Product name is required.', 'error'); return; }
+                if (!category_id) { prodShowMessage('Please select a category.', 'error'); return; }
+                if (isNaN(price_per_unit)) { prodShowMessage('Please enter a valid price.', 'error'); return; }
+
+                const submitBtn = document.getElementById('prodSubmitBtn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = file ? 'Uploading photo...' : 'Saving...';
+
+                try {
+                    let featured_image;
+                    if (file) {
+                        featured_image = await prodUploadImage(file);
+                    }
+
+                    const payload = { name, category_id, price_per_unit, min_quantity, description, display_order };
+                    if (featured_image) payload.featured_image = featured_image;
+
+                    let error;
+                    if (editId) {
+                        ({ error } = await window.db.from('products').update(payload).eq('id', editId));
+                    } else {
+                        payload.price = price_per_unit; // keep legacy "price" column in sync
+                        ({ error } = await window.db.from('products').insert(payload));
+                    }
+
+                    if (error) throw error;
+
+                    prodShowMessage(editId ? 'Product updated.' : 'Product added.', 'success');
+                    prodResetForm();
+                } catch (err) {
+                    prodShowMessage('Error saving product: ' + err.message, 'error');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = editId ? 'Save Changes' : 'Add Product';
+                }
+            });
+
+            document.getElementById('prodCancelEdit').addEventListener('click', prodResetForm);
         }
 
         checkAuth();
