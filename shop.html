@@ -4,10 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Of Janu Print | FAB Order Page</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Sinhala:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+    <title>Janu Print | FAB Order Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Sinhala:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -17,8 +15,11 @@
             --gold-gradient: linear-gradient(135deg, #b8860b 0%, #d4af37 50%, #f6d365 100%);
             --white: #ffffff;
             --light-gray: #f8f9fa;
+            --panel-gray: #eef3f6;
             --text-dark: #333333;
             --text-light: #666666;
+            --danger: #c0392b;
+            --success: #138a4f;
         }
 
         * {
@@ -35,7 +36,19 @@
             font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif;
             line-height: 1.6;
             color: var(--text-dark);
-            background-color: var(--light-gray);
+            background: var(--light-gray);
+            min-height: 100vh;
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
         }
 
         .container {
@@ -44,32 +57,129 @@
             padding: 2rem;
         }
 
-        h1 {
-            text-align: center;
-            color: var(--metallic-blue);
-            font-size: 2.5rem;
-            margin-bottom: 3rem;
+        .top-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.8rem;
+        }
+
+        .back-to-home,
+        .refresh-button,
+        .modal-secondary-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.7rem;
+            border: none;
+            border-radius: 50px;
             font-weight: 700;
-            font-family: 'Noto Sans Sinhala', 'Poppins', sans-serif;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+
+        .back-to-home {
+            background: var(--gold-gradient);
+            color: var(--metallic-blue-dark);
+            padding: 0.9rem 1.7rem;
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.28);
+        }
+
+        .refresh-button,
+        .modal-secondary-button {
+            background: var(--white);
+            color: var(--metallic-blue-dark);
+            padding: 0.75rem 1.2rem;
+            border: 1px solid rgba(30, 69, 99, 0.12);
+        }
+
+        .back-to-home:hover,
+        .refresh-button:hover,
+        .modal-secondary-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(30, 69, 99, 0.12);
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 2.2rem;
+        }
+
+        .page-header h1 {
+            color: var(--metallic-blue-dark);
+            font-size: clamp(2rem, 5vw, 3.4rem);
+            line-height: 1.1;
+            font-weight: 700;
+            margin-bottom: 0.7rem;
+        }
+
+        .page-header h1 span {
+            color: var(--metallic-blue);
+        }
+
+        .page-header p {
+            color: var(--text-light);
+            max-width: 680px;
+            margin: 0 auto;
+            font-size: 1rem;
+        }
+
+        .status-box {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--metallic-blue);
+            box-shadow: 0 8px 24px rgba(30, 69, 99, 0.07);
+            color: var(--text-light);
+        }
+
+        .status-box.error {
+            border-left-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .category-filter {
+            display: flex;
+            gap: 0.7rem;
+            overflow-x: auto;
+            padding: 0.2rem 0 1.2rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .category-button {
+            flex: 0 0 auto;
+            border: 1px solid rgba(30, 69, 99, 0.14);
+            background: var(--white);
+            color: var(--metallic-blue-dark);
+            padding: 0.75rem 1rem;
+            border-radius: 50px;
+            font-weight: 700;
+            transition: 0.25s ease;
+        }
+
+        .category-button.active,
+        .category-button:hover {
+            background: var(--metallic-blue-dark);
+            color: var(--white);
         }
 
         .main-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
         }
 
         .item-card {
             background: var(--white);
             border-radius: 16px;
-            padding: 2rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.35s cubic-bezier(.22, .61, .36, 1);
-            border: none;
-            position: relative;
             overflow: hidden;
+            border: none;
+            text-align: left;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            position: relative;
         }
 
         .item-card::before {
@@ -80,78 +190,134 @@
             right: 0;
             height: 4px;
             background: var(--gold-gradient);
-            border-radius: 16px 16px 0 0;
             transform: scaleX(0);
             transform-origin: left;
-            transition: transform 0.35s ease;
+            transition: transform 0.3s ease;
+            z-index: 2;
+        }
+
+        .item-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 45px rgba(44, 95, 141, 0.18);
         }
 
         .item-card:hover::before {
             transform: scaleX(1);
         }
 
-        .item-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 50px rgba(44, 95, 141, 0.18);
+        .product-photo {
+            width: 100%;
+            aspect-ratio: 16 / 11;
+            background: linear-gradient(135deg, rgba(0, 195, 221, 0.12), rgba(212, 175, 55, 0.16));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--metallic-blue);
+            font-size: 3rem;
         }
 
-        .item-card i {
-            font-size: 3.5rem;
-            color: var(--metallic-blue);
-            margin-bottom: 1rem;
-            transition: 0.3s;
+        .product-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
             display: block;
         }
 
+        .product-content {
+            padding: 1.2rem;
+        }
+
+        .product-category {
+            color: var(--gold-accent);
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0;
+            margin-bottom: 0.4rem;
+        }
+
         .item-card h3 {
-            margin: 1rem 0 0.5rem 0;
-            font-size: 1.2rem;
-            color: var(--metallic-blue);
-            font-weight: 600;
-            font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif;
+            color: var(--metallic-blue-dark);
+            font-size: 1.15rem;
+            line-height: 1.3;
+            margin-bottom: 0.5rem;
         }
 
         .item-card p {
             color: var(--text-light);
-            font-size: 0.95rem;
-            margin: 0;
+            font-size: 0.92rem;
+            min-height: 2.7rem;
         }
 
-        /* --- Popup / Modal --- */
+        .product-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .price {
+            color: var(--metallic-blue-dark);
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+
+        .order-button {
+            border: none;
+            background: var(--gold-gradient);
+            color: var(--metallic-blue-dark);
+            border-radius: 50px;
+            padding: 0.7rem 1rem;
+            font-weight: 700;
+            transition: 0.25s ease;
+            white-space: nowrap;
+        }
+
+        .order-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            color: var(--text-light);
+            box-shadow: 0 8px 24px rgba(30, 69, 99, 0.07);
+        }
+
         .modal-overlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
             backdrop-filter: blur(4px);
             z-index: 1000;
-            transition: all 0.3s ease;
         }
 
         .modal {
             display: none;
             position: fixed;
-            top: 50%;
-            left: 50%;
+            inset: 50% auto auto 50%;
             transform: translate(-50%, -50%);
             background: var(--white);
             color: var(--text-dark);
-            width: 90%;
-            max-width: 500px;
-            padding: 2.5rem;
+            width: min(94vw, 720px);
+            max-height: 92vh;
+            overflow-y: auto;
             border-radius: 18px;
             z-index: 1001;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-            animation: popUp 0.3s ease-out;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
             border-top: 4px solid var(--metallic-blue);
+            animation: popUp 0.25s ease-out;
         }
 
         @keyframes popUp {
             from {
-                transform: translate(-50%, -40%);
+                transform: translate(-50%, -45%);
                 opacity: 0;
             }
 
@@ -161,36 +327,119 @@
             }
         }
 
-        .modal h2 {
+        .modal-inner {
+            padding: 1.7rem;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            font-size: 1.6rem;
+            cursor: pointer;
+            color: var(--text-light);
+            background: none;
+            border: none;
+            transition: 0.25s ease;
+            width: 36px;
+            height: 36px;
+        }
+
+        .close-btn:hover {
             color: var(--metallic-blue);
-            margin-top: 0;
-            border-bottom: 2px solid var(--light-gray);
-            padding-bottom: 1rem;
-            font-size: 1.5rem;
-            font-weight: 600;
+            transform: rotate(90deg);
+        }
+
+        .modal-product {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 1rem;
+            align-items: center;
+            padding-right: 2.2rem;
+            margin-bottom: 1.4rem;
+        }
+
+        .modal-product-photo {
+            width: 140px;
+            aspect-ratio: 1;
+            border-radius: 14px;
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(0, 195, 221, 0.12), rgba(212, 175, 55, 0.16));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--metallic-blue);
+            font-size: 2.4rem;
+        }
+
+        .modal-product-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .modal h2 {
+            color: var(--metallic-blue-dark);
+            font-size: 1.45rem;
+            line-height: 1.2;
+            margin-bottom: 0.35rem;
+        }
+
+        .modal-description {
+            color: var(--text-light);
+            font-size: 0.92rem;
+        }
+
+        .form-section {
+            background: var(--panel-gray);
+            border-radius: 14px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .form-section h3 {
+            color: var(--metallic-blue-dark);
+            font-size: 1rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.9rem;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
         }
 
         label {
-            display: block;
-            margin-top: 1.2rem;
-            font-weight: 600;
-            font-size: 0.95rem;
+            font-weight: 700;
             color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+
+        .required-mark {
+            color: var(--danger);
         }
 
         select,
         input,
         textarea {
             width: 100%;
-            padding: 12px 15px;
-            margin-top: 8px;
-            border: 2px solid var(--light-gray);
+            padding: 11px 13px;
+            border: 2px solid transparent;
             border-radius: 10px;
-            font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
             background: var(--white);
             color: var(--text-dark);
+            transition: 0.25s ease;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
         }
 
         select:focus,
@@ -201,166 +450,123 @@
             box-shadow: 0 0 0 3px rgba(0, 195, 221, 0.1);
         }
 
+        .choice-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.55rem;
+        }
+
+        .choice-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            background: var(--white);
+            border: 1px solid rgba(30, 69, 99, 0.12);
+            border-radius: 50px;
+            padding: 0.65rem 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .choice-pill input {
+            width: auto;
+            margin: 0;
+        }
+
+        .dimension-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.7rem;
+        }
+
+        .field-help {
+            color: var(--text-light);
+            font-size: 0.78rem;
+        }
+
+        .price-panel {
+            background: linear-gradient(135deg, rgba(0, 195, 221, 0.09), rgba(212, 175, 55, 0.12));
+            border-left: 4px solid var(--gold-accent);
+        }
+
+        .price-line {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            color: var(--text-light);
+            margin: 0.35rem 0;
+        }
+
+        .price-line strong,
+        .total-price {
+            color: var(--metallic-blue-dark);
+            font-weight: 700;
+        }
+
+        .total-price {
+            font-size: 1.35rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
         .btn-send {
+            flex: 1;
             background: var(--gold-gradient);
             color: var(--metallic-blue-dark);
             border: none;
-            width: 100%;
-            padding: 16px 2rem;
+            padding: 15px 1rem;
             border-radius: 50px;
             font-weight: 700;
-            margin-top: 1.5rem;
-            cursor: pointer;
-            font-size: 1.05rem;
-            display: flex;
+            font-size: 1rem;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3),
-                inset -1px -1px 3px rgba(0, 0, 0, 0.1),
-                inset 1px 1px 3px rgba(255, 255, 255, 0.5);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .btn-send::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            transition: 0.5s;
+            gap: 0.6rem;
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+            transition: 0.25s ease;
         }
 
         .btn-send:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(212, 175, 55, 0.5),
-                inset -1px -1px 3px rgba(0, 0, 0, 0.15),
-                inset 1px 1px 3px rgba(255, 255, 255, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(212, 175, 55, 0.45);
         }
 
-        .btn-send:hover::before {
-            left: 100%;
+        .btn-send:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
-        /* --- Bank Details Section (Initially Hidden) --- */
-        #bankDetails {
+        .form-message {
             display: none;
-            background: linear-gradient(135deg, rgba(0, 195, 221, 0.08) 0%, rgba(212, 175, 55, 0.08) 100%);
-            padding: 1.5rem;
+            margin-top: 1rem;
+            padding: 0.9rem 1rem;
             border-radius: 12px;
-            margin-top: 1.5rem;
-            border-left: 4px solid var(--metallic-blue);
-            font-size: 0.95rem;
-        }
-
-        #bankDetails h4 {
-            margin: 0 0 0.8rem 0;
-            color: var(--metallic-blue);
-            font-size: 1rem;
+            background: rgba(19, 138, 79, 0.1);
+            color: var(--success);
             font-weight: 600;
         }
 
-        #bankDetails p {
-            color: var(--text-dark);
-            margin: 0.5rem 0;
-            line-height: 1.6;
+        .form-message.error {
+            background: rgba(192, 57, 43, 0.1);
+            color: var(--danger);
         }
 
-        .close-btn {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-light);
-            transition: all 0.3s ease;
-            background: none;
-            border: none;
-        }
-
-        .close-btn:hover {
-            color: var(--metallic-blue);
-            transform: rotate(90deg);
-        }
-
-        /* ── Back to Home Button ── */
-        .back-to-home {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.7rem;
-            background: var(--gold-gradient);
-            color: var(--metallic-blue-dark);
-            padding: 0.9rem 2rem;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3),
-                inset -1px -1px 3px rgba(0, 0, 0, 0.1),
-                inset 1px 1px 3px rgba(255, 255, 255, 0.5);
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 2rem;
-            border: none;
-            cursor: pointer;
-            font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif;
-        }
-
-        .back-to-home::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            transition: 0.5s;
-        }
-
-        .back-to-home:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(212, 175, 55, 0.5),
-                inset -1px -1px 3px rgba(0, 0, 0, 0.15),
-                inset 1px 1px 3px rgba(255, 255, 255, 0.6);
-        }
-
-        .back-to-home:hover::before {
-            left: 100%;
-        }
-
-        .back-to-home i {
-            font-size: 1.1rem;
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 1.8rem;
-            }
-
-            .modal {
-                padding: 1.5rem;
-            }
-        }
-
-        /* ── WhatsApp Floating Button ── */
         .whatsapp-float {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, #25D366 0%, #20BA58 100%);
+            bottom: 28px;
+            right: 28px;
+            width: 66px;
+            height: 66px;
+            background: linear-gradient(135deg, #25d366 0%, #20ba58 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
             z-index: 999;
             box-shadow: 0 12px 35px rgba(37, 211, 102, 0.4);
             transition: all 0.3s ease;
@@ -368,315 +574,677 @@
         }
 
         .whatsapp-float:hover {
-            transform: scale(1.1);
-            box-shadow: 0 15px 50px rgba(37, 211, 102, 0.6);
+            transform: scale(1.08);
         }
 
         .whatsapp-float i {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             color: var(--white);
-            animation: heartBeat 1.3s infinite;
         }
 
-        @keyframes heartBeat {
-            0% {
-                transform: scale(1);
+        @media (max-width: 760px) {
+            .container {
+                padding: 1rem;
             }
 
-            14% {
-                transform: scale(1.3);
+            .top-actions {
+                align-items: stretch;
+                flex-direction: column;
             }
 
-            28% {
-                transform: scale(1);
+            .page-header {
+                text-align: left;
             }
 
-            42% {
-                transform: scale(1.3);
+            .modal-product,
+            .form-grid,
+            .dimension-row {
+                grid-template-columns: 1fr;
             }
 
-            70% {
-                transform: scale(1);
-            }
-        }
-
-        /* ── Animated Text Banner ── */
-        .whatsapp-text-banner {
-            position: fixed;
-            bottom: 110px;
-            right: -500px;
-            background: var(--gold-gradient);
-            color: var(--metallic-blue-dark);
-            padding: 12px 25px;
-            border-radius: 30px 0 0 30px;
-            font-weight: 700;
-            font-size: 0.95rem;
-            z-index: 9999;
-            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
-            overflow: visible;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            white-space: nowrap;
-            animation: slideFromButton 12s ease-in-out infinite;
-        }
-
-        @keyframes slideFromButton {
-            0% {
-                right: -500px;
-                opacity: 0;
+            .modal-product {
+                padding-right: 2.2rem;
             }
 
-            5% {
-                right: 100px;
-                opacity: 1;
+            .modal-product-photo {
+                width: 100%;
+                aspect-ratio: 16 / 9;
             }
 
-            95% {
-                right: auto;
-                left: 0;
-                opacity: 1;
+            .modal-actions {
+                flex-direction: column;
             }
 
-            100% {
-                right: auto;
-                left: -500px;
-                opacity: 0;
-            }
-        }
-
-        @media (max-width: 768px) {
             .whatsapp-float {
-                bottom: 20px;
-                right: 20px;
-                width: 60px;
-                height: 60px;
-            }
-
-            .whatsapp-float i {
-                font-size: 2rem;
-            }
-
-            .whatsapp-text-banner {
-                bottom: 90px;
-                font-size: 0.8rem;
-                padding: 10px 20px;
-                animation: slideFromButton 12s ease-in-out infinite;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .whatsapp-text-banner {
-                display: none;
+                width: 58px;
+                height: 58px;
+                right: 18px;
+                bottom: 18px;
             }
         }
     </style>
 </head>
 
 <body>
-
     <div class="container">
-        <button type="button" class="back-to-home" onclick="goBack()">
-            <i class="fas fa-arrow-left"></i> Back to Home
-        </button>
-        <h1><i class="fas fa-print"></i> Of Janu Print | FAB Order Page</h1>
-
-        <div class="main-grid">
-            <div class="item-card" onclick="openOrder('T-Shirt')">
-                <i class="fas fa-tshirt"></i>
-                <h3>T-Shirts</h3>
-                <p>GSM, Custom Colors</p>
-            </div>
-
-            <div class="item-card" onclick="openOrder('Mug')">
-                <i class="fas fa-mug-hot"></i>
-                <h3>Mug Printing</h3>
-                <p>Magic, White, Black</p>
-            </div>
-
-            <div class="item-card" onclick="openOrder('Cap')">
-                <i class="fas fa-hat-cowboy"></i>
-                <h3>Caps</h3>
-                <p>Snapback, Trucker, Mesh</p>
-            </div>
-
-            <div class="item-card" onclick="openOrder('Carton')">
-                <i class="fas fa-box-open"></i>
-                <h3>Packaging Carton</h3>
-                <p>Custom Size, Ply Type</p>
-            </div>
-
-            <div class="item-card" onclick="openOrder('NamePlate')">
-                <i class="fas fa-id-card"></i>
-                <h3>Name Plates</h3>
-                <p>Acrylic, Steel, Aluminum</p>
-            </div>
-
-            <div class="item-card" onclick="openOrder('PlasticBag')">
-                <i class="fas fa-shopping-bag"></i>
-                <h3>Plastic Bags</h3>
-                <p>T-shirt, Loop Handle</p>
-            </div>
-
-            <div class="item-card" onclick="openOrder('WristBand')">
-                <i class="fas fa-band-aid"></i>
-                <h3>Wrist Bands</h3>
-                <p>Event, Silicone, Tyvek</p>
-            </div>
-
-            <div class="item-card" onclick="openOrder('Bottle')">
-                <i class="fas fa-bottle-water"></i>
-                <h3>Bottle Labels</h3>
-                <p>Water, Juice, Spray</p>
-            </div>
+        <div class="top-actions">
+            <button type="button" class="back-to-home" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </button>
+            <button type="button" class="refresh-button" onclick="loadShopData()">
+                <i class="fas fa-rotate-right"></i> Refresh Products
+            </button>
         </div>
+
+        <header class="page-header">
+            <h1>Janu Print <span>| FAB</span> Order Page</h1>
+            <p>Choose a product, select the options created in the admin dashboard, and send your order request.</p>
+        </header>
+
+        <div id="statusBox" class="status-box">Loading products from the dashboard...</div>
+        <div id="categoryFilter" class="category-filter"></div>
+        <main id="productGrid" class="main-grid"></main>
     </div>
 
     <div class="modal-overlay" id="overlay" onclick="closeOrder()"></div>
-    <div class="modal" id="orderModal">
-        <span class="close-btn" onclick="closeOrder()">&times;</span>
-        <h2 id="modalTitle">Order Item</h2>
-        <div id="modalForm">
-        </div>
+    <div class="modal" id="orderModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <button type="button" class="close-btn" onclick="closeOrder()" aria-label="Close">&times;</button>
+        <div class="modal-inner">
+            <div class="modal-product">
+                <div id="modalPhoto" class="modal-product-photo"><i class="fas fa-print"></i></div>
+                <div>
+                    <h2 id="modalTitle">Order Product</h2>
+                    <p id="modalDescription" class="modal-description"></p>
+                </div>
+            </div>
 
-        <button class="btn-send" onclick="sendWhatsApp()">
-            <i class="fab fa-whatsapp"></i> Send to WhatsApp
-        </button>
+            <form id="orderForm">
+                <div class="form-section">
+                    <h3>Your Details</h3>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="customerName">Name <span class="required-mark">*</span></label>
+                            <input type="text" id="customerName" required placeholder="Your name">
+                        </div>
+                        <div class="field">
+                            <label for="customerPhone">Phone / WhatsApp <span class="required-mark">*</span></label>
+                            <input type="tel" id="customerPhone" required placeholder="+971...">
+                        </div>
+                        <div class="field">
+                            <label for="customerEmail">Email</label>
+                            <input type="email" id="customerEmail" placeholder="you@example.com">
+                        </div>
+                        <div class="field">
+                            <label for="customerCountry">Country</label>
+                            <input type="text" id="customerCountry" placeholder="UAE / Sri Lanka / Other">
+                        </div>
+                    </div>
+                </div>
 
-        <div id="bankDetails">
-            <h4 style="margin:0; color:var(--gold-accent);">🏦 Payment Information</h4>
-            <p style="font-size:0.95rem; margin:10px 0; font-weight: 500;">
-                Please ask for bank details via WhatsApp.
-            </p>
-            <small>*ගෙවීම් තොරතුරු ලබා ගැනීමට කරුණාකර WhatsApp පණිවිඩයක් එවන්න.</small>
+                <div class="form-section">
+                    <h3>Order Details</h3>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="quantityInput">Quantity <span class="required-mark">*</span></label>
+                            <input type="number" id="quantityInput" min="1" value="1" required>
+                            <span id="minimumQuantityNote" class="field-help"></span>
+                        </div>
+                        <div class="field">
+                            <label for="deliveryOption">Delivery Option</label>
+                            <select id="deliveryOption">
+                                <option value="pickup">Pickup</option>
+                                <option value="delivery">Delivery</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="deliveryDate">Needed Date</label>
+                            <input type="date" id="deliveryDate">
+                        </div>
+                        <div class="field">
+                            <label for="paymentMethod">Payment Method</label>
+                            <select id="paymentMethod">
+                                <option value="bank_deposit">Bank Deposit</option>
+                                <option value="online_transfer">Online Transfer</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="dynamicOptions" class="form-section">
+                    <h3>Product Options</h3>
+                    <div id="optionsArea"></div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Extra Notes</h3>
+                    <textarea id="specialInstructions" placeholder="Tell us anything important about your design, size, deadline, delivery address, or artwork."></textarea>
+                </div>
+
+                <div class="form-section price-panel">
+                    <h3>Estimated Price</h3>
+                    <div class="price-line"><span>Base price</span><strong id="basePriceText">AED 0.00</strong></div>
+                    <div class="price-line"><span>Options / extras</span><strong id="extrasPriceText">AED 0.00</strong></div>
+                    <div class="price-line"><span>Quantity</span><strong id="quantityText">1</strong></div>
+                    <div class="price-line"><span>Total estimate</span><strong id="totalPriceText" class="total-price">AED 0.00</strong></div>
+                    <p class="field-help">Final price may change after artwork, material, and production details are checked.</p>
+                </div>
+
+                <div id="formMessage" class="form-message"></div>
+
+                <div class="modal-actions">
+                    <button type="submit" class="btn-send" id="submitOrderButton">
+                        <i class="fab fa-whatsapp"></i> Send Order Request
+                    </button>
+                    <button type="button" class="modal-secondary-button" onclick="closeOrder()">Cancel</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- WhatsApp Floating Button with Text Banner -->
     <a href="https://wa.me/971524186102" target="_blank" class="whatsapp-float" title="Chat on WhatsApp">
         <i class="fab fa-whatsapp"></i>
     </a>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
     <script>
-        function goBack(event) {
-            // සයිට් එක අලුත් ටැබ් එකක නම් ඕපන් වුණේ, ඒක close කරන්න උත්සාහ කරයි
+        const WHATSAPP_NUMBER = '971524186102';
+        const state = {
+            categories: [],
+            products: [],
+            fieldsByProduct: {},
+            optionsByField: {},
+            activeCategoryId: 'all',
+            activeProduct: null
+        };
+
+        const statusBox = document.getElementById('statusBox');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const productGrid = document.getElementById('productGrid');
+        const orderForm = document.getElementById('orderForm');
+        const optionsArea = document.getElementById('optionsArea');
+        const formMessage = document.getElementById('formMessage');
+
+        function goBack() {
             if (window.history.length <= 1) {
-                window.close();
-            }
-            // නැත්නම් කෙලින්ම index.html එකට යයි
-            else {
+                window.location.href = 'index.html';
+            } else {
                 window.history.back();
             }
         }
 
-        let currentCategory = '';
+        function escapeHtml(value) {
+            const div = document.createElement('div');
+            div.textContent = value == null ? '' : String(value);
+            return div.innerHTML;
+        }
 
-        const configs = {
-            'T-Shirt': `
-            <label>Select GSM</label>
-            <select id="field1"><option>180 GSM</option><option>200 GSM</option><option>240 GSM</option></select>
-            <label>Color</label>
-            <input type="text" id="field2" placeholder="e.g. Black, White, Red">
-            <label>Material</label>
-            <select id="field3"><option>Cotton</option><option>Dry Fit</option><option>Poly Cotton</option></select>
-            <label>Quantity</label>
-            <input type="number" id="field4" value="1">`,
+        function money(value) {
+            return `AED ${Number(value || 0).toFixed(2)}`;
+        }
 
-            'Mug': `
-            <label>Mug Type</label>
-            <select id="field1"><option>Normal White</option><option>Magic Mug</option><option>Color Inside</option><option>Full Black</option></select>
-            <label>Color</label>
-            <input type="text" id="field2" placeholder="Specify color">
-            <label>Quantity</label>
-            <input type="number" id="field3" value="1">`,
+        function showStatus(message, type = '') {
+            statusBox.textContent = message;
+            statusBox.className = type ? `status-box ${type}` : 'status-box';
+            statusBox.style.display = message ? 'block' : 'none';
+        }
 
-            'Cap': `
-            <label>Cap Type</label>
-            <select id="field1"><option>Baseball</option><option>Snapback</option><option>Trucker</option><option>Sports</option></select>
-            <label>Print Type</label>
-            <select id="field2"><option>Embroidery</option><option>Logo Print</option><option>3D Puff</option></select>
-            <label>Quantity</label>
-            <input type="number" id="field3" value="1">`,
+        function productImage(product) {
+            return product.featured_image || (Array.isArray(product.images) && product.images.length ? product.images[0] : '');
+        }
 
-            'Carton': `
-            <label>Carton Type</label>
-            <input type="text" id="field1" placeholder="e.g. Pizza Box, RSC">
-            <label>Board Type</label>
-            <select id="field2"><option>3 Ply</option><option>5 Ply</option><option>Double Wall</option></select>
-            <label>Printing</label>
-            <select id="field3"><option>Plain</option><option>1 Color</option><option>Full Color</option></select>
-            <label>Quantity</label>
-            <input type="number" id="field4" value="50">`,
+        function productPrice(product) {
+            return Number(product.price_per_unit || product.price || 0);
+        }
 
-            'NamePlate': `
-            <label>Plate Type</label>
-            <select id="field1"><option>Office</option><option>Door</option><option>Table</option></select>
-            <label>Material</label>
-            <select id="field2"><option>Acrylic</option><option>Steel</option><option>Aluminum</option></select>
-            <label>Quantity</label>
-            <input type="number" id="field3" value="1">`,
+        async function loadShopData() {
+            if (!window.db) {
+                showStatus('Supabase is not connected. Please check supabase-config.js.', 'error');
+                return;
+            }
 
-            'PlasticBag': `
-            <label>Bag Type</label>
-            <select id="field1"><option>T-Shirt Bag</option><option>Loop Handle</option><option>Garbage Bag</option></select>
-            <label>Thickness</label>
-            <select id="field2"><option>20 Micron</option><option>40 Micron</option><option>50+ Micron</option></select>
-            <label>Quantity</label>
-            <input type="number" id="field3" value="500">`,
+            showStatus('Loading products from the dashboard...');
+            productGrid.innerHTML = '';
 
-            'WristBand': `
-            <label>Band Type</label>
-            <select id="field1"><option>Silicone</option><option>Fabric</option><option>Tyvek</option></select>
-            <label>Print Type</label>
-            <select id="field2"><option>Debossed</option><option>Printed Logo</option></select>
-            <label>Quantity</label>
-            <input type="number" id="field3" value="50">`,
+            try {
+                const [categoriesResult, productsResult, fieldsResult, optionsResult] = await Promise.all([
+                    window.db.from('categories').select('*').eq('is_visible', true).order('display_order', { ascending: true }),
+                    window.db.from('products').select('*, categories(id, name)').eq('is_visible', true).order('display_order', { ascending: true }),
+                    window.db.from('product_fields').select('*').eq('is_enabled', true).order('display_order', { ascending: true }),
+                    window.db.from('product_field_options').select('*').order('display_order', { ascending: true })
+                ]);
 
-            'Bottle': `
-            <label>Bottle Type</label>
-            <select id="field1"><option>Water</option><option>Juice</option><option>Spray</option></select>
-            <label>Capacity</label>
-            <input type="text" id="field2" placeholder="e.g. 500ml, 1L">
-            <label>Label</label>
-            <select id="field3"><option>No Print</option><option>Sticker Label</option><option>Screen Print</option></select>
-            <label>Quantity</label>
-            <input type="number" id="field4" value="100">`
-        };
+                const firstError = categoriesResult.error || productsResult.error || fieldsResult.error || optionsResult.error;
+                if (firstError) throw firstError;
 
-        function openOrder(cat) {
-            currentCategory = cat;
-            document.getElementById('modalTitle').innerText = 'Order ' + cat;
-            document.getElementById('modalForm').innerHTML = configs[cat];
+                state.categories = categoriesResult.data || [];
+                state.products = productsResult.data || [];
+                state.fieldsByProduct = groupBy(fieldsResult.data || [], 'product_id');
+                state.optionsByField = groupBy(optionsResult.data || [], 'product_field_id');
+
+                renderCategories();
+                renderProducts();
+                showStatus(state.products.length ? '' : 'No visible products yet. Add products in the dashboard first.');
+            } catch (error) {
+                showStatus(`Could not load shop data: ${error.message}`, 'error');
+            }
+        }
+
+        function groupBy(items, key) {
+            return items.reduce((groups, item) => {
+                const groupKey = item[key];
+                if (!groups[groupKey]) groups[groupKey] = [];
+                groups[groupKey].push(item);
+                return groups;
+            }, {});
+        }
+
+        function renderCategories() {
+            const buttons = [
+                `<button type="button" class="category-button ${state.activeCategoryId === 'all' ? 'active' : ''}" data-category="all">All Products</button>`
+            ];
+
+            state.categories.forEach(category => {
+                buttons.push(`
+                    <button type="button" class="category-button ${state.activeCategoryId === category.id ? 'active' : ''}" data-category="${category.id}">
+                        ${escapeHtml(category.name)}
+                    </button>
+                `);
+            });
+
+            categoryFilter.innerHTML = buttons.join('');
+            categoryFilter.querySelectorAll('.category-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    state.activeCategoryId = button.dataset.category;
+                    renderCategories();
+                    renderProducts();
+                });
+            });
+        }
+
+        function renderProducts() {
+            const visibleProducts = state.activeCategoryId === 'all'
+                ? state.products
+                : state.products.filter(product => product.category_id === state.activeCategoryId);
+
+            if (!visibleProducts.length) {
+                productGrid.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No products in this category yet</h3>
+                        <p>Add or show products from the admin dashboard, then refresh this page.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            productGrid.innerHTML = visibleProducts.map(product => {
+                const image = productImage(product);
+                const categoryName = product.categories ? product.categories.name : 'Printing';
+                return `
+                    <article class="item-card">
+                        <div class="product-photo">
+                            ${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(product.name)}">` : '<i class="fas fa-print"></i>'}
+                        </div>
+                        <div class="product-content">
+                            <div class="product-category">${escapeHtml(categoryName)}</div>
+                            <h3>${escapeHtml(product.name)}</h3>
+                            <p>${escapeHtml(product.description || 'Custom printing product')}</p>
+                            <div class="product-footer">
+                                <div class="price">From ${money(productPrice(product))}</div>
+                                <button type="button" class="order-button" data-product-id="${product.id}">Order</button>
+                            </div>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+
+            productGrid.querySelectorAll('.order-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const product = state.products.find(item => item.id === button.dataset.productId);
+                    if (product) openOrder(product);
+                });
+            });
+        }
+
+        function openOrder(product) {
+            state.activeProduct = product;
+            orderForm.reset();
+            formMessage.style.display = 'none';
+            formMessage.className = 'form-message';
+
+            const image = productImage(product);
+            document.getElementById('modalTitle').textContent = product.name;
+            document.getElementById('modalDescription').textContent = product.description || 'Complete the details below and send your request.';
+            document.getElementById('modalPhoto').innerHTML = image
+                ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(product.name)}">`
+                : '<i class="fas fa-print"></i>';
+
+            const minQty = Math.max(Number(product.min_quantity || 1), 1);
+            const quantityInput = document.getElementById('quantityInput');
+            quantityInput.min = minQty;
+            quantityInput.value = minQty;
+            document.getElementById('minimumQuantityNote').textContent = `Minimum order quantity: ${minQty}`;
+
+            renderProductOptions(product.id);
+            updateEstimate();
+
             document.getElementById('overlay').style.display = 'block';
             document.getElementById('orderModal').style.display = 'block';
-            document.getElementById('bankDetails').style.display = 'none'; // Reset bank view
         }
 
         function closeOrder() {
             document.getElementById('overlay').style.display = 'none';
             document.getElementById('orderModal').style.display = 'none';
+            state.activeProduct = null;
         }
 
-        function sendWhatsApp() {
-            let f1 = document.getElementById('field1') ? document.getElementById('field1').value : '';
-            let f2 = document.getElementById('field2') ? document.getElementById('field2').value : '';
-            let f3 = document.getElementById('field3') ? document.getElementById('field3').value : '';
-            let f4 = document.getElementById('field4') ? document.getElementById('field4').value : '';
+        function renderProductOptions(productId) {
+            const fields = state.fieldsByProduct[productId] || [];
+            if (!fields.length) {
+                document.getElementById('dynamicOptions').style.display = 'none';
+                optionsArea.innerHTML = '';
+                return;
+            }
 
-            let msg = `*NEW ORDER: ${currentCategory}*%0A--------------------------%0A`;
-            if (f1) msg += `Type/GSM: ${f1}%0A`;
-            if (f2) msg += `Details/Color: ${f2}%0A`;
-            if (f3) msg += `Material/Print: ${f3}%0A`;
-            if (f4) msg += `Quantity: ${f4}%0A`;
-            msg += `--------------------------%0APlease send quotation.`;
-
-            window.open(`https://wa.me/971524186102?text=${msg}`, '_blank');
-
-            // Show bank details after 2 seconds
-            setTimeout(() => {
-                document.getElementById('bankDetails').style.display = 'block';
-            }, 1000);
+            document.getElementById('dynamicOptions').style.display = 'block';
+            optionsArea.innerHTML = `<div class="form-grid">${fields.map(renderField).join('')}</div>`;
+            optionsArea.querySelectorAll('input, select, textarea').forEach(input => {
+                input.addEventListener('input', updateEstimate);
+                input.addEventListener('change', updateEstimate);
+            });
         }
+
+        function renderField(field) {
+            const required = field.is_required ? 'required' : '';
+            const requiredMark = field.is_required ? ' <span class="required-mark">*</span>' : '';
+            const id = `field_${field.id}`;
+            const options = state.optionsByField[field.id] || [];
+            const type = field.field_type;
+
+            if (type === 'select') {
+                return `
+                    <div class="field">
+                        <label for="${id}">${escapeHtml(field.field_label)}${requiredMark}</label>
+                        <select id="${id}" data-field-id="${field.id}" data-field-type="${type}" ${required}>
+                            <option value="">Select one</option>
+                            ${options.map(option => `<option value="${option.id}" data-price="${Number(option.price_modifier || 0)}">${escapeHtml(option.label)}${Number(option.price_modifier || 0) ? ` (+${money(option.price_modifier)})` : ''}</option>`).join('')}
+                        </select>
+                    </div>
+                `;
+            }
+
+            if (type === 'toggle' || type === 'checkbox') {
+                return `
+                    <div class="field">
+                        <label>${escapeHtml(field.field_label)}${requiredMark}</label>
+                        <label class="choice-pill">
+                            <input type="checkbox" id="${id}" data-field-id="${field.id}" data-field-type="${type}" data-price="${Number(field.price_modifier || 0)}" ${required}>
+                            Yes${Number(field.price_modifier || 0) ? ` (+${money(field.price_modifier)})` : ''}
+                        </label>
+                    </div>
+                `;
+            }
+
+            if (type === 'radio') {
+                return `
+                    <div class="field">
+                        <label>${escapeHtml(field.field_label)}${requiredMark}</label>
+                        <div class="choice-row">
+                            ${options.map((option, index) => `
+                                <label class="choice-pill">
+                                    <input type="radio" name="${id}" value="${option.id}" data-field-id="${field.id}" data-field-type="${type}" data-price="${Number(option.price_modifier || 0)}" ${field.is_required && index === 0 ? 'required' : ''}>
+                                    ${escapeHtml(option.label)}${Number(option.price_modifier || 0) ? ` (+${money(option.price_modifier)})` : ''}
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (type === 'dimension') {
+                const presetOptions = options.map(option => {
+                    const width = Number(option.preset_width || 0);
+                    const height = Number(option.preset_height || 0);
+                    const unit = option.preset_unit || 'cm';
+                    const label = width && height ? `${option.label} (${width} x ${height} ${unit})` : option.label;
+                    return `<option value="${option.id}" data-width="${width}" data-height="${height}" data-unit="${unit}">${escapeHtml(label)}</option>`;
+                }).join('');
+
+                return `
+                    <div class="field" data-dimension-wrap="${field.id}">
+                        <label>${escapeHtml(field.field_label)}${requiredMark}</label>
+                        ${options.length ? `
+                            <select data-dimension-preset="${field.id}">
+                                <option value="">Custom size</option>
+                                ${presetOptions}
+                            </select>
+                        ` : ''}
+                        <div class="dimension-row">
+                            <input type="number" min="0" step="0.01" placeholder="Width" data-field-id="${field.id}" data-field-type="${type}" data-dimension-part="width" data-price="${Number(field.price_modifier || 0)}" ${required}>
+                            <input type="number" min="0" step="0.01" placeholder="Height" data-field-id="${field.id}" data-field-type="${type}" data-dimension-part="height" ${required}>
+                            <select data-field-id="${field.id}" data-field-type="${type}" data-dimension-part="unit">
+                                <option value="cm">cm</option>
+                                <option value="mm">mm</option>
+                                <option value="inch">inch</option>
+                                <option value="ft">ft</option>
+                            </select>
+                        </div>
+                        <span class="field-help">Price uses the dashboard price per square meter.</span>
+                    </div>
+                `;
+            }
+
+            if (type === 'file') {
+                return `
+                    <div class="field">
+                        <label for="${id}">${escapeHtml(field.field_label)}${requiredMark}</label>
+                        <input type="file" id="${id}" data-field-id="${field.id}" data-field-type="${type}" ${required}>
+                        <span class="field-help">Your file name will be included in the order request.</span>
+                    </div>
+                `;
+            }
+
+            if (type === 'text') {
+                return `
+                    <div class="field">
+                        <label for="${id}">${escapeHtml(field.field_label)}${requiredMark}</label>
+                        <textarea id="${id}" data-field-id="${field.id}" data-field-type="${type}" ${required}></textarea>
+                    </div>
+                `;
+            }
+
+            const htmlType = type === 'date' ? 'date' : 'number';
+            return `
+                <div class="field">
+                    <label for="${id}">${escapeHtml(field.field_label)}${requiredMark}</label>
+                    <input type="${htmlType}" id="${id}" data-field-id="${field.id}" data-field-type="${type}" data-price="${Number(field.price_modifier || 0)}" ${required}>
+                </div>
+            `;
+        }
+
+        function applyDimensionPreset(select) {
+            const fieldId = select.dataset.dimensionPreset;
+            const option = select.selectedOptions[0];
+            const wrap = document.querySelector(`[data-dimension-wrap="${fieldId}"]`);
+            if (!wrap || !option || !option.value) return;
+
+            const width = wrap.querySelector('[data-dimension-part="width"]');
+            const height = wrap.querySelector('[data-dimension-part="height"]');
+            const unit = wrap.querySelector('[data-dimension-part="unit"]');
+            width.value = option.dataset.width || '';
+            height.value = option.dataset.height || '';
+            unit.value = option.dataset.unit || 'cm';
+            updateEstimate();
+        }
+
+        function dimensionToSquareMeters(width, height, unit) {
+            const w = Number(width || 0);
+            const h = Number(height || 0);
+            if (!w || !h) return 0;
+
+            const multipliers = {
+                mm: 0.001,
+                cm: 0.01,
+                inch: 0.0254,
+                ft: 0.3048
+            };
+
+            const multiplier = multipliers[unit] || 0.01;
+            return (w * multiplier) * (h * multiplier);
+        }
+
+        function collectSelections() {
+            const fields = state.activeProduct ? (state.fieldsByProduct[state.activeProduct.id] || []) : [];
+            const selections = [];
+
+            fields.forEach(field => {
+                const type = field.field_type;
+                const label = field.field_label;
+
+                if (type === 'select') {
+                    const input = document.querySelector(`[data-field-id="${field.id}"]`);
+                    if (input && input.value) {
+                        const option = state.optionsByField[field.id]?.find(item => item.id === input.value);
+                        selections.push({ label, value: option ? option.label : input.value, price: Number(option?.price_modifier || 0) });
+                    }
+                } else if (type === 'toggle' || type === 'checkbox') {
+                    const input = document.querySelector(`[data-field-id="${field.id}"]`);
+                    if (input && input.checked) selections.push({ label, value: 'Yes', price: Number(field.price_modifier || 0) });
+                } else if (type === 'radio') {
+                    const input = document.querySelector(`[data-field-id="${field.id}"]:checked`);
+                    if (input) {
+                        const option = state.optionsByField[field.id]?.find(item => item.id === input.value);
+                        selections.push({ label, value: option ? option.label : input.value, price: Number(option?.price_modifier || 0) });
+                    }
+                } else if (type === 'dimension') {
+                    const width = document.querySelector(`[data-field-id="${field.id}"][data-dimension-part="width"]`);
+                    const height = document.querySelector(`[data-field-id="${field.id}"][data-dimension-part="height"]`);
+                    const unit = document.querySelector(`[data-field-id="${field.id}"][data-dimension-part="unit"]`);
+                    if (width?.value && height?.value) {
+                        const squareMeters = dimensionToSquareMeters(width.value, height.value, unit.value);
+                        const price = squareMeters * Number(field.price_modifier || 0);
+                        selections.push({
+                            label,
+                            value: `${width.value} x ${height.value} ${unit.value}`,
+                            price,
+                            meta: `${squareMeters.toFixed(3)} sqm`
+                        });
+                    }
+                } else if (type === 'file') {
+                    const input = document.querySelector(`[data-field-id="${field.id}"]`);
+                    if (input?.files?.length) {
+                        selections.push({ label, value: Array.from(input.files).map(file => file.name).join(', '), price: 0 });
+                    }
+                } else {
+                    const input = document.querySelector(`[data-field-id="${field.id}"]`);
+                    if (input && input.value) {
+                        const numericExtra = type === 'number' ? Number(input.value || 0) * Number(field.price_modifier || 0) : 0;
+                        selections.push({ label, value: input.value, price: numericExtra });
+                    }
+                }
+            });
+
+            return selections;
+        }
+
+        function updateEstimate() {
+            if (!state.activeProduct) return;
+
+            const quantityInput = document.getElementById('quantityInput');
+            const minQty = Number(quantityInput.min || 1);
+            let quantity = Number(quantityInput.value || minQty);
+            if (quantity < minQty) {
+                quantity = minQty;
+                quantityInput.value = minQty;
+            }
+
+            const basePrice = productPrice(state.activeProduct);
+            const selections = collectSelections();
+            const extras = selections.reduce((sum, item) => sum + Number(item.price || 0), 0);
+            const total = (basePrice + extras) * quantity;
+
+            document.getElementById('basePriceText').textContent = money(basePrice);
+            document.getElementById('extrasPriceText').textContent = money(extras);
+            document.getElementById('quantityText').textContent = quantity;
+            document.getElementById('totalPriceText').textContent = money(total);
+        }
+
+        function showFormMessage(message, type = '') {
+            formMessage.textContent = message;
+            formMessage.className = type ? `form-message ${type}` : 'form-message';
+            formMessage.style.display = 'block';
+        }
+
+        function buildOrderMessage() {
+            const product = state.activeProduct;
+            const quantity = Number(document.getElementById('quantityInput').value || product.min_quantity || 1);
+            const selections = collectSelections();
+            const extras = selections.reduce((sum, item) => sum + Number(item.price || 0), 0);
+            const total = (productPrice(product) + extras) * quantity;
+
+            const lines = [
+                `NEW ORDER REQUEST`,
+                `------------------------------`,
+                `Product: ${product.name}`,
+                `Category: ${product.categories ? product.categories.name : '-'}`,
+                `Quantity: ${quantity}`,
+                `Estimated Total: ${money(total)}`,
+                ``
+            ];
+
+            if (selections.length) {
+                lines.push('Product Options:');
+                selections.forEach(item => {
+                    lines.push(`- ${item.label}: ${item.value}${item.meta ? ` (${item.meta})` : ''}${item.price ? ` | +${money(item.price)}` : ''}`);
+                });
+                lines.push('');
+            }
+
+            lines.push('Customer Details:');
+            lines.push(`Name: ${document.getElementById('customerName').value.trim()}`);
+            lines.push(`Phone: ${document.getElementById('customerPhone').value.trim()}`);
+            if (document.getElementById('customerEmail').value.trim()) lines.push(`Email: ${document.getElementById('customerEmail').value.trim()}`);
+            if (document.getElementById('customerCountry').value.trim()) lines.push(`Country: ${document.getElementById('customerCountry').value.trim()}`);
+            lines.push(`Delivery: ${document.getElementById('deliveryOption').value}`);
+            if (document.getElementById('deliveryDate').value) lines.push(`Needed Date: ${document.getElementById('deliveryDate').value}`);
+            lines.push(`Payment: ${document.getElementById('paymentMethod').value.replace('_', ' ')}`);
+
+            const notes = document.getElementById('specialInstructions').value.trim();
+            if (notes) {
+                lines.push('');
+                lines.push('Notes:');
+                lines.push(notes);
+            }
+
+            return lines.join('\n');
+        }
+
+        orderForm.addEventListener('submit', event => {
+            event.preventDefault();
+            if (!state.activeProduct) return;
+
+            if (!orderForm.checkValidity()) {
+                orderForm.reportValidity();
+                return;
+            }
+
+            const message = buildOrderMessage();
+            const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+            showFormMessage('Opening WhatsApp with your order request...');
+            window.open(url, '_blank');
+        });
+
+        document.addEventListener('change', event => {
+            if (event.target.matches('[data-dimension-preset]')) {
+                applyDimensionPreset(event.target);
+            }
+        });
+
+        document.getElementById('quantityInput').addEventListener('input', updateEstimate);
+        document.getElementById('deliveryOption').addEventListener('change', updateEstimate);
+
+        loadShopData();
     </script>
-
 </body>
 
 </html>
