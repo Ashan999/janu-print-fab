@@ -6,7 +6,7 @@
  * ============================================================
  */
 
-const SUPABASE_URL = "https://gilveahoqbgqomerrov.supabase.co";
+const SUPABASE_URL = "https://gilveahoqqbgqomerrov.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_dXLX-ARW9df6aTdqANKRUQ_ceuui0kw";
 
 // Supabase client library (loaded via CDN in the HTML <head>)
