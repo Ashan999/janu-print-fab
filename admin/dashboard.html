@@ -145,11 +145,84 @@
     }
     .placeholder-box i { font-size: 2.5rem; color: var(--metallic-blue); margin-bottom: 1rem; display: block; }
 
+    /* ---- Printing Methods page ---- */
+    .panel {
+        background: var(--white);
+        border-radius: 14px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+        padding: 1.6rem;
+        margin-bottom: 1.6rem;
+    }
+    .panel h3 {
+        font-size: 1rem;
+        color: var(--metallic-blue-dark);
+        margin-bottom: 1rem;
+    }
+    .pm-form {
+        display: grid;
+        grid-template-columns: 1.2fr 2fr 0.7fr auto;
+        gap: 0.8rem;
+        align-items: end;
+    }
+    .pm-form .field { display: flex; flex-direction: column; }
+    .pm-form label { font-size: 0.8rem; font-weight: 600; margin-bottom: 0.35rem; color: var(--text-dark); }
+    .pm-form input {
+        padding: 10px 12px;
+        border: 2px solid var(--light-gray);
+        border-radius: 8px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.9rem;
+    }
+    .pm-form input:focus { outline: none; border-color: var(--metallic-blue); }
+    .btn {
+        padding: 10px 18px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.88rem;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+    .btn-primary { background: var(--gold-gradient); color: var(--metallic-blue-dark); }
+    .btn-secondary { background: var(--light-gray); color: var(--text-dark); }
+    .btn-danger { background: #fdecea; color: #c0392b; }
+    .btn-small { padding: 6px 12px; font-size: 0.8rem; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    table.pm-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
+    table.pm-table th, table.pm-table td {
+        text-align: left;
+        padding: 0.8rem 0.6rem;
+        border-bottom: 1px solid var(--light-gray);
+        font-size: 0.88rem;
+    }
+    table.pm-table th { color: var(--text-light); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; }
+    .badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    .badge-active { background: #e6f9ea; color: #1e8a3c; }
+    .badge-inactive { background: #f1f1f1; color: #888; }
+    .row-actions { display: flex; gap: 0.5rem; }
+    #pmMsg {
+        display: none;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+    }
+    #pmMsg.success { background: #e6f9ea; color: #1e8a3c; display: block; }
+    #pmMsg.error { background: #fdecea; color: #c0392b; display: block; }
+
     @media (max-width: 900px) {
         .sidebar { transform: translateX(-100%); }
         .sidebar.open { transform: translateX(0); }
         .main-area { margin-left: 0; width: 100%; }
         .menu-toggle { display: block; }
+        .pm-form { grid-template-columns: 1fr; }
     }
 </style>
 </head>
@@ -165,6 +238,7 @@
             </div>
             <ul class="nav-list">
                 <li><a data-page="home" class="active"><i class="fas fa-house"></i> Home</a></li>
+                <li><a data-page="printingmethods"><i class="fas fa-print"></i> Printing Methods</a></li>
                 <li><a data-page="products"><i class="fas fa-tshirt"></i> Products</a></li>
                 <li><a data-page="categories"><i class="fas fa-layer-group"></i> Categories</a></li>
                 <li><a data-page="orders"><i class="fas fa-receipt"></i> Orders</a></li>
@@ -215,6 +289,52 @@
             </div>
         </div>
     </div>
+
+    <!-- Template for the Printing Methods page (filled in by JS) -->
+    <template id="printingMethodsTemplate">
+        <div id="pmMsg"></div>
+
+        <div class="panel">
+            <h3 id="pmFormTitle">Add a New Printing Method</h3>
+            <form class="pm-form" id="pmForm">
+                <input type="hidden" id="pmEditId" value="">
+                <div class="field">
+                    <label for="pmName">Name</label>
+                    <input type="text" id="pmName" placeholder="e.g. DTF Printing" required>
+                </div>
+                <div class="field">
+                    <label for="pmDescription">Description (optional)</label>
+                    <input type="text" id="pmDescription" placeholder="Short description">
+                </div>
+                <div class="field">
+                    <label for="pmOrder">Order</label>
+                    <input type="number" id="pmOrder" value="0" min="0">
+                </div>
+                <button type="submit" class="btn btn-primary" id="pmSubmitBtn">Add Method</button>
+            </form>
+            <div style="margin-top:0.8rem;">
+                <button type="button" class="btn btn-secondary btn-small" id="pmCancelEdit" style="display:none;">Cancel Edit</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3>Existing Printing Methods</h3>
+            <table class="pm-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Order</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="pmTableBody">
+                    <tr><td colspan="5">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </template>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../config/supabase-config.js"></script>
@@ -268,9 +388,11 @@
             window.location.href = 'login.html';
         });
 
-        // Sidebar navigation (placeholder pages for now — built out in later modules)
+        // ------------------------------------------------------------
+        // Sidebar navigation
+        // ------------------------------------------------------------
         const pageLabels = {
-            home: 'Home', products: 'Products', categories: 'Categories',
+            home: 'Home', printingmethods: 'Printing Methods', products: 'Products', categories: 'Categories',
             orders: 'Orders', customers: 'Customers', gallery: 'Gallery',
             homepage: 'Homepage Settings', contact: 'Contact Details',
             analytics: 'Analytics', settings: 'Settings'
@@ -288,6 +410,11 @@
                 if (page === 'home') {
                     document.getElementById('pageContent').innerHTML = homeContentHTML;
                     loadStats();
+                } else if (page === 'printingmethods') {
+                    const tpl = document.getElementById('printingMethodsTemplate');
+                    document.getElementById('pageContent').innerHTML = '';
+                    document.getElementById('pageContent').appendChild(tpl.content.cloneNode(true));
+                    initPrintingMethodsPage();
                 } else {
                     document.getElementById('pageContent').innerHTML = `
                         <div class="placeholder-box">
@@ -301,6 +428,158 @@
         document.getElementById('menuToggle').addEventListener('click', () => {
             document.getElementById('sidebar').classList.toggle('open');
         });
+
+        // ------------------------------------------------------------
+        // Printing Methods page logic
+        // ------------------------------------------------------------
+        function pmShowMessage(text, type) {
+            const box = document.getElementById('pmMsg');
+            box.textContent = text;
+            box.className = type;
+            setTimeout(() => { box.style.display = 'none'; box.className = ''; }, 4000);
+        }
+
+        async function pmLoadList() {
+            const tbody = document.getElementById('pmTableBody');
+            tbody.innerHTML = '<tr><td colspan="5">Loading...</td></tr>';
+
+            const { data, error } = await window.db
+                .from('printing_methods')
+                .select('*')
+                .order('display_order', { ascending: true });
+
+            if (error) {
+                tbody.innerHTML = `<tr><td colspan="5">Error loading: ${error.message}</td></tr>`;
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5">No printing methods yet. Add your first one above.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map(row => `
+                <tr>
+                    <td>${escapeHtml(row.name)}</td>
+                    <td>${escapeHtml(row.description || '-')}</td>
+                    <td>${row.display_order}</td>
+                    <td>
+                        <span class="badge ${row.is_active ? 'badge-active' : 'badge-inactive'}">
+                            ${row.is_active ? 'Active' : 'Inactive'}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="row-actions">
+                            <button class="btn btn-secondary btn-small" data-action="edit" data-id="${row.id}">Edit</button>
+                            <button class="btn btn-secondary btn-small" data-action="toggle" data-id="${row.id}" data-active="${row.is_active}">
+                                ${row.is_active ? 'Deactivate' : 'Activate'}
+                            </button>
+                            <button class="btn btn-danger btn-small" data-action="delete" data-id="${row.id}">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            tbody.querySelectorAll('button[data-action]').forEach(btn => {
+                btn.addEventListener('click', () => pmHandleRowAction(btn, data));
+            });
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        async function pmHandleRowAction(btn, data) {
+            const id = btn.getAttribute('data-id');
+            const action = btn.getAttribute('data-action');
+            const row = data.find(r => r.id === id);
+
+            if (action === 'edit') {
+                document.getElementById('pmEditId').value = row.id;
+                document.getElementById('pmName').value = row.name;
+                document.getElementById('pmDescription').value = row.description || '';
+                document.getElementById('pmOrder').value = row.display_order;
+                document.getElementById('pmFormTitle').textContent = 'Edit Printing Method';
+                document.getElementById('pmSubmitBtn').textContent = 'Save Changes';
+                document.getElementById('pmCancelEdit').style.display = 'inline-block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            if (action === 'toggle') {
+                const newActive = !(btn.getAttribute('data-active') === 'true');
+                const { error } = await window.db
+                    .from('printing_methods')
+                    .update({ is_active: newActive })
+                    .eq('id', id);
+                if (error) { pmShowMessage('Error updating status: ' + error.message, 'error'); return; }
+                pmShowMessage('Status updated.', 'success');
+                pmLoadList();
+            }
+
+            if (action === 'delete') {
+                if (!confirm(`Delete "${row.name}"? This cannot be undone.`)) return;
+                const { error } = await window.db
+                    .from('printing_methods')
+                    .delete()
+                    .eq('id', id);
+                if (error) { pmShowMessage('Error deleting: ' + error.message, 'error'); return; }
+                pmShowMessage('Printing method deleted.', 'success');
+                pmLoadList();
+            }
+        }
+
+        function pmResetForm() {
+            document.getElementById('pmForm').reset();
+            document.getElementById('pmEditId').value = '';
+            document.getElementById('pmOrder').value = 0;
+            document.getElementById('pmFormTitle').textContent = 'Add a New Printing Method';
+            document.getElementById('pmSubmitBtn').textContent = 'Add Method';
+            document.getElementById('pmCancelEdit').style.display = 'none';
+        }
+
+        function initPrintingMethodsPage() {
+            pmLoadList();
+
+            document.getElementById('pmForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const editId = document.getElementById('pmEditId').value;
+                const name = document.getElementById('pmName').value.trim();
+                const description = document.getElementById('pmDescription').value.trim();
+                const display_order = parseInt(document.getElementById('pmOrder').value, 10) || 0;
+
+                if (!name) { pmShowMessage('Name is required.', 'error'); return; }
+
+                const submitBtn = document.getElementById('pmSubmitBtn');
+                submitBtn.disabled = true;
+
+                let error;
+                if (editId) {
+                    ({ error } = await window.db
+                        .from('printing_methods')
+                        .update({ name, description, display_order })
+                        .eq('id', editId));
+                } else {
+                    ({ error } = await window.db
+                        .from('printing_methods')
+                        .insert({ name, description, display_order }));
+                }
+
+                submitBtn.disabled = false;
+
+                if (error) {
+                    pmShowMessage('Error saving: ' + error.message, 'error');
+                    return;
+                }
+
+                pmShowMessage(editId ? 'Printing method updated.' : 'Printing method added.', 'success');
+                pmResetForm();
+                pmLoadList();
+            });
+
+            document.getElementById('pmCancelEdit').addEventListener('click', pmResetForm);
+        }
 
         checkAuth();
     </script>
