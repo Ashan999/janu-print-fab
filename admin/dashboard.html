@@ -217,6 +217,16 @@
     #pmMsg.success { background: #e6f9ea; color: #1e8a3c; display: block; }
     #pmMsg.error { background: #fdecea; color: #c0392b; display: block; }
 
+    .pm-form select {
+        padding: 10px 12px;
+        border: 2px solid var(--light-gray);
+        border-radius: 8px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.9rem;
+        background: var(--white);
+    }
+    .pm-form select:focus { outline: none; border-color: var(--metallic-blue); }
+
     @media (max-width: 900px) {
         .sidebar { transform: translateX(-100%); }
         .sidebar.open { transform: translateX(0); }
@@ -336,6 +346,54 @@
         </div>
     </template>
 
+    <!-- Template for the Categories page (filled in by JS) -->
+    <template id="categoriesTemplate">
+        <div id="catMsg"></div>
+
+        <div class="panel">
+            <h3 id="catFormTitle">Add a New Category</h3>
+            <form class="pm-form" id="catForm" style="grid-template-columns: 1.2fr 1.2fr 0.7fr auto;">
+                <input type="hidden" id="catEditId" value="">
+                <div class="field">
+                    <label for="catName">Name</label>
+                    <input type="text" id="catName" placeholder="e.g. T-Shirts" required>
+                </div>
+                <div class="field">
+                    <label for="catParent">Parent Category (optional)</label>
+                    <select id="catParent">
+                        <option value="">None (top level)</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="catOrder">Order</label>
+                    <input type="number" id="catOrder" value="0" min="0">
+                </div>
+                <button type="submit" class="btn btn-primary" id="catSubmitBtn">Add Category</button>
+            </form>
+            <div style="margin-top:0.8rem;">
+                <button type="button" class="btn btn-secondary btn-small" id="catCancelEdit" style="display:none;">Cancel Edit</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3>Existing Categories</h3>
+            <table class="pm-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Parent</th>
+                        <th>Order</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="catTableBody">
+                    <tr><td colspan="5">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </template>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../config/supabase-config.js"></script>
     <script>
@@ -415,6 +473,11 @@
                     document.getElementById('pageContent').innerHTML = '';
                     document.getElementById('pageContent').appendChild(tpl.content.cloneNode(true));
                     initPrintingMethodsPage();
+                } else if (page === 'categories') {
+                    const tpl = document.getElementById('categoriesTemplate');
+                    document.getElementById('pageContent').innerHTML = '';
+                    document.getElementById('pageContent').appendChild(tpl.content.cloneNode(true));
+                    initCategoriesPage();
                 } else {
                     document.getElementById('pageContent').innerHTML = `
                         <div class="placeholder-box">
@@ -579,6 +642,184 @@
             });
 
             document.getElementById('pmCancelEdit').addEventListener('click', pmResetForm);
+        }
+
+        // ------------------------------------------------------------
+        // Categories page logic
+        // ------------------------------------------------------------
+        function catShowMessage(text, type) {
+            const box = document.getElementById('catMsg');
+            box.textContent = text;
+            box.className = type;
+            setTimeout(() => { box.style.display = 'none'; box.className = ''; }, 4000);
+        }
+
+        function catSlugify(name) {
+            return name
+                .toLowerCase()
+                .trim()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/(^-|-$)/g, '');
+        }
+
+        async function catLoadList() {
+            const tbody = document.getElementById('catTableBody');
+            tbody.innerHTML = '<tr><td colspan="5">Loading...</td></tr>';
+
+            const { data, error } = await window.db
+                .from('categories')
+                .select('*')
+                .order('display_order', { ascending: true });
+
+            if (error) {
+                tbody.innerHTML = `<tr><td colspan="5">Error loading: ${error.message}</td></tr>`;
+                return;
+            }
+
+            // Fill the "Parent Category" dropdown
+            const parentSelect = document.getElementById('catParent');
+            const currentEditId = document.getElementById('catEditId').value;
+            parentSelect.innerHTML = '<option value="">None (top level)</option>' +
+                data
+                    .filter(c => c.id !== currentEditId) // a category can't be its own parent
+                    .map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`)
+                    .join('');
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5">No categories yet. Add your first one above.</td></tr>';
+                return;
+            }
+
+            const nameById = {};
+            data.forEach(c => { nameById[c.id] = c.name; });
+
+            tbody.innerHTML = data.map(row => `
+                <tr>
+                    <td>${escapeHtml(row.name)}</td>
+                    <td>${row.parent_id ? escapeHtml(nameById[row.parent_id] || '-') : '-'}</td>
+                    <td>${row.display_order}</td>
+                    <td>
+                        <span class="badge ${row.is_visible ? 'badge-active' : 'badge-inactive'}">
+                            ${row.is_visible ? 'Visible' : 'Hidden'}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="row-actions">
+                            <button class="btn btn-secondary btn-small" data-action="edit" data-id="${row.id}">Edit</button>
+                            <button class="btn btn-secondary btn-small" data-action="toggle" data-id="${row.id}" data-visible="${row.is_visible}">
+                                ${row.is_visible ? 'Hide' : 'Show'}
+                            </button>
+                            <button class="btn btn-danger btn-small" data-action="delete" data-id="${row.id}">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            tbody.querySelectorAll('button[data-action]').forEach(btn => {
+                btn.addEventListener('click', () => catHandleRowAction(btn, data));
+            });
+        }
+
+        async function catHandleRowAction(btn, data) {
+            const id = btn.getAttribute('data-id');
+            const action = btn.getAttribute('data-action');
+            const row = data.find(r => r.id === id);
+
+            if (action === 'edit') {
+                document.getElementById('catEditId').value = row.id;
+                document.getElementById('catName').value = row.name;
+                document.getElementById('catOrder').value = row.display_order;
+                document.getElementById('catFormTitle').textContent = 'Edit Category';
+                document.getElementById('catSubmitBtn').textContent = 'Save Changes';
+                document.getElementById('catCancelEdit').style.display = 'inline-block';
+                await catLoadList(); // refresh parent dropdown excluding this category
+                document.getElementById('catParent').value = row.parent_id || '';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+
+            if (action === 'toggle') {
+                const newVisible = !(btn.getAttribute('data-visible') === 'true');
+                const { error } = await window.db
+                    .from('categories')
+                    .update({ is_visible: newVisible })
+                    .eq('id', id);
+                if (error) { catShowMessage('Error updating status: ' + error.message, 'error'); return; }
+                catShowMessage('Status updated.', 'success');
+                catLoadList();
+            }
+
+            if (action === 'delete') {
+                if (!confirm(`Delete "${row.name}"? This cannot be undone.`)) return;
+                const { error } = await window.db
+                    .from('categories')
+                    .delete()
+                    .eq('id', id);
+                if (error) { catShowMessage('Error deleting: ' + error.message, 'error'); return; }
+                catShowMessage('Category deleted.', 'success');
+                catLoadList();
+            }
+        }
+
+        function catResetForm() {
+            document.getElementById('catForm').reset();
+            document.getElementById('catEditId').value = '';
+            document.getElementById('catOrder').value = 0;
+            document.getElementById('catFormTitle').textContent = 'Add a New Category';
+            document.getElementById('catSubmitBtn').textContent = 'Add Category';
+            document.getElementById('catCancelEdit').style.display = 'none';
+            catLoadList();
+        }
+
+        function initCategoriesPage() {
+            catLoadList();
+
+            document.getElementById('catForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const editId = document.getElementById('catEditId').value;
+                const name = document.getElementById('catName').value.trim();
+                const parent_id = document.getElementById('catParent').value || null;
+                const display_order = parseInt(document.getElementById('catOrder').value, 10) || 0;
+
+                if (!name) { catShowMessage('Name is required.', 'error'); return; }
+
+                const submitBtn = document.getElementById('catSubmitBtn');
+                submitBtn.disabled = true;
+
+                let error;
+                if (editId) {
+                    ({ error } = await window.db
+                        .from('categories')
+                        .update({ name, parent_id, display_order })
+                        .eq('id', editId));
+                } else {
+                    // Auto-generate a unique slug from the name
+                    let slug = catSlugify(name);
+                    const { data: existing } = await window.db
+                        .from('categories')
+                        .select('id')
+                        .eq('slug', slug)
+                        .maybeSingle();
+                    if (existing) {
+                        slug = slug + '-' + Date.now().toString().slice(-5);
+                    }
+                    ({ error } = await window.db
+                        .from('categories')
+                        .insert({ name, slug, parent_id, display_order }));
+                }
+
+                submitBtn.disabled = false;
+
+                if (error) {
+                    catShowMessage('Error saving: ' + error.message, 'error');
+                    return;
+                }
+
+                catShowMessage(editId ? 'Category updated.' : 'Category added.', 'success');
+                catResetForm();
+            });
+
+            document.getElementById('catCancelEdit').addEventListener('click', catResetForm);
         }
 
         checkAuth();
