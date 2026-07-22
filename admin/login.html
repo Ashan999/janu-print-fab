@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login | Janu Print FAB</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --metallic-blue: #00c3dd;
+        --metallic-blue-dark: #1e4563;
+        --gold-accent: #d4af37;
+        --gold-gradient: linear-gradient(135deg, #b8860b 0%, #d4af37 50%, #f6d365 100%);
+        --white: #ffffff;
+        --light-gray: #f8f9fa;
+        --text-dark: #333333;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: var(--metallic-blue-dark);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+    }
+    .login-card {
+        background: var(--white);
+        width: 100%;
+        max-width: 400px;
+        padding: 2.5rem;
+        border-radius: 18px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        border-top: 4px solid var(--metallic-blue);
+    }
+    .login-card h1 {
+        color: var(--metallic-blue-dark);
+        font-size: 1.4rem;
+        text-align: center;
+        margin-bottom: 0.3rem;
+    }
+    .login-card p {
+        color: #888;
+        text-align: center;
+        font-size: 0.9rem;
+        margin-bottom: 1.8rem;
+    }
+    label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.4rem;
+    }
+    input {
+        width: 100%;
+        padding: 12px 14px;
+        margin-bottom: 1.2rem;
+        border: 2px solid var(--light-gray);
+        border-radius: 10px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.95rem;
+    }
+    input:focus {
+        outline: none;
+        border-color: var(--metallic-blue);
+    }
+    button {
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 50px;
+        background: var(--gold-gradient);
+        color: var(--metallic-blue-dark);
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+    }
+    button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+    #errorMsg {
+        display: none;
+        background: #fdecea;
+        color: #c0392b;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        margin-bottom: 1.2rem;
+    }
+</style>
+</head>
+<body>
+
+    <div class="login-card">
+        <h1>Janu Print | FAB</h1>
+        <p>Admin Dashboard Login</p>
+
+        <div id="errorMsg"></div>
+
+        <form id="loginForm">
+            <label for="email">Email</label>
+            <input type="email" id="email" required placeholder="you@example.com">
+
+            <label for="password">Password</label>
+            <input type="password" id="password" required placeholder="Enter your password">
+
+            <button type="submit" id="loginBtn">Log In</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../config/supabase-config.js"></script>
+    <script>
+        const form = document.getElementById('loginForm');
+        const errorMsg = document.getElementById('errorMsg');
+        const loginBtn = document.getElementById('loginBtn');
+
+        function showError(text) {
+            errorMsg.textContent = text;
+            errorMsg.style.display = 'block';
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorMsg.style.display = 'none';
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Logging in...';
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            const { data, error } = await window.db.auth.signInWithPassword({ email, password });
+
+            if (error) {
+                showError('Incorrect email or password. Please try again.');
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Log In';
+                return;
+            }
+
+            // Confirm this logged-in user is actually an admin
+            const { data: adminRow } = await window.db
+                .from('admin_profiles')
+                .select('id')
+                .eq('id', data.user.id)
+                .maybeSingle();
+
+            if (!adminRow) {
+                showError('This account is not authorized for admin access.');
+                await window.db.auth.signOut();
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Log In';
+                return;
+            }
+
+            window.location.href = 'dashboard.html';
+        });
+    </script>
+</body>
+</html>
