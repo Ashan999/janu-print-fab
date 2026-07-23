@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Account | Janu Print FAB</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="assets/theme.css">
+<style>
+    body { background: var(--light-gray); min-height: 100vh; }
+    .account-wrap { max-width: 900px; margin: 0 auto; padding: 2rem; }
+    .profile-card, .orders-card {
+        background: var(--white); border-radius: var(--radius-md);
+        box-shadow: var(--shadow-md); padding: 1.6rem; margin-bottom: 1.5rem;
+        border-top: 4px solid var(--metallic-blue);
+    }
+    .profile-card h2, .orders-card h2 {
+        font-size: 1.1rem; color: var(--metallic-blue-dark); margin-bottom: 1rem;
+    }
+    .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; font-size: 0.9rem; }
+    .profile-grid span.label { color: var(--text-light); font-size: 0.78rem; font-weight: 600; display: block; }
+    .order-row {
+        border: 1px solid var(--light-gray); border-radius: var(--radius-sm);
+        padding: 1rem; margin-bottom: 0.8rem;
+    }
+    .order-row-head { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .order-row-head strong { color: var(--metallic-blue-dark); }
+    .badge {
+        display: inline-block; padding: 3px 10px; border-radius: 20px;
+        font-size: 0.72rem; font-weight: 600; text-transform: capitalize;
+    }
+    .badge-pending { background: #fff3cd; color: #856404; }
+    .badge-processing { background: #cce5ff; color: #004085; }
+    .badge-completed { background: #d4edda; color: #155724; }
+    .badge-cancelled { background: #f8d7da; color: #721c24; }
+    .order-meta { font-size: 0.82rem; color: var(--text-light); margin-top: 0.4rem; }
+    .account-actions { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .empty-orders { text-align: center; color: var(--text-light); padding: 2rem 1rem; }
+    @media (max-width: 600px) { .profile-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="top-bar-container">
+            <span>My Account</span>
+            <div class="top-bar-info">
+                <a href="index.html"><i class="fas fa-home"></i> Home</a>
+                <a href="shop.html"><i class="fas fa-shopping-bag"></i> Shop</a>
+            </div>
+        </div>
+    </div>
+
+    <nav class="site-nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo-wrap">
+                <img class="logo-icon" src="https://i.ibb.co/h1TnrT8Y/LOGO.png" alt="Logo">
+                <div class="logo-text-group">
+                    <span class="logo-main">Janu Print <span>| FAB</span></span>
+                    <span class="logo-tagline">My Account</span>
+                </div>
+            </a>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="cart.html" class="btn-nav-cart"><i class="fas fa-shopping-cart"></i> Cart <span id="cartCount" class="cart-badge" style="display:none">0</span></a></li>
+                <li id="navAuthUser"><a href="account.html" class="btn-nav btn-nav-customer"><i class="fas fa-user"></i> <span id="navUserName">Account</span></a></li>
+                <li><a href="#" id="navLogoutBtn" class="btn-nav btn-nav-customer"><i class="fas fa-right-from-bracket"></i> Logout</a></li>
+            </ul>
+            <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <div class="account-wrap">
+        <div class="account-actions">
+            <a href="shop.html" class="btn-primary"><i class="fas fa-shopping-bag"></i> Continue Shopping</a>
+            <a href="cart.html" class="btn-primary" style="background:var(--metallic-blue-dark);color:#fff;"><i class="fas fa-shopping-cart"></i> View Cart</a>
+        </div>
+
+        <div class="profile-card">
+            <h2><i class="fas fa-user-circle"></i> Profile</h2>
+            <div class="profile-grid" id="profileGrid">Loading...</div>
+        </div>
+
+        <div class="orders-card">
+            <h2><i class="fas fa-receipt"></i> Buy History</h2>
+            <div id="ordersList">Loading orders...</div>
+        </div>
+    </div>
+
+    <footer class="site-footer"><p>&copy; 2026 Janu Print | FAB</p></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config/supabase-config.js"></script>
+    <script src="assets/customer-auth.js"></script>
+    <script src="assets/cart.js"></script>
+    <script src="assets/nav-user.js"></script>
+    <script>
+        document.getElementById('mobileToggle')?.addEventListener('click', () => {
+            document.getElementById('navMenu').classList.toggle('active');
+        });
+
+        (async () => {
+            const profile = await JPFCustomerAuth.getProfile();
+            if (!profile) {
+                window.location.href = 'customer-login.html';
+                return;
+            }
+
+            document.getElementById('profileGrid').innerHTML = `
+                <div><span class="label">Name</span>${JPFCustomerAuth.escapeHtml(profile.name)}</div>
+                <div><span class="label">Phone</span>${JPFCustomerAuth.escapeHtml(profile.phone || '-')}</div>
+                <div><span class="label">Email</span>${JPFCustomerAuth.escapeHtml(profile.email || '-')}</div>
+                <div><span class="label">NIC</span>${JPFCustomerAuth.escapeHtml(profile.nic || '—')}</div>
+            `;
+
+            const orders = await JPFCustomerAuth.loadOrderHistory();
+            const list = document.getElementById('ordersList');
+
+            if (!orders.length) {
+                list.innerHTML = `<div class="empty-orders"><p>No orders yet.</p><a href="shop.html" class="btn-primary" style="margin-top:1rem;display:inline-flex;">Start Shopping</a></div>`;
+                return;
+            }
+
+            list.innerHTML = orders.map(o => {
+                const items = (o.order_items || []).map(i => i.product_name).join(', ') || 'Custom order';
+                const date = o.created_at ? new Date(o.created_at).toLocaleDateString() : '-';
+                return `
+                    <div class="order-row">
+                        <div class="order-row-head">
+                            <strong>Order #${JPFCustomerAuth.escapeHtml(String(o.id).slice(0, 8))}</strong>
+                            <span class="badge badge-${JPFCustomerAuth.escapeHtml(o.status || 'pending')}">${JPFCustomerAuth.escapeHtml(o.status || 'pending')}</span>
+                        </div>
+                        <div class="order-meta">
+                            ${JPFCustomerAuth.escapeHtml(items)}<br>
+                            Total: AED ${Number(o.total_amount || 0).toFixed(2)} &bull; ${date}
+                        </div>
+                    </div>`;
+            }).join('');
+        })();
+    </script>
+</body>
+</html>
