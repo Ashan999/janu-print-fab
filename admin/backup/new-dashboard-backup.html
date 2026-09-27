@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Janu Print | FAB - Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Poppins,sans-serif;background:#f5f6f8;color:#222}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:#1e4563;color:#fff;padding:20px 14px;overflow-y:auto}
+.brand{padding:10px 12px 25px;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:15px}
+.brand h1{font-size:19px}.brand span{font-size:11px;opacity:.65}
+.menu{display:flex;flex-direction:column;gap:5px}
+.menu button{width:100%;border:0;background:transparent;color:rgba(255,255,255,.75);padding:11px 13px;border-radius:8px;text-align:left;font-size:13px;transition:.2s}
+.menu button:hover{background:rgba(255,255,255,.08);color:#fff}
+.menu button.active{background:#00c3dd;color:#fff}
+.logout{margin-top:20px;border-top:1px solid rgba(255,255,255,.12);padding-top:15px}
+.main{margin-left:240px;min-height:100vh}
+.topbar{height:65px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 25px;border-bottom:1px solid #eee}
+.topbar h2{font-size:18px;color:#1e4563}.admin-user{font-size:13px;color:#777}
+.content{padding:25px}.page{display:none}.page.active{display:block}
+.page-title{margin-bottom:20px}.page-title h3{font-size:20px;color:#1e4563}.page-title p{font-size:13px;color:#777;margin-top:3px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:25px}
+.stat-card,.panel{background:#fff;border:1px solid #eee;border-radius:12px}
+.stat-card{padding:20px}.stat-card span{font-size:12px;color:#777}.stat-card strong{display:block;margin-top:7px;font-size:25px;color:#1e4563}
+.panel{padding:20px;margin-bottom:20px}
+.panel-header{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:15px}
+.panel-header h4{font-size:15px;color:#1e4563}
+.btn{border:0;padding:9px 15px;border-radius:7px;font-size:12px}
+.btn-primary{background:#d4af37;color:#1e4563;font-weight:600}.btn-blue{background:#00c3dd;color:#fff}
+.btn-gray{background:#eee;color:#333}.btn-danger{background:#fdecea;color:#c0392b}
+.btn-small{padding:6px 10px;font-size:11px}
+table{width:100%;border-collapse:collapse}th,td{padding:12px 8px;border-bottom:1px solid #eee;text-align:left;font-size:12px}th{color:#777;font-weight:600}
+.badge{display:inline-block;padding:4px 8px;border-radius:20px;font-size:10px;background:#e9f7ef;color:#218c52}
+.badge.off{background:#eee;color:#777}.status-pending{background:#fff4d6;color:#996c00}.status-processing{background:#e1f4ff;color:#0877a3}.status-ready{background:#e8e2ff;color:#6044a5}.status-delivered{background:#e5f7eb;color:#218c52}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.mini-card{background:#fff;border:1px solid #eee;border-radius:10px;padding:15px}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:11px;font-weight:600;color:#555}.field input,.field select,.field textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:7px;outline:none}.field textarea{min-height:80px;resize:vertical}
+.actions{display:flex;gap:7px;flex-wrap:wrap}.empty{text-align:center;color:#888;padding:25px}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;padding:20px}
+.modal.open{display:flex}.modal-box{background:#fff;width:100%;max-width:700px;max-height:90vh;overflow:auto;border-radius:12px;padding:22px}
+.modal-box.large{max-width:950px}.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.modal-header h3{font-size:17px;color:#1e4563}.close{border:0;background:none;font-size:22px;color:#777}
+.option-list{display:flex;flex-direction:column;gap:8px}.option-row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#f5f6f8;border-radius:8px;padding:12px}.option-row strong{font-size:13px}.option-row small{display:block;color:#888;margin-top:3px}
+.value-table{margin-top:12px}.value-table input{padding:7px;border:1px solid #ddd;border-radius:5px;width:100%}
+.color-dot{display:inline-block;width:18px;height:18px;border-radius:50%;border:1px solid #ccc;vertical-align:middle;margin-right:6px}
+.mobile-menu{display:none;border:0;background:none;font-size:22px}
+@media(max-width:900px){.sidebar{transform:translateX(-100%);transition:.25s;z-index:1000}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.mobile-menu{display:block}.stats{grid-template-columns:repeat(2,1fr)}.cards{grid-template-columns:1fr}}
+@media(max-width:600px){.content{padding:15px}.stats,.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.admin-user{display:none}table{display:block;overflow-x:auto;white-space:nowrap}}
+</style>
+</head>
+
+<body>
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><h1>Janu Print | FAB</h1><span>Super Admin</span></div>
+  <nav class="menu">
+    <button class="active" onclick="showPage('dashboard',this)">Dashboard</button>
+    <button onclick="showPage('categories',this)">Categories</button>
+    <button onclick="showPage('pricing',this)">Pricing</button>
+    <button onclick="showPage('delivery',this)">Delivery</button>
+    <button onclick="showPage('orders',this)">Orders</button>
+    <button onclick="showPage('settings',this)">Settings</button>
+  </nav>
+  <div class="logout"><button onclick="logout()" style="width:100%;border:0;background:transparent;color:#fff;text-align:left;padding:11px 13px">Logout</button></div>
+</aside>
+
+<main class="main">
+<header class="topbar">
+  <div style="display:flex;align-items:center;gap:15px">
+    <button class="mobile-menu" onclick="toggleSidebar()">☰</button>
+    <h2 id="pageTitle">Dashboard</h2>
+  </div>
+  <div class="admin-user">Super Admin</div>
+</header>
+
+<section class="content">
+
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <div class="page-title"><h3>Dashboard</h3><p>Janu Print | FAB overview</p></div>
+  <div class="stats">
+    <div class="stat-card"><span>Total Orders</span><strong id="statTotal">0</strong></div>
+    <div class="stat-card"><span>Pending</span><strong id="statPending">0</strong></div>
+    <div class="stat-card"><span>Processing</span><strong id="statProcessing">0</strong></div>
+    <div class="stat-card"><span>Delivered</span><strong id="statDelivered">0</strong></div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h4>Recent Orders</h4><button class="btn btn-blue" onclick="showPageByName('orders')">View Orders</button></div>
+    <table><thead><tr><th>Order</th><th>Customer</th><th>Category</th><th>Total</th><th>Status</th></tr></thead>
+    <tbody id="recentOrders"></tbody></table>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<div class="page" id="page-categories">
+  <div class="page-title"><h3>Categories</h3><p>Manage main categories and customer options</p></div>
+  <div class="panel">
+    <div class="panel-header">
+      <div><h4>Main Categories</h4><p style="font-size:12px;color:#777;margin-top:3px">Create categories without changing code.</p></div>
+      <button class="btn btn-primary" onclick="openCategoryModal()">+ Add Category</button>
+    </div>
+    <table><thead><tr><th>Category</th><th>Options</th><th>Status</th><th>Action</th></tr></thead><tbody id="categoryTable"></tbody></table>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div class="page" id="page-pricing">
+  <div class="page-title"><h3>Pricing</h3><p>Manage option and combination prices</p></div>
+  <div class="panel">
+    <div class="panel-header"><h4>Pricing Rules</h4><button class="btn btn-primary" onclick="openPriceModal()">+ Add Price</button></div>
+    <div id="pricingList"></div>
+  </div>
+</div>
+
+<!-- DELIVERY -->
+<div class="page" id="page-delivery">
+  <div class="page-title"><h3>Delivery</h3><p>Manage delivery dates, time slots and charges</p></div>
+  <div class="panel">
+    <div class="panel-header"><h4>Delivery Slots</h4><button class="btn btn-primary" onclick="openDeliveryModal()">+ Add Delivery Slot</button></div>
+    <table><thead><tr><th>Date</th><th>Time Slot</th><th>Fee</th><th>Status</th><th>Action</th></tr></thead><tbody id="deliveryTable"></tbody></table>
+  </div>
+</div>
+
+<!-- ORDERS -->
+<div class="page" id="page-orders">
+  <div class="page-title"><h3>Orders</h3><p>Manage customer orders and status</p></div>
+  <div class="panel">
+    <div class="panel-header"><h4>All Orders</h4><button class="btn btn-primary" onclick="addDemoOrder()">+ Demo Order</button></div>
+    <table><thead><tr><th>Order</th><th>Customer</th><th>Category</th><th>Total</th><th>Status</th><th>Action</th></tr></thead><tbody id="ordersTable"></tbody></table>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="page" id="page-settings">
+  <div class="page-title"><h3>Settings</h3><p>Business and ordering settings</p></div>
+  <div class="panel">
+    <div class="form-grid">
+      <div class="field"><label>Business Name</label><input id="setBusiness"></div>
+      <div class="field"><label>WhatsApp Number</label><input id="setWhatsapp"></div>
+      <div class="field"><label>Phone</label><input id="setPhone"></div>
+      <div class="field"><label>Currency</label><input id="setCurrency"></div>
+      <div class="field"><label>WhatsApp Ordering</label><select id="setWhatsAppEnabled"><option value="true">Enabled</option><option value="false">Disabled</option></select></div>
+      <div class="field"><label>File Upload</label><select id="setUploadEnabled"><option value="true">Enabled</option><option value="false">Disabled</option></select></div>
+    </div>
+    <div style="margin-top:15px"><button class="btn btn-primary" onclick="saveSettings()">Save Settings</button></div>
+  </div>
+</div>
+
+</section>
+</main>
+
+<!-- CATEGORY MODAL -->
+<div class="modal" id="categoryModal">
+<div class="modal-box">
+  <div class="modal-header"><h3 id="categoryModalTitle">Add Category</h3><button class="close" onclick="closeModal('categoryModal')">×</button></div>
+  <div class="form-grid">
+    <div class="field"><label>Category Name</label><input id="catName" placeholder="Example: DTF Custom Print"></div>
+    <div class="field"><label>Status</label><select id="catStatus"><option value="true">Active</option><option value="false">Hidden</option></select></div>
+    <div class="field full"><label>Description</label><textarea id="catDescription" placeholder="Short description"></textarea></div>
+  </div>
+  <div class="actions" style="justify-content:flex-end;margin-top:15px">
+    <button class="btn btn-gray" onclick="closeModal('categoryModal')">Cancel</button>
+    <button class="btn btn-primary" onclick="saveCategory()">Save Category</button>
+  </div>
+</div>
+</div>
+
+<!-- OPTIONS MODAL -->
+<div class="modal" id="optionsModal">
+<div class="modal-box large">
+  <div class="modal-header"><div><h3 id="optionsTitle">Category Options</h3><p id="optionsSubtitle" style="font-size:12px;color:#777;margin-top:3px"></p></div><button class="close" onclick="closeModal('optionsModal')">×</button></div>
+  <div class="actions" style="margin-bottom:15px">
+    <button class="btn btn-blue" onclick="addOption('Size')">+ Size</button>
+    <button class="btn btn-blue" onclick="addOption('Colour')">+ Colour</button>
+    <button class="btn btn-blue" onclick="addOption('Material')">+ Material</button>
+    <button class="btn btn-blue" onclick="addOption('GSM')">+ GSM</button>
+    <button class="btn btn-blue" onclick="addOption('Style')">+ Style</button>
+    <button class="btn btn-blue" onclick="addOption('Sleeve')">+ Sleeve</button>
+    <button class="btn btn-blue" onclick="addOption('Capacity')">+ Capacity</button>
+    <button class="btn btn-blue" onclick="addOption('Custom Size')">+ Custom Size</button>
+  </div>
+  <div class="option-list" id="optionsList"></div>
+</div>
+</div>
+
+<!-- VALUES MODAL -->
+<div class="modal" id="valuesModal">
+<div class="modal-box large">
+  <div class="modal-header"><div><h3 id="valuesTitle">Option Values</h3><p style="font-size:12px;color:#777">Add values and prices.</p></div><button class="close" onclick="closeModal('valuesModal')">×</button></div>
+  <div class="panel" style="padding:15px;margin-bottom:15px">
+    <div class="form-grid">
+      <div class="field"><label>Value Name</label><input id="valueName" placeholder="A4 / XL / Black"></div>
+      <div class="field"><label>Price</label><input id="valuePrice" type="number" step="0.01" placeholder="0"></div>
+    </div>
+    <div style="margin-top:10px"><button class="btn btn-primary" onclick="saveValue()">+ Add Value</button></div>
+  </div>
+  <table><thead><tr><th>Value</th><th>Price</th><th>Status</th><th>Action</th></tr></thead><tbody id="valuesTable"></tbody></table>
+</div>
+</div>
+
+<!-- PRICE MODAL -->
+<div class="modal" id="priceModal">
+<div class="modal-box">
+  <div class="modal-header"><h3>Add Pricing Rule</h3><button class="close" onclick="closeModal('priceModal')">×</button></div>
+  <div class="form-grid">
+    <div class="field"><label>Category</label><select id="priceCategory"></select></div>
+    <div class="field"><label>Rule / Combination</label><input id="priceRule" placeholder="A4 or L + Black + 180 GSM"></div>
+    <div class="field"><label>Price</label><input id="priceAmount" type="number" step="0.01"></div>
+    <div class="field"><label>Pricing Method</label><select id="priceMethod"><option>Fixed</option><option>Per SQM</option><option>Base + Extra</option></select></div>
+  </div>
+  <div class="actions" style="justify-content:flex-end;margin-top:15px"><button class="btn btn-gray" onclick="closeModal('priceModal')">Cancel</button><button class="btn btn-primary" onclick="savePrice()">Save Price</button></div>
+</div>
+</div>
+
+<!-- DELIVERY MODAL -->
+<div class="modal" id="deliveryModal">
+<div class="modal-box">
+  <div class="modal-header"><h3>Add Delivery Slot</h3><button class="close" onclick="closeModal('deliveryModal')">×</button></div>
+  <div class="form-grid">
+    <div class="field"><label>Date</label><input id="deliveryDate" type="date"></div>
+    <div class="field"><label>Time Slot</label><input id="deliveryTime" placeholder="10:00 AM - 12:00 PM"></div>
+    <div class="field"><label>Delivery Fee</label><input id="deliveryFee" type="number" step="0.01"></div>
+  </div>
+  <div class="actions" style="justify-content:flex-end;margin-top:15px"><button class="btn btn-gray" onclick="closeModal('deliveryModal')">Cancel</button><button class="btn btn-primary" onclick="saveDelivery()">Save Slot</button></div>
+</div>
+</div>
+
+<!-- ORDER MODAL -->
+<div class="modal" id="orderModal">
+<div class="modal-box large">
+  <div class="modal-header"><h3 id="orderTitle">Order</h3><button class="close" onclick="closeModal('orderModal')">×</button></div>
+  <div id="orderDetails"></div>
+  <div class="actions" style="margin-top:15px">
+    <button class="btn btn-blue" onclick="setCurrentOrderStatus('Pending')">Pending</button>
+    <button class="btn btn-blue" onclick="setCurrentOrderStatus('Processing')">Processing</button>
+    <button class="btn btn-blue" onclick="setCurrentOrderStatus('Ready')">Ready</button>
+    <button class="btn btn-primary" onclick="setCurrentOrderStatus('Delivered')">Delivered</button>
+  </div>
+</div>
+</div>
+
+<script>
+const KEY="janu_print_demo_v2";
+let state={
+ categories:[
+  {id:"cat1",name:"DTF Custom Print",description:"Custom DTF printing",active:true,options:[
+   {id:"o1",name:"Size",values:[["A5",15],["A4",25],["A3",40],["Custom",0]]},
+   {id:"o2",name:"Design Upload",values:[["Upload",0],["WhatsApp",0]]},
+   {id:"o3",name:"Custom Size",values:[]}
+  ]},
+  {id:"cat2",name:"Plain T-Shirt",description:"Plain printed T-shirts",active:true,options:[
+   {id:"o4",name:"Size",values:[["S",20],["M",20],["L",22],["XL",24],["XXL",26]]},
+   {id:"o5",name:"Colour",values:[["Black",0],["White",0],["Red",2],["Green",2]]},
+   {id:"o6",name:"GSM",values:[["160 GSM",0],["180 GSM",3],["200 GSM",5]]},
+   {id:"o7",name:"Style",values:[["Round Neck",0],["Polo",8],["V-Neck",4]]},
+   {id:"o8",name:"Sleeve",values:[["Short",0],["Long",5]]}
+  ]},
+  {id:"cat3",name:"Bag Printing",description:"Printed bags",active:true,options:[
+   {id:"o9",name:"Material",values:[["Non Woven",10],["Canvas",20],["Cotton",18]]},
+   {id:"o10",name:"Size",values:[["Small",10],["Medium",15],["Large",20]]}
+  ]},
+  {id:"cat4",name:"Mug Printing",description:"Printed mugs",active:true,options:[
+   {id:"o11",name:"Material",values:[["Ceramic",15],["Magic Mug",25],["Metal",30]]},
+   {id:"o12",name:"Capacity",values:[["250ml",15],["330ml",18],["450ml",22]]}
+  ]}
+ ],
+ prices:[],
+ deliveries:[],
+ orders:[
+  {id:"ORD-1001",customer:"Demo Customer",category:"DTF Custom Print",total:25,status:"Pending",options:"A4, Upload",delivery:"Standard"},
+  {id:"ORD-1002",customer:"Test Customer",category:"Plain T-Shirt",total:32,status:"Processing",options:"L, Black, 180 GSM, Round Neck, Short",delivery:"Standard"}
+ ],
+ settings:{business:"Janu Print | FAB",whatsapp:"",phone:"",currency:"LKR",whatsappEnabled:true,uploadEnabled:true}
+};
+let editingCategoryId=null,currentCategoryId=null,currentOptionId=null,currentOrderId=null;
+
+function loadState(){
+ const raw=localStorage.getItem(KEY);
+ if(raw){try{state=JSON.parse(raw)}catch(e){}}
+}
+function saveState(){localStorage.setItem(KEY,JSON.stringify(state));}
+function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function money(v){return `${state.settings.currency||"LKR"} ${Number(v||0).toFixed(2)}`}
+function openModal(id){document.getElementById(id).classList.add("open")}
+function closeModal(id){document.getElementById(id).classList.remove("open")}
+
+function showPage(page,button){
+ document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+ document.getElementById("page-"+page)?.classList.add("active");
+ document.querySelectorAll(".menu button").forEach(x=>x.classList.remove("active"));
+ if(button)button.classList.add("active");
+ const titles={dashboard:"Dashboard",categories:"Categories",pricing:"Pricing",delivery:"Delivery",orders:"Orders",settings:"Settings"};
+ document.getElementById("pageTitle").textContent=titles[page]||"Dashboard";
+ document.getElementById("sidebar").classList.remove("open");
+ if(page==="dashboard")renderDashboard();
+ if(page==="categories")renderCategories();
+ if(page==="pricing")renderPricing();
+ if(page==="delivery")renderDeliveries();
+ if(page==="orders")renderOrders();
+ if(page==="settings")renderSettings();
+}
+function showPageByName(page){const b=[...document.querySelectorAll(".menu button")].find(x=>x.getAttribute("onclick")?.includes("'"+page+"'"));showPage(page,b)}
+function toggleSidebar(){document.getElementById("sidebar").classList.toggle("open")}
+function logout(){alert("Supabase logout will be connected in the final API stage.")}
+
+function renderDashboard(){
+ const total=state.orders.length;
+ const pending=state.orders.filter(x=>x.status==="Pending").length;
+ const processing=state.orders.filter(x=>x.status==="Processing").length;
+ const delivered=state.orders.filter(x=>x.status==="Delivered").length;
+ document.getElementById("statTotal").textContent=total;
+ document.getElementById("statPending").textContent=pending;
+ document.getElementById("statProcessing").textContent=processing;
+ document.getElementById("statDelivered").textContent=delivered;
+ document.getElementById("recentOrders").innerHTML=state.orders.slice(-5).reverse().map(o=>`
+ <tr><td>${esc(o.id)}</td><td>${esc(o.customer)}</td><td>${esc(o.category)}</td><td>${money(o.total)}</td><td><span class="badge status-${o.status.toLowerCase()}">${esc(o.status)}</span></td></tr>`).join("")||`<tr><td colspan="5" class="empty">No orders yet</td></tr>`;
+}
+
+function renderCategories(){
+ document.getElementById("categoryTable").innerHTML=state.categories.map(c=>`
+ <tr>
+  <td><strong>${esc(c.name)}</strong><div style="font-size:10px;color:#888">${esc(c.description)}</div></td>
+  <td>${c.options.length} options</td>
+  <td><span class="badge ${c.active?"":"off"}">${c.active?"Active":"Hidden"}</span></td>
+  <td><div class="actions">
+   <button class="btn btn-blue btn-small" onclick="openOptions('${c.id}')">Options</button>
+   <button class="btn btn-gray btn-small" onclick="editCategory('${c.id}')">Edit</button>
+   <button class="btn btn-danger btn-small" onclick="deleteCategory('${c.id}')">Delete</button>
+  </div></td>
+ </tr>`).join("");
+}
+function openCategoryModal(){
+ editingCategoryId=null;
+ document.getElementById("categoryModalTitle").textContent="Add Category";
+ document.getElementById("catName").value="";
+ document.getElementById("catDescription").value="";
+ document.getElementById("catStatus").value="true";
+ openModal("categoryModal");
+}
+function editCategory(id){
+ const c=state.categories.find(x=>x.id===id);if(!c)return;
+ editingCategoryId=id;
+ document.getElementById("categoryModalTitle").textContent="Edit Category";
+ document.getElementById("catName").value=c.name;
+ document.getElementById("catDescription").value=c.description||"";
+ document.getElementById("catStatus").value=String(c.active);
+ openModal("categoryModal");
+}
+function saveCategory(){
+ const name=document.getElementById("catName").value.trim();
+ if(!name){alert("Enter category name.");return}
+ if(editingCategoryId){
+  const c=state.categories.find(x=>x.id===editingCategoryId);c.name=name;c.description=document.getElementById("catDescription").value.trim();c.active=document.getElementById("catStatus").value==="true";
+ }else{
+  state.categories.push({id:"cat"+Date.now(),name,description:document.getElementById("catDescription").value.trim(),active:true,options:[]});
+ }
+ saveState();closeModal("categoryModal");renderCategories();
+}
+function deleteCategory(id){
+ if(!confirm("Delete this category?"))return;
+ state.categories=state.categories.filter(x=>x.id!==id);saveState();renderCategories();
+}
+
+function openOptions(categoryId){
+ currentCategoryId=categoryId;
+ const c=state.categories.find(x=>x.id===categoryId);if(!c)return;
+ document.getElementById("optionsTitle").textContent=c.name+" Options";
+ document.getElementById("optionsSubtitle").textContent="Manage customer selections and values.";
+ renderOptions();openModal("optionsModal");
+}
+function renderOptions(){
+ const c=state.categories.find(x=>x.id===currentCategoryId);if(!c)return;
+ document.getElementById("optionsList").innerHTML=c.options.map(o=>`
+ <div class="option-row">
+  <div><strong>${esc(o.name)}</strong><small>${o.values.length} values</small></div>
+  <div class="actions">
+   <button class="btn btn-blue btn-small" onclick="openValues('${o.id}')">Values & Prices</button>
+   <button class="btn btn-danger btn-small" onclick="removeOption('${o.id}')">Remove</button>
+  </div>
+ </div>`).join("")||`<div class="empty">No options added yet.</div>`;
+}
+function addOption(name){
+ const c=state.categories.find(x=>x.id===currentCategoryId);if(!c)return;
+ if(c.options.some(x=>x.name.toLowerCase()===name.toLowerCase())){alert("This option already exists.");return}
+ c.options.push({id:"o"+Date.now()+Math.random(),name,values:[]});saveState();renderOptions();
+}
+function removeOption(id){
+ const c=state.categories.find(x=>x.id===currentCategoryId);if(!c)return;
+ c.options=c.options.filter(x=>x.id!==id);saveState();renderOptions();
+}
+
+function openValues(optionId){
+ currentOptionId=optionId;
+ const c=state.categories.find(x=>x.id===currentCategoryId);const o=c?.options.find(x=>x.id===optionId);if(!o)return;
+ document.getElementById("valuesTitle").textContent=o.name+" Values & Prices";
+ document.getElementById("valueName").value="";
+ document.getElementById("valuePrice").value="";
+ renderValues();openModal("valuesModal");
+}
+function renderValues(){
+ const c=state.categories.find(x=>x.id===currentCategoryId);const o=c?.options.find(x=>x.id===currentOptionId);if(!o)return;
+ document.getElementById("valuesTable").innerHTML=o.values.map((v,i)=>`
+ <tr><td>${esc(v[0])}</td><td>${money(v[1])}</td><td><span class="badge">Active</span></td>
+ <td><button class="btn btn-danger btn-small" onclick="deleteValue(${i})">Delete</button></td></tr>`).join("")||`<tr><td colspan="4" class="empty">No values yet</td></tr>`;
+}
+function saveValue(){
+ const name=document.getElementById("valueName").value.trim();const price=Number(document.getElementById("valuePrice").value||0);
+ if(!name){alert("Enter value name.");return}
+ const c=state.categories.find(x=>x.id===currentCategoryId);const o=c.options.find(x=>x.id===currentOptionId);
+ o.values.push([name,price]);saveState();document.getElementById("valueName").value="";document.getElementById("valuePrice").value="";renderValues();renderOptions();
+}
+function deleteValue(index){
+ const c=state.categories.find(x=>x.id===currentCategoryId);const o=c.options.find(x=>x.id===currentOptionId);
+ o.values.splice(index,1);saveState();renderValues();renderOptions();
+}
+
+function renderPricing(){
+ const el=document.getElementById("pricingList");
+ if(!state.prices.length){el.innerHTML=`<div class="empty">No pricing rules yet. Add one above.</div>`;return}
+ el.innerHTML=`<table><thead><tr><th>Category</th><th>Rule</th><th>Method</th><th>Price</th><th>Action</th></tr></thead><tbody>`+
+ state.prices.map((p,i)=>`<tr><td>${esc(p.category)}</td><td>${esc(p.rule)}</td><td>${esc(p.method)}</td><td>${money(p.amount)}</td><td><button class="btn btn-danger btn-small" onclick="deletePrice(${i})">Delete</button></td></tr>`).join("")+
+ `</tbody></table>`;
+}
+function openPriceModal(){
+ document.getElementById("priceCategory").innerHTML=state.categories.map(c=>`<option>${esc(c.name)}</option>`).join("");
+ document.getElementById("priceRule").value="";document.getElementById("priceAmount").value="";document.getElementById("priceMethod").value="Fixed";openModal("priceModal");
+}
+function savePrice(){
+ const category=document.getElementById("priceCategory").value,rule=document.getElementById("priceRule").value.trim(),amount=Number(document.getElementById("priceAmount").value||0),method=document.getElementById("priceMethod").value;
+ if(!rule){alert("Enter a pricing rule.");return}
+ state.prices.push({category,rule,amount,method});saveState();closeModal("priceModal");renderPricing();
+}
+function deletePrice(i){state.prices.splice(i,1);saveState();renderPricing()}
+
+function renderDeliveries(){
+ document.getElementById("deliveryTable").innerHTML=state.deliveries.map((d,i)=>`
+ <tr><td>${esc(d.date)}</td><td>${esc(d.time)}</td><td>${money(d.fee)}</td><td><span class="badge ${d.active?"":"off"}">${d.active?"Active":"Hidden"}</span></td>
+ <td><div class="actions"><button class="btn btn-gray btn-small" onclick="toggleDelivery(${i})">Toggle</button><button class="btn btn-danger btn-small" onclick="deleteDelivery(${i})">Delete</button></div></td></tr>`).join("")||`<tr><td colspan="5" class="empty">No delivery slots yet.</td></tr>`;
+}
+function openDeliveryModal(){document.getElementById("deliveryDate").value="";document.getElementById("deliveryTime").value="";document.getElementById("deliveryFee").value="";openModal("deliveryModal")}
+function saveDelivery(){
+ const date=document.getElementById("deliveryDate").value,time=document.getElementById("deliveryTime").value.trim(),fee=Number(document.getElementById("deliveryFee").value||0);
+ if(!date||!time){alert("Enter date and time slot.");return}
+ state.deliveries.push({date,time,fee,active:true});saveState();closeModal("deliveryModal");renderDeliveries();
+}
+function toggleDelivery(i){state.deliveries[i].active=!state.deliveries[i].active;saveState();renderDeliveries()}
+function deleteDelivery(i){state.deliveries.splice(i,1);saveState();renderDeliveries()}
+
+function renderOrders(){
+ document.getElementById("ordersTable").innerHTML=state.orders.map(o=>`
+ <tr><td>${esc(o.id)}</td><td>${esc(o.customer)}</td><td>${esc(o.category)}</td><td>${money(o.total)}</td>
+ <td><span class="badge status-${o.status.toLowerCase()}">${esc(o.status)}</span></td>
+ <td><button class="btn btn-blue btn-small" onclick="openOrder('${o.id}')">View</button></td></tr>`).join("")||`<tr><td colspan="6" class="empty">No orders yet.</td></tr>`;
+}
+function addDemoOrder(){
+ const c=state.categories[0];
+ state.orders.push({id:"ORD-"+(1000+state.orders.length+1),customer:"New Demo Customer",category:c?.name||"DTF Custom Print",total:35,status:"Pending",options:"A4, Upload",delivery:"Standard"});
+ saveState();renderOrders();renderDashboard();
+}
+function openOrder(id){
+ currentOrderId=id;const o=state.orders.find(x=>x.id===id);if(!o)return;
+ document.getElementById("orderTitle").textContent=o.id;
+ document.getElementById("orderDetails").innerHTML=`
+ <div class="cards">
+  <div class="mini-card"><small>Customer</small><strong>${esc(o.customer)}</strong></div>
+  <div class="mini-card"><small>Category</small><strong>${esc(o.category)}</strong></div>
+  <div class="mini-card"><small>Total</small><strong>${money(o.total)}</strong></div>
+ </div>
+ <div class="panel" style="margin-top:15px"><strong>Selected Options</strong><p style="margin-top:8px;font-size:13px">${esc(o.options)}</p></div>
+ <div class="panel"><strong>Delivery</strong><p style="margin-top:8px;font-size:13px">${esc(o.delivery)}</p></div>
+ <div class="panel"><strong>Design File</strong><p style="margin-top:8px;font-size:13px;color:#777">Demo upload area. Real file storage will be connected later.</p></div>`;
+ openModal("orderModal");
+}
+function setCurrentOrderStatus(status){
+ const o=state.orders.find(x=>x.id===currentOrderId);if(!o)return;o.status=status;saveState();renderOrders();renderDashboard();openOrder(currentOrderId);
+}
+
+function renderSettings(){
+ const s=state.settings;
+ document.getElementById("setBusiness").value=s.business||"";
+ document.getElementById("setWhatsapp").value=s.whatsapp||"";
+ document.getElementById("setPhone").value=s.phone||"";
+ document.getElementById("setCurrency").value=s.currency||"LKR";
+ document.getElementById("setWhatsAppEnabled").value=String(s.whatsappEnabled!==false);
+ document.getElementById("setUploadEnabled").value=String(s.uploadEnabled!==false);
+}
+function saveSettings(){
+ state.settings={business:document.getElementById("setBusiness").value.trim(),whatsapp:document.getElementById("setWhatsapp").value.trim(),phone:document.getElementById("setPhone").value.trim(),currency:document.getElementById("setCurrency").value.trim()||"LKR",whatsappEnabled:document.getElementById("setWhatsAppEnabled").value==="true",uploadEnabled:document.getElementById("setUploadEnabled").value==="true"};
+ saveState();alert("Settings saved locally.");renderDashboard();
+}
+
+document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)m.classList.remove("open")}));
+
+loadState();
+renderDashboard();
+</script>
+</body>
+</html>
