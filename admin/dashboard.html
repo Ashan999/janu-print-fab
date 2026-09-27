@@ -3,941 +3,615 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard | Janu Print FAB</title>
+<title>Janu Print | FAB - Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <style>
-    :root {
-        --metallic-blue: #00c3dd;
-        --metallic-blue-dark: #1e4563;
-        --gold-accent: #d4af37;
-        --gold-gradient: linear-gradient(135deg, #b8860b 0%, #d4af37 50%, #f6d365 100%);
-        --white: #ffffff;
-        --light-gray: #f8f9fa;
-        --text-dark: #333333;
-        --text-light: #666666;
-        --sidebar-width: 260px;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-        font-family: 'Poppins', sans-serif;
-        background: var(--light-gray);
-        color: var(--text-dark);
-    }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Poppins,sans-serif;background:#f5f6f8;color:#222}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:#1e4563;color:#fff;padding:20px 14px;overflow-y:auto}
+.brand{padding:10px 12px 25px;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:15px}
+.brand h1{font-size:19px}.brand span{font-size:11px;opacity:.65}
+.menu{display:flex;flex-direction:column;gap:5px}
+.menu button{width:100%;border:0;background:transparent;color:rgba(255,255,255,.75);padding:11px 13px;border-radius:8px;text-align:left;font-size:13px;transition:.2s}
+.menu button:hover{background:rgba(255,255,255,.08);color:#fff}
+.menu button.active{background:#00c3dd;color:#fff}
+.logout{margin-top:20px;border-top:1px solid rgba(255,255,255,.12);padding-top:15px}
+.main{margin-left:240px;min-height:100vh}
+.topbar{height:65px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 25px;border-bottom:1px solid #eee}
+.topbar h2{font-size:18px;color:#1e4563}.admin-user{font-size:13px;color:#777}
+.content{padding:25px}.page{display:none}.page.active{display:block}
+.page-title{margin-bottom:20px}.page-title h3{font-size:20px;color:#1e4563}.page-title p{font-size:13px;color:#777;margin-top:3px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:25px}
+.stat-card,.panel{background:#fff;border:1px solid #eee;border-radius:12px}
+.stat-card{padding:20px}.stat-card span{font-size:12px;color:#777}.stat-card strong{display:block;margin-top:7px;font-size:25px;color:#1e4563}
+.panel{padding:20px;margin-bottom:20px}
+.panel-header{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:15px}
+.panel-header h4{font-size:15px;color:#1e4563}
+.btn{border:0;padding:9px 15px;border-radius:7px;font-size:12px}
+.btn-primary{background:#d4af37;color:#1e4563;font-weight:600}.btn-blue{background:#00c3dd;color:#fff}
+.btn-gray{background:#eee;color:#333}.btn-danger{background:#fdecea;color:#c0392b}
+.btn-small{padding:6px 10px;font-size:11px}
+table{width:100%;border-collapse:collapse}th,td{padding:12px 8px;border-bottom:1px solid #eee;text-align:left;font-size:12px}th{color:#777;font-weight:600}
+.badge{display:inline-block;padding:4px 8px;border-radius:20px;font-size:10px;background:#e9f7ef;color:#218c52}
+.badge.off{background:#eee;color:#777}.status-pending{background:#fff4d6;color:#996c00}.status-processing{background:#e1f4ff;color:#0877a3}.status-ready{background:#e8e2ff;color:#6044a5}.status-delivered{background:#e5f7eb;color:#218c52}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.mini-card{background:#fff;border:1px solid #eee;border-radius:10px;padding:15px}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:11px;font-weight:600;color:#555}.field input,.field select,.field textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:7px;outline:none}.field textarea{min-height:80px;resize:vertical}
+.actions{display:flex;gap:7px;flex-wrap:wrap}.empty{text-align:center;color:#888;padding:25px}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;padding:20px}
+.modal.open{display:flex}.modal-box{background:#fff;width:100%;max-width:700px;max-height:90vh;overflow:auto;border-radius:12px;padding:22px}
+.modal-box.large{max-width:950px}.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.modal-header h3{font-size:17px;color:#1e4563}.close{border:0;background:none;font-size:22px;color:#777}
+.option-list{display:flex;flex-direction:column;gap:8px}.option-row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#f5f6f8;border-radius:8px;padding:12px}.option-row strong{font-size:13px}.option-row small{display:block;color:#888;margin-top:3px}
+.value-table{margin-top:12px}.value-table input{padding:7px;border:1px solid #ddd;border-radius:5px;width:100%}
+.color-dot{display:inline-block;width:18px;height:18px;border-radius:50%;border:1px solid #ccc;vertical-align:middle;margin-right:6px}
+.mobile-menu{display:none;border:0;background:none;font-size:22px}
+@media(max-width:900px){.sidebar{transform:translateX(-100%);transition:.25s;z-index:1000}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.mobile-menu{display:block}.stats{grid-template-columns:repeat(2,1fr)}.cards{grid-template-columns:1fr}}
+@media(max-width:600px){.content{padding:15px}.stats,.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.admin-user{display:none}table{display:block;overflow-x:auto;white-space:nowrap}}
 
-    #authGate {
-        position: fixed; inset: 0;
-        background: var(--metallic-blue-dark);
-        display: flex; align-items: center; justify-content: center;
-        color: var(--white); font-size: 1.1rem; z-index: 9999;
-    }
-
-    #appShell { display: none; min-height: 100vh; }
-
-    .sidebar {
-        width: var(--sidebar-width);
-        background: var(--metallic-blue-dark);
-        color: var(--white);
-        position: fixed; top: 0; left: 0; bottom: 0;
-        display: flex; flex-direction: column;
-        z-index: 100; transition: transform 0.3s ease;
-    }
-    .sidebar-brand { padding: 1.6rem 1.4rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
-    .sidebar-brand h1 { font-size: 1.15rem; font-weight: 700; }
-    .sidebar-brand span { font-size: 0.75rem; color: rgba(255,255,255,0.6); }
-    .nav-list { list-style: none; padding: 0.8rem 0; flex: 1; overflow-y: auto; }
-    .nav-list li a {
-        display: flex; align-items: center; gap: 0.8rem;
-        padding: 0.85rem 1.4rem; color: rgba(255,255,255,0.75);
-        text-decoration: none; font-size: 0.92rem; font-weight: 500;
-        cursor: pointer; border-left: 3px solid transparent; transition: 0.2s;
-    }
-    .nav-list li a i { width: 18px; text-align: center; }
-    .nav-list li a:hover { background: rgba(255,255,255,0.06); color: var(--white); }
-    .nav-list li a.active {
-        background: rgba(0,195,221,0.15); border-left-color: var(--metallic-blue); color: var(--white);
-    }
-    .nav-list li.logout-item { border-top: 1px solid rgba(255,255,255,0.1); margin-top: 0.5rem; }
-    .nav-list li.logout-item a:hover { background: rgba(220,53,69,0.2); color: #ff8080; }
-
-    .main-area {
-        margin-left: var(--sidebar-width); flex: 1;
-        display: flex; flex-direction: column; width: calc(100% - var(--sidebar-width));
-    }
-    .topbar {
-        background: var(--white); padding: 1rem 2rem;
-        display: flex; justify-content: space-between; align-items: center;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50;
-    }
-    .topbar h2 { font-size: 1.2rem; color: var(--metallic-blue-dark); }
-    .topbar .admin-email { font-size: 0.85rem; color: var(--text-light); }
-    .menu-toggle { display: none; background: none; border: none; font-size: 1.3rem; color: var(--metallic-blue-dark); cursor: pointer; }
-
-    .content { padding: 2rem; }
-
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.4rem; margin-bottom: 2rem; }
-    .stat-card {
-        background: var(--white); border-radius: 14px; padding: 1.6rem;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.06); border-top: 4px solid var(--metallic-blue);
-    }
-    .stat-card .stat-label { font-size: 0.85rem; color: var(--text-light); margin-bottom: 0.4rem; }
-    .stat-card .stat-value { font-size: 2rem; font-weight: 700; color: var(--metallic-blue-dark); }
-
-    .panel { background: var(--white); border-radius: 14px; box-shadow: 0 6px 20px rgba(0,0,0,0.06); padding: 1.6rem; margin-bottom: 1.6rem; }
-    .panel h3 { font-size: 1rem; color: var(--metallic-blue-dark); margin-bottom: 1rem; }
-    .pm-form { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: end; }
-    .pm-form .field { display: flex; flex-direction: column; }
-    .pm-form label { font-size: 0.8rem; font-weight: 600; margin-bottom: 0.35rem; color: var(--text-dark); }
-    .pm-form input, .pm-form select, .pm-form textarea {
-        padding: 10px 12px; border: 2px solid var(--light-gray);
-        border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 0.9rem; background: var(--white);
-    }
-    .pm-form textarea { resize: vertical; min-height: 80px; }
-    .pm-form input:focus, .pm-form select:focus, .pm-form textarea:focus { outline: none; border-color: var(--metallic-blue); }
-
-    .btn { padding: 10px 18px; border: none; border-radius: 8px; font-weight: 600; font-size: 0.88rem; cursor: pointer; white-space: nowrap; }
-    .btn-primary { background: var(--gold-gradient); color: var(--metallic-blue-dark); }
-    .btn-secondary { background: var(--light-gray); color: var(--text-dark); }
-    .btn-danger { background: #fdecea; color: #c0392b; }
-    .btn-small { padding: 6px 12px; font-size: 0.8rem; }
-    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-
-    table.pm-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
-    table.pm-table th, table.pm-table td { text-align: left; padding: 0.8rem 0.6rem; border-bottom: 1px solid var(--light-gray); font-size: 0.88rem; }
-    table.pm-table th { color: var(--text-light); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; }
-
-    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
-    .badge-active { background: #e6f9ea; color: #1e8a3c; }
-    .badge-inactive { background: #f1f1f1; color: #888; }
-    .badge-pending { background: #fff3cd; color: #856404; }
-    .badge-processing { background: #cce5ff; color: #004085; }
-    .badge-completed { background: #d4edda; color: #155724; }
-    .badge-cancelled { background: #f8d7da; color: #721c24; }
-
-    .row-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-    .msg-box { display: none; padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 1rem; }
-    .msg-success { background: #e6f9ea; color: #1e8a3c; display: block !important; }
-    .msg-error { background: #fdecea; color: #c0392b; display: block !important; }
-
-    .prod-thumb { width: 46px; height: 46px; border-radius: 8px; object-fit: cover; background: var(--light-gray); display: block; }
-    .field-type-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; background: #eef7fb; color: var(--metallic-blue-dark); }
-
-    .subpanel { margin-top: 1.4rem; padding: 1.2rem; background: var(--light-gray); border-radius: 12px; border: 1px dashed #ccc; }
-    .subpanel h4 { font-size: 0.9rem; color: var(--metallic-blue-dark); margin-bottom: 0.8rem; }
-    .checkbox-row { display: flex; align-items: center; gap: 0.5rem; }
-    .checkbox-row input { width: auto; margin: 0; }
-
-    .filter-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.2rem; flex-wrap: wrap; }
-    .filter-tab { padding: 7px 16px; border-radius: 20px; border: 1px solid #ddd; background: #fff; cursor: pointer; font-size: 0.85rem; font-weight: 500; }
-    .filter-tab.active { background: var(--metallic-blue-dark); color: #fff; border-color: var(--metallic-blue-dark); }
-
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); backdrop-filter: blur(3px); z-index: 1000; }
-    .modal-card { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--white); width: min(92vw, 680px); max-height: 88vh; overflow-y: auto; padding: 2rem; border-radius: 16px; z-index: 1001; box-shadow: 0 20px 60px rgba(0,0,0,0.25); border-top: 4px solid var(--metallic-blue); }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--light-gray); }
-    .close-modal-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #888; }
-    .detail-section { margin-bottom: 1.2rem; }
-    .detail-section h4 { font-size: 0.9rem; color: var(--metallic-blue-dark); margin-bottom: 0.5rem; border-bottom: 1px solid #eee; padding-bottom: 4px; }
-    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; font-size: 0.88rem; }
-    .detail-item { display: flex; flex-direction: column; }
-    .detail-item span.label { font-size: 0.75rem; color: var(--text-light); font-weight: 600; }
-    .detail-item span.val { color: var(--text-dark); font-weight: 500; }
-    .options-list { background: var(--light-gray); padding: 0.8rem; border-radius: 8px; font-size: 0.85rem; margin-top: 0.5rem; }
-
-    .progress-bar-bg { background: var(--light-gray); border-radius: 10px; height: 12px; width: 100%; overflow: hidden; margin-top: 4px; }
-    .progress-bar-fill { height: 100%; background: var(--metallic-blue); border-radius: 10px; }
-
-    @media (max-width: 900px) {
-        .sidebar { transform: translateX(-100%); }
-        .sidebar.open { transform: translateX(0); }
-        .main-area { margin-left: 0; width: 100%; }
-        .menu-toggle { display: block; }
-        .pm-form { grid-template-columns: 1fr; }
-        .detail-grid { grid-template-columns: 1fr; }
-    }
+.delivery-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.delivery-card{background:#f8fafb;border:1px solid #e7ebef;border-radius:10px;padding:15px}
+.delivery-card h5{font-size:13px;color:#1e4563;margin-bottom:8px}
+.help{font-size:11px;color:#777;line-height:1.5}
+.switch{display:flex;align-items:center;gap:8px;font-size:12px}
+.order-actions{display:flex;gap:8px;flex-wrap:wrap}
+.status-flow{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.status-flow span{padding:6px 9px;border-radius:16px;background:#f0f2f4;font-size:10px}
+.status-flow span.current{background:#00c3dd;color:#fff}
+.checklist{display:grid;gap:8px;margin-top:12px}
+.check-row{display:flex;align-items:center;gap:8px;padding:9px;background:#f7f8fa;border-radius:7px;font-size:12px}
+.order-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.order-summary .mini-card{padding:12px}
+@media(max-width:900px){.delivery-grid,.order-summary{grid-template-columns:1fr}}
 </style>
 </head>
+
 <body>
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><h1>Janu Print | FAB</h1><span>Super Admin</span></div>
+  <nav class="menu">
+    <button class="active" onclick="showPage('dashboard',this)">Dashboard</button>
+    <button onclick="showPage('categories',this)">Categories</button>
+    <button onclick="showPage('pricing',this)">Pricing</button>
+    <button onclick="showPage('delivery',this)">Delivery</button>
+    <button onclick="showPage('orders',this)">Orders</button>
+    <button onclick="showPage('settings',this)">Settings</button>
+  </nav>
+  <div class="logout"><button onclick="logout()" style="width:100%;border:0;background:transparent;color:#fff;text-align:left;padding:11px 13px">Logout</button></div>
+</aside>
 
-    <div id="authGate">Checking login...</div>
+<main class="main">
+<header class="topbar">
+  <div style="display:flex;align-items:center;gap:15px">
+    <button class="mobile-menu" onclick="toggleSidebar()">☰</button>
+    <h2 id="pageTitle">Dashboard</h2>
+  </div>
+  <div class="admin-user">Super Admin</div>
+</header>
 
-    <div id="appShell">
-        <nav class="sidebar" id="sidebar">
-            <div class="sidebar-brand">
-                <h1>Janu Print | FAB</h1>
-                <span>Admin Dashboard</span>
-            </div>
-            <ul class="nav-list">
-                <li><a data-page="home" class="active"><i class="fas fa-house"></i> Home</a></li>
-                <li><a data-page="orders"><i class="fas fa-receipt"></i> Orders</a></li>
-                <li><a data-page="customers"><i class="fas fa-users"></i> Customers</a></li>
-                <li><a data-page="printingmethods"><i class="fas fa-print"></i> Printing Methods</a></li>
-                <li><a data-page="products"><i class="fas fa-tshirt"></i> Products</a></li>
-                <li><a data-page="productfields"><i class="fas fa-sliders"></i> Product Options</a></li>
-                <li><a data-page="categories"><i class="fas fa-layer-group"></i> Categories</a></li>
-                <li><a data-page="gallery"><i class="fas fa-images"></i> Gallery</a></li>
-                <li><a data-page="homepage"><i class="fas fa-house-laptop"></i> Homepage Settings</a></li>
-                <li><a data-page="contact"><i class="fas fa-envelope"></i> Contact Details</a></li>
-                <li><a data-page="analytics"><i class="fas fa-chart-line"></i> Analytics</a></li>
-                <li><a data-page="settings"><i class="fas fa-gear"></i> Settings</a></li>
-                <li class="logout-item"><a id="logoutBtn"><i class="fas fa-right-from-bracket"></i> Logout</a></li>
-            </ul>
-        </nav>
+<section class="content">
 
-        <div class="main-area">
-            <div class="topbar">
-                <div style="display:flex; align-items:center; gap:1rem;">
-                    <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
-                    <h2 id="pageTitle">Home</h2>
-                </div>
-                <div class="admin-email" id="adminEmail"></div>
-            </div>
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <div class="page-title"><h3>Dashboard</h3><p>Janu Print | FAB overview</p></div>
+  <div class="stats">
+    <div class="stat-card"><span>Total Orders</span><strong id="statTotal">0</strong></div>
+    <div class="stat-card"><span>Pending</span><strong id="statPending">0</strong></div>
+    <div class="stat-card"><span>Processing</span><strong id="statProcessing">0</strong></div>
+    <div class="stat-card"><span>Delivered</span><strong id="statDelivered">0</strong></div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h4>Recent Orders</h4><button class="btn btn-blue" onclick="showPageByName('orders')">View Orders</button></div>
+    <table><thead><tr><th>Order</th><th>Customer</th><th>Category</th><th>Total</th><th>Status</th></tr></thead>
+    <tbody id="recentOrders"></tbody></table>
+  </div>
+</div>
 
-            <div class="content" id="pageContent">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-label">Total Products</div>
-                        <div class="stat-value" id="statProducts">-</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Total Orders</div>
-                        <div class="stat-value" id="statOrders">-</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Pending Orders</div>
-                        <div class="stat-value" id="statPending">-</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Total Customers</div>
-                        <div class="stat-value" id="statCustomers">-</div>
-                    </div>
-                </div>
-                <div class="panel">
-                    <h3><i class="fas fa-star" style="color:var(--gold-accent);"></i> Welcome to Janu Print Management System</h3>
-                    <p style="color:var(--text-light); font-size:0.95rem; line-height:1.6;">
-                        Your cloud dashboard is fully operational. Use the navigation panel on the left to handle customer orders, update catalog items, customize homepage texts, review performance analytics, and manage contact settings.
-                    </p>
-                </div>
-            </div>
-        </div>
+<!-- CATEGORIES -->
+<div class="page" id="page-categories">
+  <div class="page-title"><h3>Categories</h3><p>Manage main categories and customer options</p></div>
+  <div class="panel">
+    <div class="panel-header">
+      <div><h4>Main Categories</h4><p style="font-size:12px;color:#777;margin-top:3px">Create categories without changing code.</p></div>
+      <button class="btn btn-primary" onclick="openCategoryModal()">+ Add Category</button>
     </div>
+    <table><thead><tr><th>Category</th><th>Options</th><th>Status</th><th>Action</th></tr></thead><tbody id="categoryTable"></tbody></table>
+  </div>
+</div>
 
-    <!-- Modal Overlay & Card for Details -->
-    <div class="modal-overlay" id="orderModalOverlay" onclick="closeOrderModal()"></div>
-    <div class="modal-card" id="orderModalCard">
-        <div class="modal-header">
-            <h3>Order Details</h3>
-            <button class="close-modal-btn" onclick="closeOrderModal()">&times;</button>
-        </div>
-        <div id="orderModalBody">Loading details...</div>
+<!-- PRICING -->
+<div class="page" id="page-pricing">
+  <div class="page-title"><h3>Pricing</h3><p>Manage option and combination prices</p></div>
+  <div class="panel">
+    <div class="panel-header"><h4>Pricing Rules</h4><button class="btn btn-primary" onclick="openPriceModal()">+ Add Price</button></div>
+    <div id="pricingList"></div>
+  </div>
+</div>
+
+<!-- DELIVERY -->
+<div class="page" id="page-delivery">
+  <div class="page-title"><h3>Delivery & Production</h3><p>Set normal production days, urgent delivery and delivery charges per category.</p></div>
+  <div class="panel">
+    <div class="panel-header">
+      <div><h4>Category Delivery Settings</h4><p style="font-size:12px;color:#777;margin-top:3px">Each category can have its own production time and urgent fee.</p></div>
     </div>
+    <div id="deliveryCategoryList"></div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h4>How Delivery Works</h4></div>
+    <div class="help" style="font-size:12px">
+      <b>Normal:</b> Order date + category production days = earliest normal date.<br>
+      <b>Urgent:</b> If enabled, customer can request tomorrow delivery and the category urgent fee is added.<br>
+      <b>Multiple items:</b> final production date should use the longest production time in the order.<br>
+      <b>Admin:</b> manually verify artwork, payment, production and delivery before moving the order through its statuses.
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h4>Delivery Time Slots</h4><button class="btn btn-primary" onclick="openDeliverySlotModal()">+ Add Time Slot</button></div>
+    <table><thead><tr><th>Time Slot</th><th>Fee</th><th>Status</th><th>Action</th></tr></thead><tbody id="deliverySlotTable"></tbody></table>
+  </div>
+</div>
 
-    <!-- Templates -->
-    <template id="ordersTemplate">
-        <div id="ordMsg" class="msg-box"></div>
-        <div class="filter-tabs">
-            <button class="filter-tab active" data-status="all">All Orders</button>
-            <button class="filter-tab" data-status="pending">Pending</button>
-            <button class="filter-tab" data-status="processing">Processing</button>
-            <button class="filter-tab" data-status="completed">Completed</button>
-            <button class="filter-tab" data-status="cancelled">Cancelled</button>
-        </div>
-        <div class="panel">
-            <h3>Customer Orders</h3>
-            <table class="pm-table">
-                <thead>
-                    <tr><th>Order ID</th><th>Customer</th><th>Phone</th><th>Amount</th><th>Payment</th><th>Status</th><th>Actions</th></tr>
-                </thead>
-                <tbody id="ordTableBody"><tr><td colspan="7">Loading...</td></tr></tbody>
-            </table>
-        </div>
-    </template>
+<!-- ORDERS -->
+<div class="page" id="page-orders">
+  <div class="page-title"><h3>Orders</h3><p>Manage customer orders and status</p></div>
+  <div class="panel">
+    <div class="panel-header"><h4>All Orders</h4><button class="btn btn-primary" onclick="addDemoOrder()">+ Demo Order</button></div>
+    <table><thead><tr><th>Order</th><th>Customer</th><th>Category</th><th>Total</th><th>Status</th><th>Action</th></tr></thead><tbody id="ordersTable"></tbody></table>
+  </div>
+</div>
 
-    <template id="customersTemplate">
-        <div id="custMsg" class="msg-box"></div>
-        <div class="panel">
-            <h3>Recorded Customers</h3>
-            <table class="pm-table">
-                <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Country</th><th>Orders</th><th>Actions</th></tr></thead>
-                <tbody id="custTableBody"><tr><td colspan="6">Loading...</td></tr></tbody>
-            </table>
-        </div>
-    </template>
+<!-- SETTINGS -->
+<div class="page" id="page-settings">
+  <div class="page-title"><h3>Settings</h3><p>Business and ordering settings</p></div>
+  <div class="panel">
+    <div class="form-grid">
+      <div class="field"><label>Business Name</label><input id="setBusiness"></div>
+      <div class="field"><label>WhatsApp Number</label><input id="setWhatsapp"></div>
+      <div class="field"><label>Phone</label><input id="setPhone"></div>
+      <div class="field"><label>Currency</label><input id="setCurrency"></div>
+      <div class="field"><label>WhatsApp Ordering</label><select id="setWhatsAppEnabled"><option value="true">Enabled</option><option value="false">Disabled</option></select></div>
+      <div class="field"><label>File Upload</label><select id="setUploadEnabled"><option value="true">Enabled</option><option value="false">Disabled</option></select></div>
+    </div>
+    <div style="margin-top:15px"><button class="btn btn-primary" onclick="saveSettings()">Save Settings</button></div>
+  </div>
+</div>
 
-    <template id="printingMethodsTemplate">
-        <div id="pmMsg" class="msg-box"></div>
-        <div class="panel">
-            <h3 id="pmFormTitle">Add a New Printing Method</h3>
-            <form class="pm-form" id="pmForm">
-                <input type="hidden" id="pmEditId" value="">
-                <div class="field"><label for="pmName">Name</label><input type="text" id="pmName" placeholder="e.g. DTF Printing" required></div>
-                <div class="field"><label for="pmDescription">Description (optional)</label><input type="text" id="pmDescription" placeholder="Short description"></div>
-                <div class="field"><label for="pmOrder">Order</label><input type="number" id="pmOrder" value="0" min="0"></div>
-                <button type="submit" class="btn btn-primary" id="pmSubmitBtn">Add Method</button>
-            </form>
-            <div style="margin-top:0.8rem;"><button type="button" class="btn btn-secondary btn-small" id="pmCancelEdit" style="display:none;">Cancel Edit</button></div>
-        </div>
-        <div class="panel">
-            <h3>Existing Printing Methods</h3>
-            <table class="pm-table">
-                <thead><tr><th>Name</th><th>Description</th><th>Order</th><th>Status</th><th>Actions</th></tr></thead>
-                <tbody id="pmTableBody"><tr><td colspan="5">Loading...</td></tr></tbody>
-            </table>
-        </div>
-    </template>
+</section>
+</main>
 
-    <template id="categoriesTemplate">
-        <div id="catMsg" class="msg-box"></div>
-        <div class="panel">
-            <h3 id="catFormTitle">Add a New Category</h3>
-            <form class="pm-form" id="catForm">
-                <input type="hidden" id="catEditId" value="">
-                <div class="field"><label for="catName">Name</label><input type="text" id="catName" placeholder="e.g. T-Shirts" required></div>
-                <div class="field"><label for="catParent">Parent Category (optional)</label><select id="catParent"><option value="">None (top level)</option></select></div>
-                <div class="field"><label for="catOrder">Order</label><input type="number" id="catOrder" value="0" min="0"></div>
-                <button type="submit" class="btn btn-primary" id="catSubmitBtn">Add Category</button>
-            </form>
-            <div style="margin-top:0.8rem;"><button type="button" class="btn btn-secondary btn-small" id="catCancelEdit" style="display:none;">Cancel Edit</button></div>
-        </div>
-        <div class="panel">
-            <h3>Existing Categories</h3>
-            <table class="pm-table">
-                <thead><tr><th>Name</th><th>Parent</th><th>Order</th><th>Status</th><th>Actions</th></tr></thead>
-                <tbody id="catTableBody"><tr><td colspan="5">Loading...</td></tr></tbody>
-            </table>
-        </div>
-    </template>
+<!-- CATEGORY MODAL -->
+<div class="modal" id="categoryModal">
+<div class="modal-box">
+  <div class="modal-header"><h3 id="categoryModalTitle">Add Category</h3><button class="close" onclick="closeModal('categoryModal')">×</button></div>
+  <div class="form-grid">
+    <div class="field"><label>Category Name</label><input id="catName" placeholder="Example: DTF Custom Print"></div>
+    <div class="field"><label>Status</label><select id="catStatus"><option value="true">Active</option><option value="false">Hidden</option></select></div>
+    <div class="field full"><label>Description</label><textarea id="catDescription" placeholder="Short description"></textarea></div>
+  </div>
+  <div class="actions" style="justify-content:flex-end;margin-top:15px">
+    <button class="btn btn-gray" onclick="closeModal('categoryModal')">Cancel</button>
+    <button class="btn btn-primary" onclick="saveCategory()">Save Category</button>
+  </div>
+</div>
+</div>
 
-    <template id="productsTemplate">
-        <div id="prodMsg" class="msg-box"></div>
-        <div class="panel">
-            <h3 id="prodFormTitle">Add a New Product</h3>
-            <form class="pm-form" id="prodForm">
-                <input type="hidden" id="prodEditId" value="">
-                <div class="field"><label for="prodName">Product Name</label><input type="text" id="prodName" placeholder="e.g. Custom DTF T-Shirt" required></div>
-                <div class="field"><label for="prodCategory">Category</label><select id="prodCategory" required><option value="">Select a category</option></select></div>
-                <div class="field"><label for="prodPrice">Price per Unit (AED)</label><input type="number" id="prodPrice" step="0.01" min="0" required></div>
-                <div class="field"><label for="prodMinQty">Minimum Order Quantity</label><input type="number" id="prodMinQty" min="1" value="1" required></div>
-                <div class="field" style="grid-column: 1 / -1;"><label for="prodDescription">Description</label><input type="text" id="prodDescription"></div>
-                <div class="field"><label for="prodImage">Product Photo</label><input type="file" id="prodImage" accept="image/*"><small id="prodExistingImageNote" style="color:#888; font-size:0.78rem;"></small></div>
-                <div class="field"><label for="prodOrder">Display Order</label><input type="number" id="prodOrder" value="0" min="0"></div>
-                <div style="grid-column: 1 / -1; display:flex; gap:0.8rem;"><button type="submit" class="btn btn-primary" id="prodSubmitBtn">Add Product</button><button type="button" class="btn btn-secondary" id="prodCancelEdit" style="display:none;">Cancel Edit</button></div>
-            </form>
-        </div>
-        <div class="panel">
-            <h3>Existing Products</h3>
-            <table class="pm-table">
-                <thead><tr><th>Photo</th><th>Name</th><th>Category</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
-                <tbody id="prodTableBody"><tr><td colspan="6">Loading...</td></tr></tbody>
-            </table>
-        </div>
-    </template>
+<!-- OPTIONS MODAL -->
+<div class="modal" id="optionsModal">
+<div class="modal-box large">
+  <div class="modal-header"><div><h3 id="optionsTitle">Category Options</h3><p id="optionsSubtitle" style="font-size:12px;color:#777;margin-top:3px"></p></div><button class="close" onclick="closeModal('optionsModal')">×</button></div>
+  <div class="actions" style="margin-bottom:15px">
+    <button class="btn btn-blue" onclick="addOption('Size')">+ Size</button>
+    <button class="btn btn-blue" onclick="addOption('Colour')">+ Colour</button>
+    <button class="btn btn-blue" onclick="addOption('Material')">+ Material</button>
+    <button class="btn btn-blue" onclick="addOption('GSM')">+ GSM</button>
+    <button class="btn btn-blue" onclick="addOption('Style')">+ Style</button>
+    <button class="btn btn-blue" onclick="addOption('Sleeve')">+ Sleeve</button>
+    <button class="btn btn-blue" onclick="addOption('Capacity')">+ Capacity</button>
+    <button class="btn btn-blue" onclick="addOption('Custom Size')">+ Custom Size</button>
+  </div>
+  <div class="option-list" id="optionsList"></div>
+</div>
+</div>
 
-    <template id="productFieldsTemplate">
-        <div id="pfMsg" class="msg-box"></div>
-        <div class="panel">
-            <h3>Select a Product</h3>
-            <div class="field" style="max-width:420px;"><label for="pfProductSelect">Product</label><select id="pfProductSelect"><option value="">-- Choose a product --</option></select></div>
-        </div>
-        <div id="pfFieldsArea" style="display:none;">
-            <div class="panel">
-                <h3 id="pfFormTitle">Add a New Option</h3>
-                <form class="pm-form" id="pfForm">
-                    <input type="hidden" id="pfEditId" value="">
-                    <div class="field"><label for="pfLabel">Option Label</label><input type="text" id="pfLabel" placeholder="e.g. Size" required></div>
-                    <div class="field">
-                        <label for="pfType">Option Type</label>
-                        <select id="pfType" required>
-                            <option value="select">Size / Color List</option>
-                            <option value="dimension">Dimension Calculator</option>
-                            <option value="toggle">Extra Charge Switch</option>
-                            <option value="file">File Upload</option>
-                            <option value="text">Text Box</option>
-                        </select>
-                    </div>
-                    <div class="field" id="pfPriceWrap"><label id="pfPriceLabel" for="pfPrice">Extra Charge (AED)</label><input type="number" id="pfPrice" step="0.01" min="0" value="0"></div>
-                    <div class="field"><label>&nbsp;</label><div class="checkbox-row"><input type="checkbox" id="pfRequired"><label for="pfRequired" style="margin:0;">Required</label></div></div>
-                    <div style="grid-column: 1 / -1; display:flex; gap:0.8rem;"><button type="submit" class="btn btn-primary" id="pfSubmitBtn">Add Option</button><button type="button" class="btn btn-secondary" id="pfCancelEdit" style="display:none;">Cancel Edit</button></div>
-                </form>
-            </div>
-            <div class="panel">
-                <h3>Options on This Product</h3>
-                <table class="pm-table">
-                    <thead><tr><th>Label</th><th>Type</th><th>Required</th><th>Charge</th><th>Actions</th></tr></thead>
-                    <tbody id="pfTableBody"><tr><td colspan="5">Loading...</td></tr></tbody>
-                </table>
-                <div class="subpanel" id="pfSubItemsPanel" style="display:none;">
-                    <h4 id="pfSubItemsTitle">Manage Choices</h4>
-                    <form class="pm-form" id="pfSubItemForm" style="grid-template-columns: repeat(4, 1fr); margin-bottom:1rem;">
-                        <div class="field" id="pfSubLabelWrap"><label for="pfSubLabel">Label</label><input type="text" id="pfSubLabel" placeholder="e.g. Small" required></div>
-                        <div class="field" id="pfSubPriceWrap"><label for="pfSubPrice">Extra Charge (AED)</label><input type="number" id="pfSubPrice" step="0.01" min="0" value="0"></div>
-                        <div class="field" id="pfSubWidthWrap" style="display:none;"><label for="pfSubWidth">Width</label><input type="number" id="pfSubWidth" step="0.01" min="0"></div>
-                        <div class="field" id="pfSubHeightWrap" style="display:none;"><label for="pfSubHeight">Height</label><input type="number" id="pfSubHeight" step="0.01" min="0"></div>
-                        <div class="field" id="pfSubUnitWrap" style="display:none;"><label for="pfSubUnit">Unit</label><select id="pfSubUnit"><option value="cm">cm</option><option value="mm">mm</option><option value="inch">inch</option><option value="ft">ft</option></select></div>
-                        <div style="grid-column: 1 / -1; display:flex; gap:0.8rem; margin-top:0.4rem;"><button type="submit" class="btn btn-primary btn-small" id="pfSubSubmitBtn">Add</button><button type="button" class="btn btn-secondary btn-small" id="pfSubCloseBtn">Close</button></div>
-                    </form>
-                    <table class="pm-table" id="pfSubTable">
-                        <thead><tr><th>Label</th><th id="pfSubColHeader3">Charge / Size</th><th>Actions</th></tr></thead>
-                        <tbody id="pfSubTableBody"><tr><td colspan="3">Loading...</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </template>
+<!-- VALUES MODAL -->
+<div class="modal" id="valuesModal">
+<div class="modal-box large">
+  <div class="modal-header"><div><h3 id="valuesTitle">Option Values</h3><p style="font-size:12px;color:#777">Add values and prices.</p></div><button class="close" onclick="closeModal('valuesModal')">×</button></div>
+  <div class="panel" style="padding:15px;margin-bottom:15px">
+    <div class="form-grid">
+      <div class="field"><label>Value Name</label><input id="valueName" placeholder="A4 / XL / Black"></div>
+      <div class="field"><label>Price</label><input id="valuePrice" type="number" step="0.01" placeholder="0"></div>
+    </div>
+    <div style="margin-top:10px"><button class="btn btn-primary" onclick="saveValue()">+ Add Value</button></div>
+  </div>
+  <table><thead><tr><th>Value</th><th>Price</th><th>Status</th><th>Action</th></tr></thead><tbody id="valuesTable"></tbody></table>
+</div>
+</div>
 
-    <template id="galleryTemplate">
-        <div id="galMsg" class="msg-box"></div>
-        <div class="panel">
-            <h3 id="galFormTitle">Add Portfolio Photo</h3>
-            <form class="pm-form" id="galForm">
-                <input type="hidden" id="galEditId" value="">
-                <div class="field"><label for="galTitle">Title / Caption</label><input type="text" id="galTitle" placeholder="e.g. DTF Print Sample" required></div>
-                <div class="field"><label for="galCategory">Category Tag</label><input type="text" id="galCategory" placeholder="e.g. Apparel" value="Apparel"></div>
-                <div class="field"><label for="galImage">Photo File</label><input type="file" id="galImage" accept="image/*"></div>
-                <div class="field"><label for="galOrder">Display Order</label><input type="number" id="galOrder" value="0" min="0"></div>
-                <div style="grid-column:1 / -1; display:flex; gap:0.8rem;"><button type="submit" class="btn btn-primary" id="galSubmitBtn">Upload Item</button><button type="button" class="btn btn-secondary" id="galCancelEdit" style="display:none;">Cancel Edit</button></div>
-            </form>
-        </div>
-        <div class="panel">
-            <h3>Gallery Items</h3>
-            <table class="pm-table">
-                <thead><tr><th>Photo</th><th>Title</th><th>Category</th><th>Order</th><th>Status</th><th>Actions</th></tr></thead>
-                <tbody id="galTableBody"><tr><td colspan="6">Loading...</td></tr></tbody>
-            </table>
-        </div>
-    </template>
+<!-- PRICE MODAL -->
+<div class="modal" id="priceModal">
+<div class="modal-box">
+  <div class="modal-header"><h3>Add Pricing Rule</h3><button class="close" onclick="closeModal('priceModal')">×</button></div>
+  <div class="form-grid">
+    <div class="field"><label>Category</label><select id="priceCategory"></select></div>
+    <div class="field"><label>Rule / Combination</label><input id="priceRule" placeholder="A4 or L + Black + 180 GSM"></div>
+    <div class="field"><label>Price</label><input id="priceAmount" type="number" step="0.01"></div>
+    <div class="field"><label>Pricing Method</label><select id="priceMethod"><option>Fixed</option><option>Per SQM</option><option>Base + Extra</option></select></div>
+  </div>
+  <div class="actions" style="justify-content:flex-end;margin-top:15px"><button class="btn btn-gray" onclick="closeModal('priceModal')">Cancel</button><button class="btn btn-primary" onclick="savePrice()">Save Price</button></div>
+</div>
+</div>
 
-    <template id="homepageTemplate">
-        <div id="hpMsg" class="msg-box"></div>
-        <div class="panel">
-            <h3>Edit Main Website Content</h3>
-            <form class="pm-form" id="hpForm" style="grid-template-columns: 1fr;">
-                <div class="field"><label for="hpHeroTitle">Hero Headline (Sinhala / English)</label><input type="text" id="hpHeroTitle" placeholder="Hero title text"></div>
-                <div class="field"><label for="hpHeroSubtitle">Hero Subtitle</label><input type="text" id="hpHeroSubtitle" placeholder="Hero subtitle text"></div>
-                <div class="field"><label for="hpCtaText">CTA Button Text</label><input type="text" id="hpCtaText" placeholder="Explore Portfolio"></div>
-                <div class="field"><label for="hpAboutSinhala">About Us Text (Sinhala)</label><textarea id="hpAboutSinhala" rows="4"></textarea></div>
-                <div class="field"><label for="hpAboutEnglish">About Us Text (English)</label><textarea id="hpAboutEnglish" rows="4"></textarea></div>
-                <div><button type="submit" class="btn btn-primary" id="hpSubmitBtn">Save Changes</button></div>
-            </form>
-        </div>
-    </template>
+<!-- DELIVERY SETTINGS MODAL -->
+<div class="modal" id="deliverySettingsModal">
+<div class="modal-box">
+  <div class="modal-header"><h3 id="deliverySettingsTitle">Delivery Settings</h3><button class="close" onclick="closeModal('deliverySettingsModal')">×</button></div>
+  <div class="form-grid">
+    <div class="field"><label>Normal Production Days</label><input id="prodDays" type="number" min="0" step="1" placeholder="Example: 2"></div>
+    <div class="field"><label>Normal Delivery Fee</label><input id="normalDeliveryFee" type="number" min="0" step="0.01"></div>
+    <div class="field"><label>Urgent Order</label><select id="urgentEnabled"><option value="true">Available</option><option value="false">Not Available</option></select></div>
+    <div class="field"><label>Urgent Delivery</label><select id="urgentMode"><option value="tomorrow">Get Tomorrow</option></select></div>
+    <div class="field"><label>Urgent Extra Fee</label><input id="urgentFee" type="number" min="0" step="0.01" placeholder="Example: 800"></div>
+  </div>
+  <div class="help" style="margin-top:12px">Normal date is calculated from the order date + production days. Urgent orders are available only when enabled and add the urgent fee.</div>
+  <div class="actions" style="justify-content:flex-end;margin-top:15px"><button class="btn btn-gray" onclick="closeModal('deliverySettingsModal')">Cancel</button><button class="btn btn-primary" onclick="saveDeliverySettings()">Save Settings</button></div>
+</div>
+</div>
 
-    <template id="contactTemplate">
-        <div id="contactMsg" class="msg-box"></div>
-        <div class="panel">
-            <h3>Edit Business Contact Details</h3>
-            <form class="pm-form" id="contactForm" style="grid-template-columns: 1fr 1fr;">
-                <div class="field"><label for="cntPhone">Phone Number</label><input type="text" id="cntPhone" placeholder="+94713296006"></div>
-                <div class="field"><label for="cntEmail">Email Address</label><input type="email" id="cntEmail" placeholder="JanuPrintFab@gmail.com"></div>
-                <div class="field"><label for="cntWhatsapp">WhatsApp Number</label><input type="text" id="cntWhatsapp" placeholder="94713296006"></div>
-                <div class="field"><label for="cntAddress">Address / Location</label><input type="text" id="cntAddress" placeholder="Matara, Sri Lanka"></div>
-                <div class="field"><label for="cntFacebook">Facebook Page Link</label><input type="text" id="cntFacebook"></div>
-                <div class="field"><label for="cntInstagram">Instagram Link</label><input type="text" id="cntInstagram"></div>
-                <div style="grid-column: 1 / -1;"><button type="submit" class="btn btn-primary" id="cntSubmitBtn">Save Contact Details</button></div>
-            </form>
-        </div>
-    </template>
+<!-- DELIVERY SLOT MODAL -->
+<div class="modal" id="deliverySlotModal">
+<div class="modal-box">
+  <div class="modal-header"><h3>Add Delivery Time Slot</h3><button class="close" onclick="closeModal('deliverySlotModal')">×</button></div>
+  <div class="form-grid">
+    <div class="field full"><label>Time Slot</label><input id="slotTime" placeholder="10:00 AM - 12:00 PM"></div>
+    <div class="field"><label>Delivery Fee</label><input id="slotFee" type="number" min="0" step="0.01"></div>
+    <div class="field"><label>Status</label><select id="slotActive"><option value="true">Active</option><option value="false">Hidden</option></select></div>
+  </div>
+  <div class="actions" style="justify-content:flex-end;margin-top:15px"><button class="btn btn-gray" onclick="closeModal('deliverySlotModal')">Cancel</button><button class="btn btn-primary" onclick="saveDeliverySlot()">Save Slot</button></div>
+</div>
+</div>
 
-    <template id="analyticsTemplate">
-        <div class="stats-grid">
-            <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value" id="anTotalRev">AED 0.00</div></div>
-            <div class="stat-card"><div class="stat-label">Completed Orders</div><div class="stat-value" id="anCompleted">0</div></div>
-            <div class="stat-card"><div class="stat-label">Average Order Value</div><div class="stat-value" id="anAvgOrder">AED 0.00</div></div>
-        </div>
-        <div class="panel">
-            <h3>Orders Breakdown by Status</h3>
-            <div id="anStatusBars" style="display:flex; flex-direction:column; gap:1rem; margin-top:1rem;">Loading...</div>
-        </div>
-    </template>
+<!-- ORDER MODAL -->
+<div class="modal" id="orderModal">
+<div class="modal-box large">
+  <div class="modal-header"><h3 id="orderTitle">Order</h3><button class="close" onclick="closeModal('orderModal')">×</button></div>
+  <div id="orderDetails"></div>
+  <div class="actions" style="margin-top:15px">
+    <button class="btn btn-blue" onclick="setCurrentOrderStatus('Pending')">Pending</button>
+    <button class="btn btn-blue" onclick="setCurrentOrderStatus('Processing')">Processing</button>
+    <button class="btn btn-blue" onclick="setCurrentOrderStatus('Ready')">Ready</button>
+    <button class="btn btn-primary" onclick="setCurrentOrderStatus('Delivered')">Delivered</button>
+  </div>
+</div>
+</div>
 
-    <template id="settingsTemplate">
-        <div id="stgMsg" class="msg-box"></div>
-        <div class="panel">
-            <h3>Store & System Preferences</h3>
-            <form class="pm-form" id="stgForm" style="grid-template-columns: 1fr 1fr;">
-                <div class="field"><label for="stgStoreName">Store Name</label><input type="text" id="stgStoreName" value="Janu Print | FAB"></div>
-                <div class="field"><label for="stgCurrency">Currency Symbol</label><input type="text" id="stgCurrency" value="AED"></div>
-                <div class="field"><label for="stgMinQty">Default Minimum Order Qty</label><input type="number" id="stgMinQty" value="1" min="1"></div>
-                <div style="grid-column:1 / -1;"><button type="submit" class="btn btn-primary" id="stgSubmitBtn">Save Settings</button></div>
-            </form>
-        </div>
-    </template>
+<script>
+const KEY="janu_print_demo_v2";
+let state={
+ categories:[
+  {id:"cat1",name:"DTF Custom Print",description:"Custom DTF printing",active:true,delivery:{days:1,fee:500,urgent:true,urgentMode:"tomorrow",urgentFee:500},options:[
+   {id:"o1",name:"Size",values:[["A5",15],["A4",25],["A3",40],["Custom",0]]},
+   {id:"o2",name:"Design Upload",values:[["Upload",0],["WhatsApp",0]]},
+   {id:"o3",name:"Custom Size",values:[]}
+  ]},
+  {id:"cat2",name:"Plain T-Shirt",description:"Plain printed T-shirts",active:true,delivery:{days:2,fee:500,urgent:true,urgentMode:"tomorrow",urgentFee:800},options:[
+   {id:"o4",name:"Size",values:[["S",20],["M",20],["L",22],["XL",24],["XXL",26]]},
+   {id:"o5",name:"Colour",values:[["Black",0],["White",0],["Red",2],["Green",2]]},
+   {id:"o6",name:"GSM",values:[["160 GSM",0],["180 GSM",3],["200 GSM",5]]},
+   {id:"o7",name:"Style",values:[["Round Neck",0],["Polo",8],["V-Neck",4]]},
+   {id:"o8",name:"Sleeve",values:[["Short",0],["Long",5]]}
+  ]},
+  {id:"cat3",name:"Bag Printing",description:"Printed bags",active:true,delivery:{days:2,fee:500,urgent:true,urgentMode:"tomorrow",urgentFee:700},options:[
+   {id:"o9",name:"Material",values:[["Non Woven",10],["Canvas",20],["Cotton",18]]},
+   {id:"o10",name:"Size",values:[["Small",10],["Medium",15],["Large",20]]}
+  ]},
+  {id:"cat4",name:"Mug Printing",description:"Printed mugs",active:true,delivery:{days:2,fee:500,urgent:true,urgentMode:"tomorrow",urgentFee:700},options:[
+   {id:"o11",name:"Material",values:[["Ceramic",15],["Magic Mug",25],["Metal",30]]},
+   {id:"o12",name:"Capacity",values:[["250ml",15],["330ml",18],["450ml",22]]}
+  ]}
+ ],
+ prices:[],
+ deliveries:[],
+ orders:[
+  {id:"ORD-1001",customer:"Demo Customer",category:"DTF Custom Print",total:25,status:"Pending",options:"A4, Upload",delivery:"Standard",checklist:{artwork:false,payment:false,production:false,delivery:false}},
+  {id:"ORD-1002",customer:"Test Customer",category:"Plain T-Shirt",total:32,status:"Processing",options:"L, Black, 180 GSM, Round Neck, Short",delivery:"Standard",checklist:{artwork:true,payment:true,production:false,delivery:false}}
+ ],
+ settings:{business:"Janu Print | FAB",whatsapp:"",phone:"",currency:"LKR",whatsappEnabled:true,uploadEnabled:true}
+};
+let editingCategoryId=null,currentCategoryId=null,currentOptionId=null,currentOrderId=null;
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../config/supabase-config.js"></script>
-    <script>
-        const authGate = document.getElementById('authGate');
-        const appShell = document.getElementById('appShell');
+function loadState(){
+ const raw=localStorage.getItem(KEY);
+ if(raw){try{state=JSON.parse(raw)}catch(e){}}
+}
+function saveState(){localStorage.setItem(KEY,JSON.stringify(state));}
+function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function money(v){return `${state.settings.currency||"LKR"} ${Number(v||0).toFixed(2)}`}
+function openModal(id){document.getElementById(id).classList.add("open")}
+function closeModal(id){document.getElementById(id).classList.remove("open")}
 
-        async function checkAuth() {
-            const { data: { session } } = await window.db.auth.getSession();
-            if (!session) { window.location.href = 'login.html'; return; }
+function showPage(page,button){
+ document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+ document.getElementById("page-"+page)?.classList.add("active");
+ document.querySelectorAll(".menu button").forEach(x=>x.classList.remove("active"));
+ if(button)button.classList.add("active");
+ const titles={dashboard:"Dashboard",categories:"Categories",pricing:"Pricing",delivery:"Delivery",orders:"Orders",settings:"Settings"};
+ document.getElementById("pageTitle").textContent=titles[page]||"Dashboard";
+ document.getElementById("sidebar").classList.remove("open");
+ if(page==="dashboard")renderDashboard();
+ if(page==="categories")renderCategories();
+ if(page==="pricing")renderPricing();
+ if(page==="delivery")renderDeliveries();
+ if(page==="orders")renderOrders();
+ if(page==="settings")renderSettings();
+}
+function showPageByName(page){const b=[...document.querySelectorAll(".menu button")].find(x=>x.getAttribute("onclick")?.includes("'"+page+"'"));showPage(page,b)}
+function toggleSidebar(){document.getElementById("sidebar").classList.toggle("open")}
+function logout(){alert("Supabase logout will be connected in the final API stage.")}
 
-            const { data: adminRow } = await window.db.from('admin_profiles').select('id').eq('id', session.user.id).maybeSingle();
-            if (!adminRow) { await window.db.auth.signOut(); window.location.href = 'login.html'; return; }
+function renderDashboard(){
+ const total=state.orders.length;
+ const pending=state.orders.filter(x=>x.status==="Pending").length;
+ const processing=state.orders.filter(x=>x.status==="Processing").length;
+ const delivered=state.orders.filter(x=>x.status==="Delivered").length;
+ document.getElementById("statTotal").textContent=total;
+ document.getElementById("statPending").textContent=pending;
+ document.getElementById("statProcessing").textContent=processing;
+ document.getElementById("statDelivered").textContent=delivered;
+ document.getElementById("recentOrders").innerHTML=state.orders.slice(-5).reverse().map(o=>`
+ <tr><td>${esc(o.id)}</td><td>${esc(o.customer)}</td><td>${esc(o.category)}</td><td>${money(o.total)}</td><td><span class="badge status-${o.status.toLowerCase()}">${esc(o.status)}</span></td></tr>`).join("")||`<tr><td colspan="5" class="empty">No orders yet</td></tr>`;
+}
 
-            document.getElementById('adminEmail').textContent = session.user.email;
-            authGate.style.display = 'none';
-            appShell.style.display = 'flex';
-            loadStats();
-        }
+function renderCategories(){
+ document.getElementById("categoryTable").innerHTML=state.categories.map(c=>`
+ <tr>
+  <td><strong>${esc(c.name)}</strong><div style="font-size:10px;color:#888">${esc(c.description)}</div></td>
+  <td>${c.options.length} options</td>
+  <td><span class="badge ${c.active?"":"off"}">${c.active?"Active":"Hidden"}</span></td>
+  <td><div class="actions">
+   <button class="btn btn-blue btn-small" onclick="openOptions('${c.id}')">Options</button>
+   <button class="btn btn-gray btn-small" onclick="editCategory('${c.id}')">Edit</button>
+   <button class="btn btn-danger btn-small" onclick="deleteCategory('${c.id}')">Delete</button>
+  </div></td>
+ </tr>`).join("");
+}
+function openCategoryModal(){
+ editingCategoryId=null;
+ document.getElementById("categoryModalTitle").textContent="Add Category";
+ document.getElementById("catName").value="";
+ document.getElementById("catDescription").value="";
+ document.getElementById("catStatus").value="true";
+ openModal("categoryModal");
+}
+function editCategory(id){
+ const c=state.categories.find(x=>x.id===id);if(!c)return;
+ editingCategoryId=id;
+ document.getElementById("categoryModalTitle").textContent="Edit Category";
+ document.getElementById("catName").value=c.name;
+ document.getElementById("catDescription").value=c.description||"";
+ document.getElementById("catStatus").value=String(c.active);
+ openModal("categoryModal");
+}
+function saveCategory(){
+ const name=document.getElementById("catName").value.trim();
+ if(!name){alert("Enter category name.");return}
+ if(editingCategoryId){
+  const c=state.categories.find(x=>x.id===editingCategoryId);c.name=name;c.description=document.getElementById("catDescription").value.trim();c.active=document.getElementById("catStatus").value==="true";
+ }else{
+  state.categories.push({id:"cat"+Date.now(),name,description:document.getElementById("catDescription").value.trim(),active:true,delivery:{days:1,fee:0,urgent:false,urgentMode:"tomorrow",urgentFee:0},options:[]});
+ }
+ saveState();closeModal("categoryModal");renderCategories();
+}
+function deleteCategory(id){
+ if(!confirm("Delete this category?"))return;
+ state.categories=state.categories.filter(x=>x.id!==id);saveState();renderCategories();
+}
 
-        async function loadStats() {
-            const [{ count: productCount }, { count: orderCount }, { count: pendingCount }, { count: customerCount }] = await Promise.all([
-                window.db.from('products').select('*', { count: 'exact', head: true }),
-                window.db.from('orders').select('*', { count: 'exact', head: true }),
-                window.db.from('orders').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
-                window.db.from('customers').select('*', { count: 'exact', head: true })
-            ]);
-            document.getElementById('statProducts').textContent = productCount ?? 0;
-            document.getElementById('statOrders').textContent = orderCount ?? 0;
-            document.getElementById('statPending').textContent = pendingCount ?? 0;
-            document.getElementById('statCustomers').textContent = customerCount ?? 0;
-        }
+function openOptions(categoryId){
+ currentCategoryId=categoryId;
+ const c=state.categories.find(x=>x.id===categoryId);if(!c)return;
+ document.getElementById("optionsTitle").textContent=c.name+" Options";
+ document.getElementById("optionsSubtitle").textContent="Manage customer selections and values.";
+ renderOptions();openModal("optionsModal");
+}
+function renderOptions(){
+ const c=state.categories.find(x=>x.id===currentCategoryId);if(!c)return;
+ document.getElementById("optionsList").innerHTML=c.options.map(o=>`
+ <div class="option-row">
+  <div><strong>${esc(o.name)}</strong><small>${o.values.length} values</small></div>
+  <div class="actions">
+   <button class="btn btn-blue btn-small" onclick="openValues('${o.id}')">Values & Prices</button>
+   <button class="btn btn-danger btn-small" onclick="removeOption('${o.id}')">Remove</button>
+  </div>
+ </div>`).join("")||`<div class="empty">No options added yet.</div>`;
+}
+function addOption(name){
+ const c=state.categories.find(x=>x.id===currentCategoryId);if(!c)return;
+ if(c.options.some(x=>x.name.toLowerCase()===name.toLowerCase())){alert("This option already exists.");return}
+ c.options.push({id:"o"+Date.now()+Math.random(),name,values:[]});saveState();renderOptions();
+}
+function removeOption(id){
+ const c=state.categories.find(x=>x.id===currentCategoryId);if(!c)return;
+ c.options=c.options.filter(x=>x.id!==id);saveState();renderOptions();
+}
 
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            await window.db.auth.signOut();
-            window.location.href = 'login.html';
-        });
+function openValues(optionId){
+ currentOptionId=optionId;
+ const c=state.categories.find(x=>x.id===currentCategoryId);const o=c?.options.find(x=>x.id===optionId);if(!o)return;
+ document.getElementById("valuesTitle").textContent=o.name+" Values & Prices";
+ document.getElementById("valueName").value="";
+ document.getElementById("valuePrice").value="";
+ renderValues();openModal("valuesModal");
+}
+function renderValues(){
+ const c=state.categories.find(x=>x.id===currentCategoryId);const o=c?.options.find(x=>x.id===currentOptionId);if(!o)return;
+ document.getElementById("valuesTable").innerHTML=o.values.map((v,i)=>`
+ <tr><td>${esc(v[0])}</td><td>${money(v[1])}</td><td><span class="badge">Active</span></td>
+ <td><button class="btn btn-danger btn-small" onclick="deleteValue(${i})">Delete</button></td></tr>`).join("")||`<tr><td colspan="4" class="empty">No values yet</td></tr>`;
+}
+function saveValue(){
+ const name=document.getElementById("valueName").value.trim();const price=Number(document.getElementById("valuePrice").value||0);
+ if(!name){alert("Enter value name.");return}
+ const c=state.categories.find(x=>x.id===currentCategoryId);const o=c.options.find(x=>x.id===currentOptionId);
+ o.values.push([name,price]);saveState();document.getElementById("valueName").value="";document.getElementById("valuePrice").value="";renderValues();renderOptions();
+}
+function deleteValue(index){
+ const c=state.categories.find(x=>x.id===currentCategoryId);const o=c.options.find(x=>x.id===currentOptionId);
+ o.values.splice(index,1);saveState();renderValues();renderOptions();
+}
 
-        function escapeHtml(str) {
-            if (!str) return '';
-            const div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
-        }
+function renderPricing(){
+ const el=document.getElementById("pricingList");
+ if(!state.prices.length){el.innerHTML=`<div class="empty">No pricing rules yet. Add one above.</div>`;return}
+ el.innerHTML=`<table><thead><tr><th>Category</th><th>Rule</th><th>Method</th><th>Price</th><th>Action</th></tr></thead><tbody>`+
+ state.prices.map((p,i)=>`<tr><td>${esc(p.category)}</td><td>${esc(p.rule)}</td><td>${esc(p.method)}</td><td>${money(p.amount)}</td><td><button class="btn btn-danger btn-small" onclick="deletePrice(${i})">Delete</button></td></tr>`).join("")+
+ `</tbody></table>`;
+}
+function openPriceModal(){
+ document.getElementById("priceCategory").innerHTML=state.categories.map(c=>`<option>${esc(c.name)}</option>`).join("");
+ document.getElementById("priceRule").value="";document.getElementById("priceAmount").value="";document.getElementById("priceMethod").value="Fixed";openModal("priceModal");
+}
+function savePrice(){
+ const category=document.getElementById("priceCategory").value,rule=document.getElementById("priceRule").value.trim(),amount=Number(document.getElementById("priceAmount").value||0),method=document.getElementById("priceMethod").value;
+ if(!rule){alert("Enter a pricing rule.");return}
+ state.prices.push({category,rule,amount,method});saveState();closeModal("priceModal");renderPricing();
+}
+function deletePrice(i){state.prices.splice(i,1);saveState();renderPricing()}
 
-        const pageLabels = {
-            home: 'Home', orders: 'Orders', customers: 'Customers', printingmethods: 'Printing Methods',
-            products: 'Products', productfields: 'Product Options', categories: 'Categories',
-            gallery: 'Gallery', homepage: 'Homepage Settings', contact: 'Contact Details',
-            analytics: 'Analytics', settings: 'Settings'
-        };
-        const homeContentHTML = document.getElementById('pageContent').innerHTML;
+function renderDeliveries(){
+  const list=document.getElementById("deliveryCategoryList");
+  list.innerHTML=state.categories.map(c=>{
+    const d=c.delivery||{days:1,fee:0,urgent:false,urgentMode:"tomorrow",urgentFee:0};
+    c.delivery=d;
+    return `<div class="delivery-card" style="margin-bottom:10px">
+      <div class="panel-header" style="margin-bottom:8px">
+        <div><h5>${esc(c.name)}</h5><div class="help">${esc(c.description||"")}</div></div>
+        <button class="btn btn-blue btn-small" onclick="openDeliverySettings('${c.id}')">Edit</button>
+      </div>
+      <div class="delivery-grid">
+        <div><small>Normal Production</small><strong style="display:block;margin-top:4px">${Number(d.days||0)} day(s)</strong></div>
+        <div><small>Normal Fee</small><strong style="display:block;margin-top:4px">${money(d.fee)}</strong></div>
+        <div><small>Urgent</small><strong style="display:block;margin-top:4px">${d.urgent?"Tomorrow + "+money(d.urgentFee):"Not available"}</strong></div>
+      </div>
+    </div>`;
+  }).join("")||`<div class="empty">No categories yet.</div>`;
 
-        document.querySelectorAll('.nav-list a[data-page]').forEach(link => {
-            link.addEventListener('click', () => {
-                document.querySelectorAll('.nav-list a[data-page]').forEach(a => a.classList.remove('active'));
-                link.classList.add('active');
-                const page = link.getAttribute('data-page');
-                document.getElementById('pageTitle').textContent = pageLabels[page];
-                document.getElementById('sidebar').classList.remove('open');
+  document.getElementById("deliverySlotTable").innerHTML=state.deliveries.map((d,i)=>`
+    <tr><td>${esc(d.time)}</td><td>${money(d.fee)}</td><td><span class="badge ${d.active?"":"off"}">${d.active?"Active":"Hidden"}</span></td>
+    <td><div class="actions"><button class="btn btn-gray btn-small" onclick="toggleDeliverySlot(${i})">Toggle</button><button class="btn btn-danger btn-small" onclick="deleteDeliverySlot(${i})">Delete</button></div></td></tr>`
+  ).join("")||`<tr><td colspan="4" class="empty">No delivery time slots yet.</td></tr>`;
+}
+function openDeliverySettings(id){
+  currentCategoryId=id;
+  const c=state.categories.find(x=>x.id===id); if(!c)return;
+  const d=c.delivery||{days:1,fee:0,urgent:false,urgentMode:"tomorrow",urgentFee:0};
+  document.getElementById("deliverySettingsTitle").textContent=c.name+" Delivery Settings";
+  document.getElementById("prodDays").value=d.days;
+  document.getElementById("normalDeliveryFee").value=d.fee;
+  document.getElementById("urgentEnabled").value=String(d.urgent);
+  document.getElementById("urgentMode").value=d.urgentMode||"tomorrow";
+  document.getElementById("urgentFee").value=d.urgentFee;
+  openModal("deliverySettingsModal");
+}
+function saveDeliverySettings(){
+  const c=state.categories.find(x=>x.id===currentCategoryId); if(!c)return;
+  c.delivery={
+    days:Math.max(0,Number(document.getElementById("prodDays").value||0)),
+    fee:Math.max(0,Number(document.getElementById("normalDeliveryFee").value||0)),
+    urgent:document.getElementById("urgentEnabled").value==="true",
+    urgentMode:document.getElementById("urgentMode").value,
+    urgentFee:Math.max(0,Number(document.getElementById("urgentFee").value||0))
+  };
+  saveState();closeModal("deliverySettingsModal");renderDeliveries();
+}
+function openDeliverySlotModal(){
+  document.getElementById("slotTime").value="";
+  document.getElementById("slotFee").value="";
+  document.getElementById("slotActive").value="true";
+  openModal("deliverySlotModal");
+}
+function saveDeliverySlot(){
+  const time=document.getElementById("slotTime").value.trim();
+  const fee=Math.max(0,Number(document.getElementById("slotFee").value||0));
+  const active=document.getElementById("slotActive").value==="true";
+  if(!time){alert("Enter time slot.");return}
+  state.deliveries.push({time,fee,active});
+  saveState();closeModal("deliverySlotModal");renderDeliveries();
+}
+function toggleDeliverySlot(i){state.deliveries[i].active=!state.deliveries[i].active;saveState();renderDeliveries()}
+function deleteDeliverySlot(i){if(!confirm("Delete this time slot?"))return;state.deliveries.splice(i,1);saveState();renderDeliveries()}
 
-                const pageContent = document.getElementById('pageContent');
-                pageContent.innerHTML = '';
+function renderOrders(){
+ document.getElementById("ordersTable").innerHTML=state.orders.map(o=>`
+ <tr><td>${esc(o.id)}</td><td>${esc(o.customer)}</td><td>${esc(o.category)}</td><td>${money(o.total)}</td>
+ <td><span class="badge status-${o.status.toLowerCase()}">${esc(o.status)}</span></td>
+ <td><button class="btn btn-blue btn-small" onclick="openOrder('${o.id}')">View</button></td></tr>`).join("")||`<tr><td colspan="6" class="empty">No orders yet.</td></tr>`;
+}
+function addDemoOrder(){
+ const c=state.categories[0];
+ state.orders.push({id:"ORD-"+(1000+state.orders.length+1),customer:"New Demo Customer",category:c?.name||"DTF Custom Print",total:35,status:"Pending",options:"A4, Upload",delivery:"Standard",checklist:{artwork:false,payment:false,production:false,delivery:false}});
+ saveState();renderOrders();renderDashboard();
+}
+function ensureChecklist(o){
+ if(!o.checklist)o.checklist={artwork:false,payment:false,production:false,delivery:false};
+ return o.checklist;
+}
+function toggleChecklistItem(orderId,key){
+ const o=state.orders.find(x=>x.id===orderId);if(!o)return;
+ const cl=ensureChecklist(o);
+ cl[key]=!cl[key];
+ saveState();openOrder(orderId);
+}
+function openOrder(id){
+ currentOrderId=id;const o=state.orders.find(x=>x.id===id);if(!o)return;
+ const cl=ensureChecklist(o);
+ const statuses=["Pending","Processing","Ready","Delivered"];
+ const checkItems=[["artwork","Artwork confirmed"],["payment","Payment received"],["production","Production done"],["delivery","Ready / handed to delivery"]];
+ document.getElementById("orderTitle").textContent=o.id;
+ document.getElementById("orderDetails").innerHTML=`
+ <div class="cards">
+  <div class="mini-card"><small>Customer</small><strong>${esc(o.customer)}</strong></div>
+  <div class="mini-card"><small>Category</small><strong>${esc(o.category)}</strong></div>
+  <div class="mini-card"><small>Total</small><strong>${money(o.total)}</strong></div>
+ </div>
+ <div class="panel" style="margin-top:15px"><strong>Selected Options</strong><p style="margin-top:8px;font-size:13px">${esc(o.options)}</p></div>
+ <div class="panel"><strong>Delivery</strong><p style="margin-top:8px;font-size:13px">${esc(o.delivery)}</p></div>
+ <div class="panel"><strong>Design File</strong><p style="margin-top:8px;font-size:13px;color:#777">Demo upload area. Real file storage will be connected later.</p></div>
+ <div class="panel">
+  <strong>Order Status</strong>
+  <div class="status-flow">${statuses.map(s=>`<span class="${s===o.status?"current":""}">${esc(s)}</span>`).join("")}</div>
+ </div>
+ <div class="panel">
+  <strong>Manual Verification Checklist</strong>
+  <div class="checklist">${checkItems.map(([key,label])=>`
+   <label class="check-row"><input type="checkbox" ${cl[key]?"checked":""} onchange="toggleChecklistItem('${o.id}','${key}')"> ${esc(label)}</label>`).join("")}</div>
+ </div>`;
+ openModal("orderModal");
+}
+function setCurrentOrderStatus(status){
+ const o=state.orders.find(x=>x.id===currentOrderId);if(!o)return;o.status=status;saveState();renderOrders();renderDashboard();openOrder(currentOrderId);
+}
 
-                if (page === 'home') { pageContent.innerHTML = homeContentHTML; loadStats(); }
-                else if (page === 'orders') { renderTpl('ordersTemplate'); initOrdersPage(); }
-                else if (page === 'customers') { renderTpl('customersTemplate'); initCustomersPage(); }
-                else if (page === 'printingmethods') { renderTpl('printingMethodsTemplate'); initPrintingMethodsPage(); }
-                else if (page === 'categories') { renderTpl('categoriesTemplate'); initCategoriesPage(); }
-                else if (page === 'products') { renderTpl('productsTemplate'); initProductsPage(); }
-                else if (page === 'productfields') { renderTpl('productFieldsTemplate'); initProductFieldsPage(); }
-                else if (page === 'gallery') { renderTpl('galleryTemplate'); initGalleryPage(); }
-                else if (page === 'homepage') { renderTpl('homepageTemplate'); initHomepageSettingsPage(); }
-                else if (page === 'contact') { renderTpl('contactTemplate'); initContactDetailsPage(); }
-                else if (page === 'analytics') { renderTpl('analyticsTemplate'); initAnalyticsPage(); }
-                else if (page === 'settings') { renderTpl('settingsTemplate'); initSettingsPage(); }
-            });
-        });
+function renderSettings(){
+ const s=state.settings;
+ document.getElementById("setBusiness").value=s.business||"";
+ document.getElementById("setWhatsapp").value=s.whatsapp||"";
+ document.getElementById("setPhone").value=s.phone||"";
+ document.getElementById("setCurrency").value=s.currency||"LKR";
+ document.getElementById("setWhatsAppEnabled").value=String(s.whatsappEnabled!==false);
+ document.getElementById("setUploadEnabled").value=String(s.uploadEnabled!==false);
+}
+function saveSettings(){
+ state.settings={business:document.getElementById("setBusiness").value.trim(),whatsapp:document.getElementById("setWhatsapp").value.trim(),phone:document.getElementById("setPhone").value.trim(),currency:document.getElementById("setCurrency").value.trim()||"LKR",whatsappEnabled:document.getElementById("setWhatsAppEnabled").value==="true",uploadEnabled:document.getElementById("setUploadEnabled").value==="true"};
+ saveState();alert("Settings saved locally.");renderDashboard();
+}
 
-        function renderTpl(id) {
-            const tpl = document.getElementById(id);
-            document.getElementById('pageContent').appendChild(tpl.content.cloneNode(true));
-        }
+document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)m.classList.remove("open")}));
 
-        document.getElementById('menuToggle').addEventListener('click', () => {
-            document.getElementById('sidebar').classList.toggle('open');
-        });
-
-        // --- Orders Logic ---
-        let currentOrdersFilter = 'all';
-        async function ordLoadList(filterStatus = 'all') {
-            const tbody = document.getElementById('ordTableBody'); if (!tbody) return;
-            tbody.innerHTML = '<tr><td colspan="7">Loading...</td></tr>';
-            let query = window.db.from('orders').select('*, customers(*)');
-            if (filterStatus !== 'all') query = query.eq('status', filterStatus);
-            const { data, error } = await query;
-            if (error) { tbody.innerHTML = `<tr><td colspan="7">Error: ${error.message}</td></tr>`; return; }
-            if (!data || data.length === 0) { tbody.innerHTML = '<tr><td colspan="7">No orders found.</td></tr>'; return; }
-            tbody.innerHTML = data.map(o => `
-                <tr>
-                    <td><strong>#${o.id.slice(0, 8)}</strong></td>
-                    <td>${escapeHtml(o.customers ? o.customers.name : 'Guest')}</td>
-                    <td>${escapeHtml(o.customers ? o.customers.phone : '-')}</td>
-                    <td>AED ${Number(o.total_amount || 0).toFixed(2)}</td>
-                    <td>${escapeHtml(o.payment_method || '-')}</td>
-                    <td><span class="badge badge-${o.status || 'pending'}">${o.status || 'pending'}</span></td>
-                    <td>
-                        <div class="row-actions">
-                            <button class="btn btn-secondary btn-small" onclick="ordViewDetails('${o.id}')">Details</button>
-                            <button class="btn btn-danger btn-small" onclick="ordDelete('${o.id}')">Delete</button>
-                        </div>
-                    </td>
-                </tr>`).join('');
-        }
-        async function ordViewDetails(orderId) {
-            const modalBody = document.getElementById('orderModalBody');
-            modalBody.innerHTML = 'Loading...';
-            document.getElementById('orderModalOverlay').style.display = 'block';
-            document.getElementById('orderModalCard').style.display = 'block';
-            const [{ data: order }, { data: items }] = await Promise.all([
-                window.db.from('orders').select('*, customers(*)').eq('id', orderId).single(),
-                window.db.from('order_items').select('*').eq('order_id', orderId)
-            ]);
-            if (!order) return;
-            const c = order.customers || {}; const item = items?.[0] || {}; const sel = item.selected_options?.selections || [];
-            modalBody.innerHTML = `
-                <div class="detail-section">
-                    <h4>Customer Information</h4>
-                    <div class="detail-grid">
-                        <div class="detail-item"><span class="label">Name</span><span class="val">${escapeHtml(c.name || '-')}</span></div>
-                        <div class="detail-item"><span class="label">Phone</span><span class="val">${escapeHtml(c.phone || '-')}</span></div>
-                        <div class="detail-item"><span class="label">Email</span><span class="val">${escapeHtml(c.email || '-')}</span></div>
-                        <div class="detail-item"><span class="label">Country</span><span class="val">${escapeHtml(c.country || '-')}</span></div>
-                    </div>
-                </div>
-                <div class="detail-section">
-                    <h4>Product & Selections</h4>
-                    <div class="detail-grid">
-                        <div class="detail-item"><span class="label">Product Name</span><span class="val">${escapeHtml(item.product_name || '-')}</span></div>
-                        <div class="detail-item"><span class="label">Quantity</span><span class="val">${item.quantity || 1}</span></div>
-                        <div class="detail-item"><span class="label">Total Price</span><span class="val">AED ${Number(order.total_amount || 0).toFixed(2)}</span></div>
-                    </div>
-                    ${sel.length > 0 ? `<div class="options-list">${sel.map(s => `<div>• <strong>${escapeHtml(s.label)}:</strong> ${escapeHtml(s.value)}</div>`).join('')}</div>` : ''}
-                </div>
-                <div class="detail-section">
-                    <h4>Update Status</h4>
-                    <div style="display:flex; gap:0.8rem;">
-                        <select id="ordStatusSelect">
-                            <option value="pending" ${order.status==='pending'?'selected':''}>Pending</option>
-                            <option value="processing" ${order.status==='processing'?'selected':''}>Processing</option>
-                            <option value="completed" ${order.status==='completed'?'selected':''}>Completed</option>
-                            <option value="cancelled" ${order.status==='cancelled'?'selected':''}>Cancelled</option>
-                        </select>
-                        <button class="btn btn-primary btn-small" onclick="ordSaveStatus('${order.id}')">Save</button>
-                    </div>
-                </div>`;
-        }
-        async function ordSaveStatus(orderId) {
-            const s = document.getElementById('ordStatusSelect').value;
-            await window.db.from('orders').update({ status: s }).eq('id', orderId);
-            closeOrderModal(); ordLoadList(currentOrdersFilter); loadStats();
-        }
-        async function ordDelete(orderId) {
-            if (!confirm('Delete this order?')) return;
-            await window.db.from('order_items').delete().eq('order_id', orderId);
-            await window.db.from('orders').delete().eq('id', orderId);
-            ordLoadList(currentOrdersFilter); loadStats();
-        }
-        function closeOrderModal() { document.getElementById('orderModalOverlay').style.display='none'; document.getElementById('orderModalCard').style.display='none'; }
-        function initOrdersPage() {
-            ordLoadList(currentOrdersFilter);
-            document.querySelectorAll('.filter-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
-                    tab.classList.add('active'); currentOrdersFilter = tab.getAttribute('data-status'); ordLoadList(currentOrdersFilter);
-                });
-            });
-        }
-
-        // --- Customers Logic ---
-        async function custLoadList() {
-            const tbody = document.getElementById('custTableBody'); if (!tbody) return;
-            const { data } = await window.db.from('customers').select('*, orders(id)');
-            if (!data || data.length===0) { tbody.innerHTML='<tr><td colspan="6">No customers recorded yet.</td></tr>'; return; }
-            tbody.innerHTML = data.map(c => `
-                <tr>
-                    <td>${escapeHtml(c.name || 'Unnamed')}</td>
-                    <td>${escapeHtml(c.phone || '-')}</td>
-                    <td>${escapeHtml(c.email || '-')}</td>
-                    <td>${escapeHtml(c.country || '-')}</td>
-                    <td>${c.orders ? c.orders.length : 0} order(s)</td>
-                    <td><button class="btn btn-danger btn-small" onclick="custDelete('${c.id}')">Delete</button></td>
-                </tr>`).join('');
-        }
-        async function custDelete(id) {
-            if (!confirm('Delete customer profile?')) return;
-            await window.db.from('customers').delete().eq('id', id);
-            custLoadList(); loadStats();
-        }
-        function initCustomersPage() { custLoadList(); }
-
-        // --- Gallery Logic ---
-        async function galLoadList() {
-            const tbody = document.getElementById('galTableBody'); if (!tbody) return;
-            const { data } = await window.db.from('gallery').select('*').order('display_order', { ascending: true });
-            if (!data || data.length === 0) { tbody.innerHTML='<tr><td colspan="6">No portfolio photos uploaded yet.</td></tr>'; return; }
-            tbody.innerHTML = data.map(g => `
-                <tr>
-                    <td><img class="prod-thumb" src="${g.image_url}" alt=""></td>
-                    <td>${escapeHtml(g.title)}</td>
-                    <td>${escapeHtml(g.category)}</td>
-                    <td>${g.display_order}</td>
-                    <td><span class="badge ${g.is_visible?'badge-active':'badge-inactive'}">${g.is_visible?'Visible':'Hidden'}</span></td>
-                    <td>
-                        <button class="btn btn-secondary btn-small" onclick="galToggle('${g.id}', ${!g.is_visible})">${g.is_visible?'Hide':'Show'}</button>
-                        <button class="btn btn-danger btn-small" onclick="galDelete('${g.id}')">Delete</button>
-                    </td>
-                </tr>`).join('');
-        }
-        async function galToggle(id, status) { await window.db.from('gallery').update({ is_visible: status }).eq('id', id); galLoadList(); }
-        async function galDelete(id) { if(confirm('Delete photo?')) { await window.db.from('gallery').delete().eq('id', id); galLoadList(); } }
-        function initGalleryPage() {
-            galLoadList();
-            document.getElementById('galForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const title = document.getElementById('galTitle').value.trim();
-                const category = document.getElementById('galCategory').value.trim();
-                const order = parseInt(document.getElementById('galOrder').value, 10) || 0;
-                const file = document.getElementById('galImage').files[0];
-                if (!file) { alert('Please select a photo file.'); return; }
-
-                const path = `gallery-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.]/g, '-')}`;
-                const { error: upErr } = await window.db.storage.from('products').upload(path, file);
-                if (upErr) { alert('Upload error: ' + upErr.message); return; }
-                const { data: pUrl } = window.db.storage.from('products').getPublicUrl(path);
-
-                await window.db.from('gallery').insert({ title, category, display_order: order, image_url: pUrl.publicUrl });
-                document.getElementById('galForm').reset();
-                galLoadList();
-            });
-        }
-
-        // --- Homepage Settings Logic ---
-        async function initHomepageSettingsPage() {
-            const { data } = await window.db.from('homepage_settings').select('*').eq('id', 'main').maybeSingle();
-            if (data) {
-                document.getElementById('hpHeroTitle').value = data.hero_title || '';
-                document.getElementById('hpHeroSubtitle').value = data.hero_subtitle || '';
-                document.getElementById('hpCtaText').value = data.cta_text || '';
-                document.getElementById('hpAboutSinhala').value = data.about_sinhala || '';
-                document.getElementById('hpAboutEnglish').value = data.about_english || '';
-            }
-            document.getElementById('hpForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const payload = {
-                    id: 'main',
-                    hero_title: document.getElementById('hpHeroTitle').value,
-                    hero_subtitle: document.getElementById('hpHeroSubtitle').value,
-                    cta_text: document.getElementById('hpCtaText').value,
-                    about_sinhala: document.getElementById('hpAboutSinhala').value,
-                    about_english: document.getElementById('hpAboutEnglish').value
-                };
-                await window.db.from('homepage_settings').upsert(payload);
-                document.getElementById('hpMsg').textContent = 'Homepage content updated successfully!';
-                document.getElementById('hpMsg').className = 'msg-box msg-success';
-            });
-        }
-
-        // --- Contact Details Logic ---
-        async function initContactDetailsPage() {
-            const { data } = await window.db.from('contact_details').select('*').eq('id', 'main').maybeSingle();
-            if (data) {
-                document.getElementById('cntPhone').value = data.phone || '';
-                document.getElementById('cntEmail').value = data.email || '';
-                document.getElementById('cntWhatsapp').value = data.whatsapp || '';
-                document.getElementById('cntAddress').value = data.address || '';
-                document.getElementById('cntFacebook').value = data.facebook || '';
-                document.getElementById('cntInstagram').value = data.instagram || '';
-            }
-            document.getElementById('contactForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const payload = {
-                    id: 'main',
-                    phone: document.getElementById('cntPhone').value,
-                    email: document.getElementById('cntEmail').value,
-                    whatsapp: document.getElementById('cntWhatsapp').value,
-                    address: document.getElementById('cntAddress').value,
-                    facebook: document.getElementById('cntFacebook').value,
-                    instagram: document.getElementById('cntInstagram').value
-                };
-                await window.db.from('contact_details').upsert(payload);
-                document.getElementById('contactMsg').textContent = 'Contact details updated!';
-                document.getElementById('contactMsg').className = 'msg-box msg-success';
-            });
-        }
-
-        // --- Analytics Logic ---
-        async function initAnalyticsPage() {
-            const { data: orders } = await window.db.from('orders').select('*');
-            if (!orders) return;
-            const completed = orders.filter(o => o.status === 'completed');
-            const totalRev = completed.reduce((sum, o) => sum + Number(o.total_amount || 0), 0);
-            const avgOrder = completed.length ? (totalRev / completed.length) : 0;
-
-            document.getElementById('anTotalRev').textContent = `AED ${totalRev.toFixed(2)}`;
-            document.getElementById('anCompleted').textContent = completed.length;
-            document.getElementById('anAvgOrder').textContent = `AED ${avgOrder.toFixed(2)}`;
-
-            const statuses = ['pending', 'processing', 'completed', 'cancelled'];
-            const bars = statuses.map(s => {
-                const count = orders.filter(o => o.status === s).length;
-                const pct = orders.length ? ((count / orders.length) * 100).toFixed(1) : 0;
-                return `<div>
-                    <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:600;">
-                        <span>${s.toUpperCase()} (${count})</span><span>${pct}%</span>
-                    </div>
-                    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%;"></div></div>
-                </div>`;
-            }).join('');
-            document.getElementById('anStatusBars').innerHTML = bars;
-        }
-
-        // --- System Settings Logic ---
-        async function initSettingsPage() {
-            const { data } = await window.db.from('site_settings').select('*').eq('id', 'main').maybeSingle();
-            if (data) {
-                document.getElementById('stgStoreName').value = data.store_name || '';
-                document.getElementById('stgCurrency').value = data.currency_symbol || '';
-                document.getElementById('stgMinQty').value = data.default_min_qty || 1;
-            }
-            document.getElementById('stgForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                await window.db.from('site_settings').upsert({
-                    id: 'main',
-                    store_name: document.getElementById('stgStoreName').value,
-                    currency_symbol: document.getElementById('stgCurrency').value,
-                    default_min_qty: parseInt(document.getElementById('stgMinQty').value, 10) || 1
-                });
-                document.getElementById('stgMsg').textContent = 'System settings saved!';
-                document.getElementById('stgMsg').className = 'msg-box msg-success';
-            });
-        }
-
-        // --- Printing Methods, Categories, Products, Product Options Existing Logic ---
-        function pmShowMessage(text, type) { const box = document.getElementById('pmMsg'); if(!box)return; box.textContent = text; box.className = type==='error'?'msg-box msg-error':'msg-box msg-success'; }
-        async function pmLoadList() {
-            const tbody = document.getElementById('pmTableBody'); if(!tbody)return;
-            const { data } = await window.db.from('printing_methods').select('*').order('display_order', { ascending: true });
-            if(!data||data.length===0){ tbody.innerHTML='<tr><td colspan="5">No printing methods yet.</td></tr>'; return;}
-            tbody.innerHTML = data.map(r => `
-                <tr>
-                    <td>${escapeHtml(r.name)}</td><td>${escapeHtml(r.description||'-')}</td><td>${r.display_order}</td>
-                    <td><span class="badge ${r.is_active?'badge-active':'badge-inactive'}">${r.is_active?'Active':'Inactive'}</span></td>
-                    <td>
-                        <button class="btn btn-secondary btn-small" onclick="pmEdit('${r.id}','${escapeHtml(r.name)}','${escapeHtml(r.description||'')}',${r.display_order})">Edit</button>
-                        <button class="btn btn-danger btn-small" onclick="pmDelete('${r.id}')">Delete</button>
-                    </td>
-                </tr>`).join('');
-        }
-        function pmEdit(id, name, desc, order){ document.getElementById('pmEditId').value=id; document.getElementById('pmName').value=name; document.getElementById('pmDescription').value=desc; document.getElementById('pmOrder').value=order; }
-        async function pmDelete(id){ if(confirm('Delete printing method?')){ await window.db.from('printing_methods').delete().eq('id',id); pmLoadList(); } }
-        function initPrintingMethodsPage(){
-            pmLoadList();
-            document.getElementById('pmForm').addEventListener('submit', async(e)=>{
-                e.preventDefault();
-                const editId=document.getElementById('pmEditId').value;
-                const name=document.getElementById('pmName').value.trim();
-                const description=document.getElementById('pmDescription').value.trim();
-                const display_order=parseInt(document.getElementById('pmOrder').value, 10)||0;
-                if(editId) await window.db.from('printing_methods').update({name, description, display_order}).eq('id', editId);
-                else await window.db.from('printing_methods').insert({name, description, display_order});
-                document.getElementById('pmForm').reset(); pmLoadList();
-            });
-        }
-
-        function catShowMessage(text, type) { const box = document.getElementById('catMsg'); if(!box)return; box.textContent = text; box.className = type==='error'?'msg-box msg-error':'msg-box msg-success'; }
-        async function catLoadList() {
-            const tbody = document.getElementById('catTableBody'); if(!tbody)return;
-            const { data } = await window.db.from('categories').select('*').order('display_order', { ascending: true });
-            if(!data||data.length===0){ tbody.innerHTML='<tr><td colspan="5">No categories yet.</td></tr>'; return;}
-            tbody.innerHTML = data.map(r => `
-                <tr>
-                    <td>${escapeHtml(r.name)}</td><td>-</td><td>${r.display_order}</td>
-                    <td><span class="badge ${r.is_visible?'badge-active':'badge-inactive'}">${r.is_visible?'Visible':'Hidden'}</span></td>
-                    <td><button class="btn btn-danger btn-small" onclick="catDelete('${r.id}')">Delete</button></td>
-                </tr>`).join('');
-        }
-        async function catDelete(id){ if(confirm('Delete category?')){ await window.db.from('categories').delete().eq('id',id); catLoadList(); } }
-        function initCategoriesPage(){
-            catLoadList();
-            document.getElementById('catForm').addEventListener('submit', async(e)=>{
-                e.preventDefault();
-                const name=document.getElementById('catName').value.trim();
-                const display_order=parseInt(document.getElementById('catOrder').value, 10)||0;
-                const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-                await window.db.from('categories').insert({name, slug, display_order});
-                document.getElementById('catForm').reset(); catLoadList();
-            });
-        }
-
-        async function prodLoadList() {
-            const tbody = document.getElementById('prodTableBody'); if(!tbody)return;
-            const { data } = await window.db.from('products').select('*, categories(name)').order('display_order', { ascending: true });
-            if(!data||data.length===0){ tbody.innerHTML='<tr><td colspan="6">No products yet.</td></tr>'; return;}
-            tbody.innerHTML = data.map(r => `
-                <tr>
-                    <td><img class="prod-thumb" src="${r.featured_image||''}" alt=""></td>
-                    <td>${escapeHtml(r.name)}</td><td>${escapeHtml(r.categories?.name||'-')}</td>
-                    <td>AED ${Number(r.price_per_unit).toFixed(2)}</td>
-                    <td><span class="badge ${r.is_visible?'badge-active':'badge-inactive'}">${r.is_visible?'Visible':'Hidden'}</span></td>
-                    <td><button class="btn btn-danger btn-small" onclick="prodDelete('${r.id}')">Delete</button></td>
-                </tr>`).join('');
-        }
-        async function prodDelete(id){ if(confirm('Delete product?')){ await window.db.from('products').delete().eq('id',id); prodLoadList(); } }
-        async function initProductsPage(){
-            const { data: cats } = await window.db.from('categories').select('*');
-            const select = document.getElementById('prodCategory');
-            if(select) select.innerHTML = '<option value="">Select category</option>' + (cats||[]).map(c=>`<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
-            prodLoadList();
-            document.getElementById('prodForm').addEventListener('submit', async(e)=>{
-                e.preventDefault();
-                const name=document.getElementById('prodName').value.trim();
-                const category_id=document.getElementById('prodCategory').value;
-                const price_per_unit=parseFloat(document.getElementById('prodPrice').value)||0;
-                const min_quantity=parseInt(document.getElementById('prodMinQty').value,10)||1;
-                const description=document.getElementById('prodDescription').value.trim();
-                const file = document.getElementById('prodImage').files[0];
-                let featured_image = '';
-                if(file) {
-                    const path = `prod-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.]/g, '-')}`;
-                    await window.db.storage.from('products').upload(path, file);
-                    const { data: pUrl } = window.db.storage.from('products').getPublicUrl(path);
-                    featured_image = pUrl.publicUrl;
-                }
-                await window.db.from('products').insert({name, category_id, price_per_unit, price: price_per_unit, min_quantity, description, featured_image});
-                document.getElementById('prodForm').reset(); prodLoadList();
-            });
-        }
-
-        const pfState = { productId: null, fields: [] };
-        async function initProductFieldsPage(){
-            const { data } = await window.db.from('products').select('id, name');
-            const sel = document.getElementById('pfProductSelect');
-            if(sel) sel.innerHTML = '<option value="">-- Choose product --</option>' + (data||[]).map(p=>`<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
-            sel.addEventListener('change', async (e) => {
-                pfState.productId = e.target.value;
-                if(!pfState.productId) { document.getElementById('pfFieldsArea').style.display='none'; return; }
-                document.getElementById('pfFieldsArea').style.display='block';
-                pfLoadFields();
-            });
-            document.getElementById('pfForm').addEventListener('submit', async(e)=>{
-                e.preventDefault();
-                const field_label = document.getElementById('pfLabel').value.trim();
-                const field_type = document.getElementById('pfType').value;
-                const price_modifier = parseFloat(document.getElementById('pfPrice').value)||0;
-                const is_required = document.getElementById('pfRequired').checked;
-                await window.db.from('product_fields').insert({
-                    product_id: pfState.productId, field_key: field_label.toLowerCase().replace(/[^a-z0-9]+/g,'_'),
-                    field_label, field_type, price_modifier, is_required
-                });
-                document.getElementById('pfForm').reset(); pfLoadFields();
-            });
-        }
-        async function pfLoadFields(){
-            const tbody = document.getElementById('pfTableBody'); if(!tbody) return;
-            const { data } = await window.db.from('product_fields').select('*').eq('product_id', pfState.productId);
-            if(!data||data.length===0){ tbody.innerHTML='<tr><td colspan="5">No options added yet.</td></tr>'; return; }
-            tbody.innerHTML = data.map(f => `
-                <tr>
-                    <td>${escapeHtml(f.field_label)}</td><td><span class="field-type-badge">${f.field_type}</span></td>
-                    <td>${f.is_required?'Yes':'No'}</td><td>AED ${Number(f.price_modifier).toFixed(2)}</td>
-                    <td><button class="btn btn-danger btn-small" onclick="pfDeleteField('${f.id}')">Delete</button></td>
-                </tr>`).join('');
-        }
-        async function pfDeleteField(id){ await window.db.from('product_fields').delete().eq('id', id); pfLoadFields(); }
-
-        checkAuth();
-    </script>
+loadState();
+renderDashboard();
+</script>
 </body>
 </html>
