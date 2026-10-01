@@ -49,21 +49,6 @@ table{width:100%;border-collapse:collapse}th,td{padding:12px 8px;border-bottom:1
 .mobile-menu{display:none;border:0;background:none;font-size:22px}
 @media(max-width:900px){.sidebar{transform:translateX(-100%);transition:.25s;z-index:1000}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.mobile-menu{display:block}.stats{grid-template-columns:repeat(2,1fr)}.cards{grid-template-columns:1fr}}
 @media(max-width:600px){.content{padding:15px}.stats,.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.admin-user{display:none}table{display:block;overflow-x:auto;white-space:nowrap}}
-
-.delivery-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.delivery-card{background:#f8fafb;border:1px solid #e7ebef;border-radius:10px;padding:15px}
-.delivery-card h5{font-size:13px;color:#1e4563;margin-bottom:8px}
-.help{font-size:11px;color:#777;line-height:1.5}
-.switch{display:flex;align-items:center;gap:8px;font-size:12px}
-.order-actions{display:flex;gap:8px;flex-wrap:wrap}
-.status-flow{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
-.status-flow span{padding:6px 9px;border-radius:16px;background:#f0f2f4;font-size:10px}
-.status-flow span.current{background:#00c3dd;color:#fff}
-.checklist{display:grid;gap:8px;margin-top:12px}
-.check-row{display:flex;align-items:center;gap:8px;padding:9px;background:#f7f8fa;border-radius:7px;font-size:12px}
-.order-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.order-summary .mini-card{padding:12px}
-@media(max-width:900px){.delivery-grid,.order-summary{grid-template-columns:1fr}}
 </style>
 </head>
 
@@ -131,25 +116,10 @@ table{width:100%;border-collapse:collapse}th,td{padding:12px 8px;border-bottom:1
 
 <!-- DELIVERY -->
 <div class="page" id="page-delivery">
-  <div class="page-title"><h3>Delivery & Production</h3><p>Set normal production days, urgent delivery and delivery charges per category.</p></div>
+  <div class="page-title"><h3>Delivery</h3><p>Manage delivery dates, time slots and charges</p></div>
   <div class="panel">
-    <div class="panel-header">
-      <div><h4>Category Delivery Settings</h4><p style="font-size:12px;color:#777;margin-top:3px">Each category can have its own production time and urgent fee.</p></div>
-    </div>
-    <div id="deliveryCategoryList"></div>
-  </div>
-  <div class="panel">
-    <div class="panel-header"><h4>How Delivery Works</h4></div>
-    <div class="help" style="font-size:12px">
-      <b>Normal:</b> Order date + category production days = earliest normal date.<br>
-      <b>Urgent:</b> If enabled, customer can request tomorrow delivery and the category urgent fee is added.<br>
-      <b>Multiple items:</b> final production date should use the longest production time in the order.<br>
-      <b>Admin:</b> manually verify artwork, payment, production and delivery before moving the order through its statuses.
-    </div>
-  </div>
-  <div class="panel">
-    <div class="panel-header"><h4>Delivery Time Slots</h4><button class="btn btn-primary" onclick="openDeliverySlotModal()">+ Add Time Slot</button></div>
-    <table><thead><tr><th>Time Slot</th><th>Fee</th><th>Status</th><th>Action</th></tr></thead><tbody id="deliverySlotTable"></tbody></table>
+    <div class="panel-header"><h4>Delivery Slots</h4><button class="btn btn-primary" onclick="openDeliveryModal()">+ Add Delivery Slot</button></div>
+    <table><thead><tr><th>Date</th><th>Time Slot</th><th>Fee</th><th>Status</th><th>Action</th></tr></thead><tbody id="deliveryTable"></tbody></table>
   </div>
 </div>
 
@@ -244,32 +214,16 @@ table{width:100%;border-collapse:collapse}th,td{padding:12px 8px;border-bottom:1
 </div>
 </div>
 
-<!-- DELIVERY SETTINGS MODAL -->
-<div class="modal" id="deliverySettingsModal">
+<!-- DELIVERY MODAL -->
+<div class="modal" id="deliveryModal">
 <div class="modal-box">
-  <div class="modal-header"><h3 id="deliverySettingsTitle">Delivery Settings</h3><button class="close" onclick="closeModal('deliverySettingsModal')">×</button></div>
+  <div class="modal-header"><h3>Add Delivery Slot</h3><button class="close" onclick="closeModal('deliveryModal')">×</button></div>
   <div class="form-grid">
-    <div class="field"><label>Normal Production Days</label><input id="prodDays" type="number" min="0" step="1" placeholder="Example: 2"></div>
-    <div class="field"><label>Normal Delivery Fee</label><input id="normalDeliveryFee" type="number" min="0" step="0.01"></div>
-    <div class="field"><label>Urgent Order</label><select id="urgentEnabled"><option value="true">Available</option><option value="false">Not Available</option></select></div>
-    <div class="field"><label>Urgent Delivery</label><select id="urgentMode"><option value="tomorrow">Get Tomorrow</option></select></div>
-    <div class="field"><label>Urgent Extra Fee</label><input id="urgentFee" type="number" min="0" step="0.01" placeholder="Example: 800"></div>
+    <div class="field"><label>Date</label><input id="deliveryDate" type="date"></div>
+    <div class="field"><label>Time Slot</label><input id="deliveryTime" placeholder="10:00 AM - 12:00 PM"></div>
+    <div class="field"><label>Delivery Fee</label><input id="deliveryFee" type="number" step="0.01"></div>
   </div>
-  <div class="help" style="margin-top:12px">Normal date is calculated from the order date + production days. Urgent orders are available only when enabled and add the urgent fee.</div>
-  <div class="actions" style="justify-content:flex-end;margin-top:15px"><button class="btn btn-gray" onclick="closeModal('deliverySettingsModal')">Cancel</button><button class="btn btn-primary" onclick="saveDeliverySettings()">Save Settings</button></div>
-</div>
-</div>
-
-<!-- DELIVERY SLOT MODAL -->
-<div class="modal" id="deliverySlotModal">
-<div class="modal-box">
-  <div class="modal-header"><h3>Add Delivery Time Slot</h3><button class="close" onclick="closeModal('deliverySlotModal')">×</button></div>
-  <div class="form-grid">
-    <div class="field full"><label>Time Slot</label><input id="slotTime" placeholder="10:00 AM - 12:00 PM"></div>
-    <div class="field"><label>Delivery Fee</label><input id="slotFee" type="number" min="0" step="0.01"></div>
-    <div class="field"><label>Status</label><select id="slotActive"><option value="true">Active</option><option value="false">Hidden</option></select></div>
-  </div>
-  <div class="actions" style="justify-content:flex-end;margin-top:15px"><button class="btn btn-gray" onclick="closeModal('deliverySlotModal')">Cancel</button><button class="btn btn-primary" onclick="saveDeliverySlot()">Save Slot</button></div>
+  <div class="actions" style="justify-content:flex-end;margin-top:15px"><button class="btn btn-gray" onclick="closeModal('deliveryModal')">Cancel</button><button class="btn btn-primary" onclick="saveDelivery()">Save Slot</button></div>
 </div>
 </div>
 
@@ -291,23 +245,23 @@ table{width:100%;border-collapse:collapse}th,td{padding:12px 8px;border-bottom:1
 const KEY="janu_print_demo_v2";
 let state={
  categories:[
-  {id:"cat1",name:"DTF Custom Print",description:"Custom DTF printing",active:true,delivery:{days:1,fee:500,urgent:true,urgentMode:"tomorrow",urgentFee:500},options:[
+  {id:"cat1",name:"DTF Custom Print",description:"Custom DTF printing",active:true,options:[
    {id:"o1",name:"Size",values:[["A5",15],["A4",25],["A3",40],["Custom",0]]},
    {id:"o2",name:"Design Upload",values:[["Upload",0],["WhatsApp",0]]},
    {id:"o3",name:"Custom Size",values:[]}
   ]},
-  {id:"cat2",name:"Plain T-Shirt",description:"Plain printed T-shirts",active:true,delivery:{days:2,fee:500,urgent:true,urgentMode:"tomorrow",urgentFee:800},options:[
+  {id:"cat2",name:"Plain T-Shirt",description:"Plain printed T-shirts",active:true,options:[
    {id:"o4",name:"Size",values:[["S",20],["M",20],["L",22],["XL",24],["XXL",26]]},
    {id:"o5",name:"Colour",values:[["Black",0],["White",0],["Red",2],["Green",2]]},
    {id:"o6",name:"GSM",values:[["160 GSM",0],["180 GSM",3],["200 GSM",5]]},
    {id:"o7",name:"Style",values:[["Round Neck",0],["Polo",8],["V-Neck",4]]},
    {id:"o8",name:"Sleeve",values:[["Short",0],["Long",5]]}
   ]},
-  {id:"cat3",name:"Bag Printing",description:"Printed bags",active:true,delivery:{days:2,fee:500,urgent:true,urgentMode:"tomorrow",urgentFee:700},options:[
+  {id:"cat3",name:"Bag Printing",description:"Printed bags",active:true,options:[
    {id:"o9",name:"Material",values:[["Non Woven",10],["Canvas",20],["Cotton",18]]},
    {id:"o10",name:"Size",values:[["Small",10],["Medium",15],["Large",20]]}
   ]},
-  {id:"cat4",name:"Mug Printing",description:"Printed mugs",active:true,delivery:{days:2,fee:500,urgent:true,urgentMode:"tomorrow",urgentFee:700},options:[
+  {id:"cat4",name:"Mug Printing",description:"Printed mugs",active:true,options:[
    {id:"o11",name:"Material",values:[["Ceramic",15],["Magic Mug",25],["Metal",30]]},
    {id:"o12",name:"Capacity",values:[["250ml",15],["330ml",18],["450ml",22]]}
   ]}
@@ -315,8 +269,8 @@ let state={
  prices:[],
  deliveries:[],
  orders:[
-  {id:"ORD-1001",customer:"Demo Customer",category:"DTF Custom Print",total:25,status:"Pending",options:"A4, Upload",delivery:"Standard",checklist:{artwork:false,payment:false,production:false,delivery:false}},
-  {id:"ORD-1002",customer:"Test Customer",category:"Plain T-Shirt",total:32,status:"Processing",options:"L, Black, 180 GSM, Round Neck, Short",delivery:"Standard",checklist:{artwork:true,payment:true,production:false,delivery:false}}
+  {id:"ORD-1001",customer:"Demo Customer",category:"DTF Custom Print",total:25,status:"Pending",options:"A4, Upload",delivery:"Standard"},
+  {id:"ORD-1002",customer:"Test Customer",category:"Plain T-Shirt",total:32,status:"Processing",options:"L, Black, 180 GSM, Round Neck, Short",delivery:"Standard"}
  ],
  settings:{business:"Janu Print | FAB",whatsapp:"",phone:"",currency:"LKR",whatsappEnabled:true,uploadEnabled:true}
 };
@@ -400,7 +354,7 @@ function saveCategory(){
  if(editingCategoryId){
   const c=state.categories.find(x=>x.id===editingCategoryId);c.name=name;c.description=document.getElementById("catDescription").value.trim();c.active=document.getElementById("catStatus").value==="true";
  }else{
-  state.categories.push({id:"cat"+Date.now(),name,description:document.getElementById("catDescription").value.trim(),active:true,delivery:{days:1,fee:0,urgent:false,urgentMode:"tomorrow",urgentFee:0},options:[]});
+  state.categories.push({id:"cat"+Date.now(),name,description:document.getElementById("catDescription").value.trim(),active:true,options:[]});
  }
  saveState();closeModal("categoryModal");renderCategories();
 }
@@ -481,67 +435,18 @@ function savePrice(){
 function deletePrice(i){state.prices.splice(i,1);saveState();renderPricing()}
 
 function renderDeliveries(){
-  const list=document.getElementById("deliveryCategoryList");
-  list.innerHTML=state.categories.map(c=>{
-    const d=c.delivery||{days:1,fee:0,urgent:false,urgentMode:"tomorrow",urgentFee:0};
-    c.delivery=d;
-    return `<div class="delivery-card" style="margin-bottom:10px">
-      <div class="panel-header" style="margin-bottom:8px">
-        <div><h5>${esc(c.name)}</h5><div class="help">${esc(c.description||"")}</div></div>
-        <button class="btn btn-blue btn-small" onclick="openDeliverySettings('${c.id}')">Edit</button>
-      </div>
-      <div class="delivery-grid">
-        <div><small>Normal Production</small><strong style="display:block;margin-top:4px">${Number(d.days||0)} day(s)</strong></div>
-        <div><small>Normal Fee</small><strong style="display:block;margin-top:4px">${money(d.fee)}</strong></div>
-        <div><small>Urgent</small><strong style="display:block;margin-top:4px">${d.urgent?"Tomorrow + "+money(d.urgentFee):"Not available"}</strong></div>
-      </div>
-    </div>`;
-  }).join("")||`<div class="empty">No categories yet.</div>`;
-
-  document.getElementById("deliverySlotTable").innerHTML=state.deliveries.map((d,i)=>`
-    <tr><td>${esc(d.time)}</td><td>${money(d.fee)}</td><td><span class="badge ${d.active?"":"off"}">${d.active?"Active":"Hidden"}</span></td>
-    <td><div class="actions"><button class="btn btn-gray btn-small" onclick="toggleDeliverySlot(${i})">Toggle</button><button class="btn btn-danger btn-small" onclick="deleteDeliverySlot(${i})">Delete</button></div></td></tr>`
-  ).join("")||`<tr><td colspan="4" class="empty">No delivery time slots yet.</td></tr>`;
+ document.getElementById("deliveryTable").innerHTML=state.deliveries.map((d,i)=>`
+ <tr><td>${esc(d.date)}</td><td>${esc(d.time)}</td><td>${money(d.fee)}</td><td><span class="badge ${d.active?"":"off"}">${d.active?"Active":"Hidden"}</span></td>
+ <td><div class="actions"><button class="btn btn-gray btn-small" onclick="toggleDelivery(${i})">Toggle</button><button class="btn btn-danger btn-small" onclick="deleteDelivery(${i})">Delete</button></div></td></tr>`).join("")||`<tr><td colspan="5" class="empty">No delivery slots yet.</td></tr>`;
 }
-function openDeliverySettings(id){
-  currentCategoryId=id;
-  const c=state.categories.find(x=>x.id===id); if(!c)return;
-  const d=c.delivery||{days:1,fee:0,urgent:false,urgentMode:"tomorrow",urgentFee:0};
-  document.getElementById("deliverySettingsTitle").textContent=c.name+" Delivery Settings";
-  document.getElementById("prodDays").value=d.days;
-  document.getElementById("normalDeliveryFee").value=d.fee;
-  document.getElementById("urgentEnabled").value=String(d.urgent);
-  document.getElementById("urgentMode").value=d.urgentMode||"tomorrow";
-  document.getElementById("urgentFee").value=d.urgentFee;
-  openModal("deliverySettingsModal");
+function openDeliveryModal(){document.getElementById("deliveryDate").value="";document.getElementById("deliveryTime").value="";document.getElementById("deliveryFee").value="";openModal("deliveryModal")}
+function saveDelivery(){
+ const date=document.getElementById("deliveryDate").value,time=document.getElementById("deliveryTime").value.trim(),fee=Number(document.getElementById("deliveryFee").value||0);
+ if(!date||!time){alert("Enter date and time slot.");return}
+ state.deliveries.push({date,time,fee,active:true});saveState();closeModal("deliveryModal");renderDeliveries();
 }
-function saveDeliverySettings(){
-  const c=state.categories.find(x=>x.id===currentCategoryId); if(!c)return;
-  c.delivery={
-    days:Math.max(0,Number(document.getElementById("prodDays").value||0)),
-    fee:Math.max(0,Number(document.getElementById("normalDeliveryFee").value||0)),
-    urgent:document.getElementById("urgentEnabled").value==="true",
-    urgentMode:document.getElementById("urgentMode").value,
-    urgentFee:Math.max(0,Number(document.getElementById("urgentFee").value||0))
-  };
-  saveState();closeModal("deliverySettingsModal");renderDeliveries();
-}
-function openDeliverySlotModal(){
-  document.getElementById("slotTime").value="";
-  document.getElementById("slotFee").value="";
-  document.getElementById("slotActive").value="true";
-  openModal("deliverySlotModal");
-}
-function saveDeliverySlot(){
-  const time=document.getElementById("slotTime").value.trim();
-  const fee=Math.max(0,Number(document.getElementById("slotFee").value||0));
-  const active=document.getElementById("slotActive").value==="true";
-  if(!time){alert("Enter time slot.");return}
-  state.deliveries.push({time,fee,active});
-  saveState();closeModal("deliverySlotModal");renderDeliveries();
-}
-function toggleDeliverySlot(i){state.deliveries[i].active=!state.deliveries[i].active;saveState();renderDeliveries()}
-function deleteDeliverySlot(i){if(!confirm("Delete this time slot?"))return;state.deliveries.splice(i,1);saveState();renderDeliveries()}
+function toggleDelivery(i){state.deliveries[i].active=!state.deliveries[i].active;saveState();renderDeliveries()}
+function deleteDelivery(i){state.deliveries.splice(i,1);saveState();renderDeliveries()}
 
 function renderOrders(){
  document.getElementById("ordersTable").innerHTML=state.orders.map(o=>`
@@ -549,26 +454,13 @@ function renderOrders(){
  <td><span class="badge status-${o.status.toLowerCase()}">${esc(o.status)}</span></td>
  <td><button class="btn btn-blue btn-small" onclick="openOrder('${o.id}')">View</button></td></tr>`).join("")||`<tr><td colspan="6" class="empty">No orders yet.</td></tr>`;
 }
-function addDemoOrder(){ 
+function addDemoOrder(){
  const c=state.categories[0];
- state.orders.push({id:"ORD-"+(1000+state.orders.length+1),customer:"New Demo Customer",category:c?.name||"DTF Custom Print",total:35,status:"Pending",options:"A4, Upload",delivery:"Standard",checklist:{artwork:false,payment:false,production:false,delivery:false}});
+ state.orders.push({id:"ORD-"+(1000+state.orders.length+1),customer:"New Demo Customer",category:c?.name||"DTF Custom Print",total:35,status:"Pending",options:"A4, Upload",delivery:"Standard"});
  saveState();renderOrders();renderDashboard();
-}
-function ensureChecklist(o){
- if(!o.checklist)o.checklist={artwork:false,payment:false,production:false,delivery:false};
- return o.checklist;
-}
-function toggleChecklistItem(orderId,key){
- const o=state.orders.find(x=>x.id===orderId);if(!o)return;
- const cl=ensureChecklist(o);
- cl[key]=!cl[key];
- saveState();openOrder(orderId);
 }
 function openOrder(id){
  currentOrderId=id;const o=state.orders.find(x=>x.id===id);if(!o)return;
- const cl=ensureChecklist(o);
- const statuses=["Pending","Processing","Ready","Delivered"];
- const checkItems=[["artwork","Artwork confirmed"],["payment","Payment received"],["production","Production done"],["delivery","Ready / handed to delivery"]];
  document.getElementById("orderTitle").textContent=o.id;
  document.getElementById("orderDetails").innerHTML=`
  <div class="cards">
@@ -578,16 +470,7 @@ function openOrder(id){
  </div>
  <div class="panel" style="margin-top:15px"><strong>Selected Options</strong><p style="margin-top:8px;font-size:13px">${esc(o.options)}</p></div>
  <div class="panel"><strong>Delivery</strong><p style="margin-top:8px;font-size:13px">${esc(o.delivery)}</p></div>
- <div class="panel"><strong>Design File</strong><p style="margin-top:8px;font-size:13px;color:#777">Demo upload area. Real file storage will be connected later.</p></div>
- <div class="panel">
-  <strong>Order Status</strong>
-  <div class="status-flow">${statuses.map(s=>`<span class="${s===o.status?"current":""}">${esc(s)}</span>`).join("")}</div>
- </div>
- <div class="panel">
-  <strong>Manual Verification Checklist</strong>
-  <div class="checklist">${checkItems.map(([key,label])=>`
-   <label class="check-row"><input type="checkbox" ${cl[key]?"checked":""} onchange="toggleChecklistItem('${o.id}','${key}')"> ${esc(label)}</label>`).join("")}</div>
- </div>`;
+ <div class="panel"><strong>Design File</strong><p style="margin-top:8px;font-size:13px;color:#777">Demo upload area. Real file storage will be connected later.</p></div>`;
  openModal("orderModal");
 }
 function setCurrentOrderStatus(status){

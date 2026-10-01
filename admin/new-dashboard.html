@@ -549,7 +549,7 @@ function renderOrders(){
  <td><span class="badge status-${o.status.toLowerCase()}">${esc(o.status)}</span></td>
  <td><button class="btn btn-blue btn-small" onclick="openOrder('${o.id}')">View</button></td></tr>`).join("")||`<tr><td colspan="6" class="empty">No orders yet.</td></tr>`;
 }
-function addDemoOrder(){ 
+function addDemoOrder(){
  const c=state.categories[0];
  state.orders.push({id:"ORD-"+(1000+state.orders.length+1),customer:"New Demo Customer",category:c?.name||"DTF Custom Print",total:35,status:"Pending",options:"A4, Upload",delivery:"Standard",checklist:{artwork:false,payment:false,production:false,delivery:false}});
  saveState();renderOrders();renderDashboard();
