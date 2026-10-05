@@ -4,112 +4,224 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Login | Janu Print FAB</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
     :root {
-        --metallic-blue: #00c3dd;
-        --metallic-blue-dark: #1e4563;
-        --gold-accent: #d4af37;
+        --ink: #1e4563;
+        --ink-deep: #0f2536;
+        --cyan: #00c3dd;
+        --magenta: #e6007e;
+        --yellow: #ffd200;
         --gold-gradient: linear-gradient(135deg, #b8860b 0%, #d4af37 50%, #f6d365 100%);
-        --white: #ffffff;
-        --light-gray: #f8f9fa;
-        --text-dark: #333333;
+        --paper: #f3f6f8;
+        --text: #1d2b36;
+        --muted: #6b7a86;
+        --line: #d9e1e7;
+        --err: #b3261e;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { min-height: 100%; }
     body {
-        font-family: 'Poppins', sans-serif;
-        background: var(--metallic-blue-dark);
+        font-family: 'Poppins', system-ui, sans-serif;
+        color: var(--text);
+        background: var(--paper);
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
         min-height: 100vh;
+    }
+
+    /* ---------- brand side ---------- */
+    .brand {
+        position: relative;
+        overflow: hidden;
+        background: radial-gradient(120% 90% at 20% 0%, #285a7f 0%, var(--ink) 40%, var(--ink-deep) 100%);
+        color: #fff;
+        padding: 2.5rem clamp(1.5rem, 5vw, 4rem);
         display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 1rem;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 1.5rem;
     }
-    .login-card {
-        background: var(--white);
-        width: 100%;
-        max-width: 400px;
-        padding: 2.5rem;
-        border-radius: 18px;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        border-top: 4px solid var(--metallic-blue);
+    .brand::before {              /* halftone dots, fading toward the bottom */
+        content: '';
+        position: absolute; inset: 0;
+        background-image: radial-gradient(rgba(255,255,255,.11) 1.6px, transparent 1.8px);
+        background-size: 16px 16px;
+        -webkit-mask-image: linear-gradient(160deg, #000 0%, transparent 70%);
+                mask-image: linear-gradient(160deg, #000 0%, transparent 70%);
+        pointer-events: none;
     }
-    .login-card h1 {
-        color: var(--metallic-blue-dark);
-        font-size: 1.4rem;
-        text-align: center;
-        margin-bottom: 0.3rem;
-    }
-    .login-card p {
-        color: #888;
-        text-align: center;
-        font-size: 0.9rem;
-        margin-bottom: 1.8rem;
-    }
-    label {
-        display: block;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: var(--text-dark);
-        margin-bottom: 0.4rem;
-    }
-    input {
-        width: 100%;
-        padding: 12px 14px;
-        margin-bottom: 1.2rem;
-        border: 2px solid var(--light-gray);
-        border-radius: 10px;
-        font-family: 'Poppins', sans-serif;
-        font-size: 0.95rem;
-    }
-    input:focus {
-        outline: none;
-        border-color: var(--metallic-blue);
-    }
-    button {
-        width: 100%;
-        padding: 14px;
-        border: none;
-        border-radius: 50px;
-        background: var(--gold-gradient);
-        color: var(--metallic-blue-dark);
+    .brand > * { position: relative; }
+    .logo { display: flex; align-items: center; gap: .75rem; font-weight: 600; letter-spacing: .01em; }
+    .logo img { height: 38px; width: auto; border-radius: 8px; }
+    .logo b { font-weight: 600; }
+    .logo b span { color: #f6d365; }
+
+    .proof { display: grid; place-items: center; }
+    .proof svg { width: min(320px, 62vw); height: auto; filter: drop-shadow(0 24px 40px rgba(0,0,0,.45)); transform: rotate(-4deg); }
+    .proof circle { mix-blend-mode: multiply; transition: transform .9s cubic-bezier(.2, .9, .25, 1); }
+    .proof .c { fill: var(--cyan); }
+    .proof .m { fill: var(--magenta); }
+    .proof .y { fill: var(--yellow); }
+    .proof.off .c { transform: translate(-46px, -34px); }
+    .proof.off .m { transform: translate(52px, -26px); }
+    .proof.off .y { transform: translate(-6px, 50px); }
+
+    .pitch h1 {
+        font-family: 'Bricolage Grotesque', 'Poppins', sans-serif;
         font-weight: 700;
-        font-size: 1rem;
-        cursor: pointer;
+        font-size: clamp(1.7rem, 3.2vw, 2.7rem);
+        line-height: 1.08;
+        letter-spacing: -.02em;
+        max-width: 15ch;
     }
-    button:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
+    .pitch p { margin-top: .9rem; max-width: 38ch; color: rgba(255,255,255,.72); font-size: .95rem; line-height: 1.55; }
+
+    /* ---------- form side ---------- */
+    .panel { display: grid; place-items: center; padding: 2rem clamp(1.25rem, 5vw, 4rem); }
+    .form-wrap { width: 100%; max-width: 380px; }
+    .form-wrap h2 {
+        font-family: 'Bricolage Grotesque', 'Poppins', sans-serif;
+        font-size: 1.9rem; letter-spacing: -.015em; color: var(--ink);
     }
+    .form-wrap .sub { color: var(--muted); font-size: .92rem; margin: .35rem 0 1.8rem; }
+
     #errorMsg {
         display: none;
-        background: #fdecea;
-        color: #c0392b;
-        padding: 10px 14px;
-        border-radius: 8px;
-        font-size: 0.85rem;
-        margin-bottom: 1.2rem;
+        background: #fdecea; color: var(--err);
+        border-left: 4px solid var(--err);
+        padding: 10px 14px; border-radius: 8px;
+        font-size: .86rem; margin-bottom: 1.2rem;
+    }
+    label { display: block; font-size: .84rem; font-weight: 600; margin-bottom: .4rem; }
+    .field { position: relative; margin-bottom: 1.15rem; }
+    .field input {
+        width: 100%; padding: 13px 14px;
+        border: 1.5px solid var(--line); border-radius: 10px;
+        background: #fff; color: var(--text);
+        font: inherit; font-size: .95rem;
+        transition: border-color .15s, box-shadow .15s;
+    }
+    .field input::placeholder { color: #9aa7b1; }
+    .field input:focus { outline: none; border-color: var(--cyan); box-shadow: 0 0 0 4px rgba(0,195,221,.18); }
+    .field.has-toggle input { padding-right: 76px; }
+    .toggle {
+        position: absolute; right: 8px; bottom: 7px;
+        background: none; border: 0; border-radius: 6px;
+        padding: 6px 10px; font: inherit; font-size: .78rem; font-weight: 600;
+        color: var(--ink); cursor: pointer;
+    }
+    .toggle:hover { background: #e8f3f8; }
+    .toggle:focus-visible, .meta a:focus-visible, #loginBtn:focus-visible { outline: 3px solid var(--cyan); outline-offset: 2px; }
+
+    #loginBtn {
+        width: 100%; margin-top: .4rem; padding: 14px;
+        border: 0; border-radius: 12px;
+        background: var(--gold-gradient); color: var(--ink-deep);
+        font: inherit; font-weight: 700; font-size: 1rem; cursor: pointer;
+        box-shadow: 0 8px 20px rgba(184,134,11,.28);
+        transition: transform .15s, box-shadow .15s;
+        display: flex; align-items: center; justify-content: center; gap: .6rem;
+    }
+    #loginBtn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 12px 24px rgba(184,134,11,.34); }
+    #loginBtn:disabled { opacity: .7; cursor: not-allowed; }
+    #loginBtn.busy::after {
+        content: ''; width: 16px; height: 16px; border-radius: 50%;
+        border: 2px solid rgba(15,37,54,.3); border-top-color: var(--ink-deep);
+        animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .meta { display: flex; justify-content: space-between; align-items: center; margin-top: 1.3rem; font-size: .82rem; color: var(--muted); }
+    .meta a { color: var(--ink); font-weight: 600; text-decoration: none; }
+    .meta a:hover { text-decoration: underline; }
+
+    /* ---------- small screens ---------- */
+    @media (max-width: 860px) {
+        body { grid-template-columns: 1fr; }
+        .brand { flex-direction: row; align-items: center; flex-wrap: wrap; padding: 1.25rem 1.5rem; }
+        .proof, .pitch { display: none; }
+        .panel { align-items: start; padding-top: 2rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .proof circle, #loginBtn { transition: none; }
+        #loginBtn.busy::after { animation-duration: 1.6s; }
     }
 </style>
 </head>
 <body>
 
-    <div class="login-card">
-        <h1>Janu Print | FAB</h1>
-        <p>Admin Dashboard Login</p>
+    <aside class="brand">
+        <div class="logo">
+            <img src="https://i.ibb.co/h1TnrT8Y/LOGO.png" alt="" onerror="this.remove()">
+            <b>Janu Print <span>| FAB</span></b>
+        </div>
 
-        <div id="errorMsg"></div>
+        <div class="proof off" id="proof" aria-hidden="true">
+            <svg viewBox="0 0 300 340" xmlns="http://www.w3.org/2000/svg">
+                <rect x="30" y="30" width="240" height="280" rx="4" fill="#fff"/>
+                <!-- crop marks -->
+                <g stroke="#0f2536" stroke-width="1.2" opacity=".55">
+                    <path d="M14 30h12M30 14v12M286 30h-12M270 14v12M14 310h12M30 326v-12M286 310h-12M270 326v-12"/>
+                </g>
+                <!-- overprinted inks -->
+                <circle class="c" cx="128" cy="140" r="68"/>
+                <circle class="m" cx="172" cy="140" r="68"/>
+                <circle class="y" cx="150" cy="180" r="68"/>
+                <!-- registration target -->
+                <g stroke="#0f2536" stroke-width="1.2" fill="none">
+                    <circle cx="150" cy="156" r="9"/><path d="M150 140v32M134 156h32"/>
+                </g>
+                <!-- colour bar -->
+                <g>
+                    <rect x="52" y="274" width="22" height="16" fill="#00c3dd"/>
+                    <rect x="76" y="274" width="22" height="16" fill="#e6007e"/>
+                    <rect x="100" y="274" width="22" height="16" fill="#ffd200"/>
+                    <rect x="124" y="274" width="22" height="16" fill="#111"/>
+                    <rect x="148" y="274" width="22" height="16" fill="#00c3dd" opacity=".5"/>
+                    <rect x="172" y="274" width="22" height="16" fill="#e6007e" opacity=".5"/>
+                    <rect x="196" y="274" width="22" height="16" fill="#ffd200" opacity=".5"/>
+                    <rect x="220" y="274" width="22" height="16" fill="#111" opacity=".5"/>
+                </g>
+            </svg>
+        </div>
 
-        <form id="loginForm">
-            <label for="email">Email</label>
-            <input type="email" id="email" required placeholder="you@example.com">
+        <div class="pitch">
+            <h1>Every order, in register.</h1>
+            <p>Track production, check payment receipts and keep your customers updated from one dashboard.</p>
+        </div>
+    </aside>
 
-            <label for="password">Password</label>
-            <input type="password" id="password" required placeholder="Enter your password">
+    <main class="panel">
+        <div class="form-wrap">
+            <h2>Welcome back</h2>
+            <p class="sub">Log in to the admin dashboard.</p>
 
-            <button type="submit" id="loginBtn">Log In</button>
-        </form>
-    </div>
+            <div id="errorMsg" role="alert" aria-live="assertive"></div>
+
+            <form id="loginForm">
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required placeholder="you@example.com" autocomplete="username">
+                </div>
+
+                <div class="field has-toggle">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required placeholder="Enter your password" autocomplete="current-password">
+                    <button type="button" class="toggle" id="togglePw" aria-label="Show password" aria-pressed="false">Show</button>
+                </div>
+
+                <button type="submit" id="loginBtn">Log In</button>
+            </form>
+
+            <div class="meta">
+                <a href="reset-password.html">Forgot password?</a>
+                <span>Authorized staff only</span>
+            </div>
+        </div>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../config/supabase-config.js"></script>
@@ -117,27 +229,52 @@
         const form = document.getElementById('loginForm');
         const errorMsg = document.getElementById('errorMsg');
         const loginBtn = document.getElementById('loginBtn');
+        const proof = document.getElementById('proof');
+        const pw = document.getElementById('password');
+        const togglePw = document.getElementById('togglePw');
+
+        // Inks start out of register and settle into place when the page loads
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduceMotion) proof.classList.remove('off');
+        else requestAnimationFrame(() => setTimeout(() => proof.classList.remove('off'), 250));
+
+        togglePw.addEventListener('click', () => {
+            const show = pw.type === 'password';
+            pw.type = show ? 'text' : 'password';
+            togglePw.textContent = show ? 'Hide' : 'Show';
+            togglePw.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+            togglePw.setAttribute('aria-pressed', String(show));
+        });
 
         function showError(text) {
             errorMsg.textContent = text;
             errorMsg.style.display = 'block';
+            // A failed login knocks the inks out of register for a moment
+            if (!reduceMotion) {
+                proof.classList.add('off');
+                setTimeout(() => proof.classList.remove('off'), 900);
+            }
+        }
+
+        function setBusy(busy) {
+            loginBtn.disabled = busy;
+            loginBtn.classList.toggle('busy', busy);
+            loginBtn.firstChild.textContent = busy ? 'Logging in...' : 'Log In';
         }
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             errorMsg.style.display = 'none';
-            loginBtn.disabled = true;
-            loginBtn.textContent = 'Logging in...';
+            setBusy(true);
 
             const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
+            const password = pw.value;
 
             const { data, error } = await window.db.auth.signInWithPassword({ email, password });
 
             if (error) {
                 showError('Incorrect email or password. Please try again.');
-                loginBtn.disabled = false;
-                loginBtn.textContent = 'Log In';
+                setBusy(false);
                 return;
             }
 
@@ -151,12 +288,11 @@
             if (!adminRow) {
                 showError('This account is not authorized for admin access.');
                 await window.db.auth.signOut();
-                loginBtn.disabled = false;
-                loginBtn.textContent = 'Log In';
+                setBusy(false);
                 return;
             }
 
-            window.location.href = 'dashboard.html';
+            window.location.href = 'new-dashboard.html';
         });
     </script>
 </body>

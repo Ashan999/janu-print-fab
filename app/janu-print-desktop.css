@@ -1,0 +1,486 @@
+
+/* =========================================================
+   Janu Print | FAB - Desktop Experience
+   Add AFTER app/app.css
+   Desktop only: 1100px+
+   Keeps existing HTML, JS, Supabase data and routes intact.
+   ========================================================= */
+
+@media (min-width:1100px){
+
+  :root{
+    --jp-bg:#f5f8fb;
+    --jp-surface:#ffffff;
+    --jp-ink:#102a43;
+    --jp-muted:#6b7c8f;
+    --jp-line:#dfe8ef;
+    --jp-brand:#16486a;
+    --jp-cyan:#00bfd6;
+    --jp-gold:#d6ae3a;
+    --jp-shadow:0 12px 35px rgba(16,42,67,.08);
+    --jp-shadow-hover:0 20px 45px rgba(16,42,67,.14);
+  }
+
+  html,body{
+    min-width:1100px;
+    background:
+      radial-gradient(circle at 8% 0%,rgba(0,191,214,.08),transparent 28%),
+      radial-gradient(circle at 92% 8%,rgba(214,174,58,.08),transparent 25%),
+      var(--jp-bg);
+  }
+
+  body{
+    color:var(--jp-ink);
+    font-size:15px;
+  }
+
+  /* ---------- Desktop header ---------- */
+
+  .top{
+    position:sticky;
+    top:0;
+    z-index:100;
+    height:76px;
+    padding:0 max(28px,calc((100vw - 1380px)/2));
+    gap:16px;
+    background:rgba(255,255,255,.94);
+    border-bottom:1px solid rgba(223,232,239,.9);
+    box-shadow:0 4px 18px rgba(16,42,67,.045);
+    backdrop-filter:blur(14px);
+  }
+
+  .top img{
+    width:auto;
+    height:42px;
+    object-fit:contain;
+  }
+
+  .top b{
+    font-size:19px;
+    letter-spacing:-.02em;
+  }
+
+  .top b span{
+    color:var(--jp-gold);
+  }
+
+  .top .sp{
+    flex:1;
+  }
+
+  .top .ib{
+    width:42px;
+    height:42px;
+    border-radius:12px;
+    color:var(--jp-brand);
+    background:#f2f7fa;
+    transition:.2s ease;
+  }
+
+  .top .ib:hover{
+    background:#e5f7fa;
+    transform:translateY(-1px);
+  }
+
+  /* ---------- Desktop navigation ---------- */
+
+  .nav{
+    position:fixed;
+    top:0;
+    right:max(88px,calc((100vw - 1380px)/2 + 75px));
+    left:auto;
+    bottom:auto;
+    width:auto;
+    height:76px;
+    display:flex;
+    align-items:center;
+    gap:4px;
+    padding:0;
+    border:0;
+    background:transparent;
+    z-index:110;
+  }
+
+  .nav a{
+    flex:0 0 auto;
+    position:relative;
+    height:44px;
+    padding:0 17px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#64788a;
+    font-size:14px;
+    font-weight:600;
+    text-decoration:none;
+    transition:.2s ease;
+  }
+
+  .nav a i{
+    display:none;
+  }
+
+  .nav a:hover{
+    color:var(--jp-brand);
+    background:#f1f7fa;
+  }
+
+  .nav a.on{
+    color:var(--jp-brand);
+    background:#eaf7fa;
+    font-weight:750;
+  }
+
+  .nav a.on:after{
+    content:"";
+    position:absolute;
+    left:18px;
+    right:18px;
+    bottom:3px;
+    height:3px;
+    border-radius:9px;
+    background:var(--jp-cyan);
+  }
+
+  /* ---------- Main desktop canvas ---------- */
+
+  main{
+    width:min(1380px,calc(100vw - 72px));
+    max-width:none;
+    margin:0 auto;
+    padding:38px 0 110px;
+  }
+
+  main.flow{
+    width:min(1240px,calc(100vw - 72px));
+    max-width:none;
+    padding-bottom:130px;
+  }
+
+  /* ---------- Shop search ---------- */
+
+  body:has(#q) main:not(.flow){
+    padding-top:42px;
+  }
+
+  #q{
+    height:58px;
+    padding:0 22px 0 52px;
+    border:1px solid #dce6ed;
+    border-radius:16px;
+    background:#fff;
+    box-shadow:0 8px 25px rgba(16,42,67,.055);
+    font-size:15px;
+    outline:none;
+    transition:.2s ease;
+  }
+
+  #q:focus{
+    border-color:var(--jp-cyan);
+    box-shadow:0 0 0 4px rgba(0,191,214,.10),0 10px 30px rgba(16,42,67,.08);
+  }
+
+  /* Search icon without adding another dependency */
+  body:has(#q) main:not(.flow):before{
+    content:"⌕";
+    position:absolute;
+    z-index:2;
+    margin:17px 0 0 20px;
+    color:#7890a2;
+    font-size:25px;
+    line-height:1;
+    pointer-events:none;
+  }
+
+  /* ---------- Category navigation ---------- */
+
+  .chips{
+    display:flex;
+    gap:10px;
+    overflow:visible;
+    padding:20px 0 28px;
+  }
+
+  .chip{
+    min-height:42px;
+    padding:0 18px;
+    border:1px solid #dce6ed;
+    border-radius:12px;
+    background:#fff;
+    color:#496176;
+    font-size:13px;
+    font-weight:650;
+    box-shadow:0 3px 12px rgba(16,42,67,.035);
+    transition:.2s ease;
+  }
+
+  .chip:hover{
+    color:var(--jp-brand);
+    border-color:#b9dbe2;
+    transform:translateY(-1px);
+  }
+
+  .chip.on{
+    color:#fff;
+    border-color:var(--jp-brand);
+    background:linear-gradient(135deg,#16486a,#21617f);
+    box-shadow:0 8px 18px rgba(22,72,106,.20);
+  }
+
+  /* ---------- Product grid ---------- */
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:20px;
+  }
+
+  .pc{
+    min-width:0;
+    overflow:hidden;
+    padding:0;
+    border:1px solid #e0e8ee;
+    border-radius:18px;
+    background:#fff;
+    box-shadow:0 8px 24px rgba(16,42,67,.055);
+    text-decoration:none;
+    transition:
+      transform .22s ease,
+      box-shadow .22s ease,
+      border-color .22s ease;
+  }
+
+  .pc:hover{
+    transform:translateY(-6px);
+    border-color:#c7dce5;
+    box-shadow:var(--jp-shadow-hover);
+  }
+
+  .pc .im{
+    height:230px;
+    margin:0;
+    border-radius:0;
+    background-color:#edf4f7;
+    background-size:cover;
+    background-position:center;
+    transition:transform .35s ease,background-color .2s ease;
+  }
+
+  .pc:hover .im{
+    transform:scale(1.015);
+    background-color:#e7f0f4;
+  }
+
+  .pc b{
+    padding:17px 18px 5px;
+    color:var(--jp-ink);
+    font-size:15px;
+    line-height:1.35;
+  }
+
+  .pc span{
+    display:block;
+    padding:0 18px 18px;
+    color:var(--jp-brand);
+    font-size:13px;
+    font-weight:750;
+  }
+
+  /* ---------- Generic cards ---------- */
+
+  .card{
+    border:1px solid #e0e8ee;
+    border-radius:18px;
+    background:#fff;
+    box-shadow:0 8px 24px rgba(16,42,67,.05);
+    padding:20px;
+  }
+
+  .acts{
+    gap:14px;
+  }
+
+  .acts a,
+  .acts button{
+    border-color:#e0e8ee;
+    border-radius:14px;
+    background:#fff;
+    transition:.2s ease;
+  }
+
+  .acts a:hover,
+  .acts button:hover{
+    transform:translateY(-2px);
+    border-color:#c7dce5;
+    box-shadow:0 8px 20px rgba(16,42,67,.08);
+  }
+
+  /* ---------- Headings ---------- */
+
+  h1{
+    color:var(--jp-ink);
+    font-size:30px;
+    letter-spacing:-.035em;
+  }
+
+  h2{
+    margin-top:30px;
+    color:#6a7d8e;
+    font-size:12px;
+  }
+
+  p.m{
+    color:var(--jp-muted);
+  }
+
+  /* ---------- Product/order buttons ---------- */
+
+  .btn{
+    border-radius:13px;
+    background:linear-gradient(135deg,#16486a,#1f6382);
+    box-shadow:0 8px 20px rgba(22,72,106,.18);
+    transition:.2s ease;
+  }
+
+  .btn:hover{
+    transform:translateY(-1px);
+    box-shadow:0 12px 25px rgba(22,72,106,.24);
+  }
+
+  .btn.alt{
+    background:#fff;
+    box-shadow:none;
+  }
+
+  /* ---------- Footer ---------- */
+
+  .site-footer{
+    padding:0 0 34px;
+  }
+
+  .site-footer__inner{
+    width:min(1380px,calc(100vw - 72px));
+    max-width:none;
+    margin:0 auto;
+    padding:24px 28px;
+    border-radius:18px;
+    border:1px solid #dfe8ef;
+    background:rgba(255,255,255,.88);
+    box-shadow:0 8px 25px rgba(16,42,67,.04);
+  }
+
+  .site-footer__links{
+    gap:24px;
+    font-size:13px;
+  }
+
+  .site-footer__links a{
+    color:#496176;
+    transition:.2s ease;
+  }
+
+  .site-footer__links a:hover{
+    color:var(--jp-brand);
+  }
+
+  /* ---------- Checkout desktop ---------- */
+
+  main.flow{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 350px;
+    gap:28px;
+    align-items:start;
+  }
+
+  main.flow .steps,
+  main.flow > p.m,
+  main.flow > .err,
+  main.flow > #stepbody{
+    grid-column:1;
+  }
+
+  main.flow .steps{
+    margin-top:4px;
+  }
+
+  main.flow .bar{
+    position:fixed;
+    left:auto;
+    right:max(36px,calc((100vw - 1240px)/2));
+    bottom:28px;
+    width:350px;
+    border:1px solid #dfe8ef;
+    border-radius:18px;
+    padding:15px 17px;
+    box-shadow:0 15px 40px rgba(16,42,67,.13);
+  }
+
+  /* Keep the checkout readable instead of making it absurdly wide */
+  main.flow #stepbody{
+    max-width:760px;
+  }
+
+  .steps{
+    gap:7px;
+  }
+
+  .steps i{
+    height:6px;
+    background:#dfe8ef;
+  }
+
+  .steps i.on{
+    background:linear-gradient(90deg,var(--jp-cyan),#27d2c5);
+  }
+
+  /* Payment methods */
+  .opt.pm{
+    border-radius:14px;
+    padding:17px;
+    background:#fff;
+    transition:.2s ease;
+  }
+
+  .opt.pm:hover{
+    border-color:#a9d9e1;
+    box-shadow:0 7px 18px rgba(16,42,67,.07);
+  }
+
+  .opt.pm.on{
+    border-color:var(--jp-cyan);
+    background:#effbfd;
+    box-shadow:0 0 0 3px rgba(0,191,214,.08);
+  }
+
+  /* ---------- Large screens ---------- */
+
+  @media (min-width:1450px){
+    .grid{
+      grid-template-columns:repeat(5,minmax(0,1fr));
+    }
+
+    .pc .im{
+      height:245px;
+    }
+
+    main{
+      width:min(1480px,calc(100vw - 90px));
+    }
+
+    .site-footer__inner{
+      width:min(1480px,calc(100vw - 90px));
+    }
+  }
+
+  @media (min-width:1750px){
+    .grid{
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:24px;
+    }
+
+    .pc .im{
+      height:270px;
+    }
+  }
+}

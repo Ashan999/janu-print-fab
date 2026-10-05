@@ -74,7 +74,7 @@ const JPFCart = (() => {
     }
 
     function money(value) {
-        return `AED ${Number(value || 0).toFixed(2)}`;
+        return `LKR ${Number(value || 0).toFixed(2)}`;
     }
 
     return { addItem, updateQuantity, removeItem, clear, getItems, getCount, getSubtotal, money };

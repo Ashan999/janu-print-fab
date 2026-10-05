@@ -65,6 +65,8 @@ table{width:100%;border-collapse:collapse}th,td{padding:12px 8px;border-bottom:1
 .order-summary .mini-card{padding:12px}
 @media(max-width:900px){.delivery-grid,.order-summary{grid-template-columns:1fr}}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../config/supabase-config.js"></script>
 </head>
 
 <body>
@@ -76,6 +78,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:12px 8px;border-bottom:1
     <button onclick="showPage('pricing',this)">Pricing</button>
     <button onclick="showPage('delivery',this)">Delivery</button>
     <button onclick="showPage('orders',this)">Orders</button>
+    <button onclick="showPage('payments',this)">Payments</button>
     <button onclick="showPage('settings',this)">Settings</button>
   </nav>
   <div class="logout"><button onclick="logout()" style="width:100%;border:0;background:transparent;color:#fff;text-align:left;padding:11px 13px">Logout</button></div>
@@ -159,6 +162,30 @@ table{width:100%;border-collapse:collapse}th,td{padding:12px 8px;border-bottom:1
   <div class="panel">
     <div class="panel-header"><h4>All Orders</h4><button class="btn btn-primary" onclick="addDemoOrder()">+ Demo Order</button></div>
     <table><thead><tr><th>Order</th><th>Customer</th><th>Category</th><th>Total</th><th>Status</th><th>Action</th></tr></thead><tbody id="ordersTable"></tbody></table>
+  </div>
+</div>
+  <div class="panel" style="margin-top:15px">
+    <div class="panel-header">
+      <div><h4>Customer Files</h4><p style="font-size:12px;color:#777;margin-top:3px">Download the artwork/design files uploaded with real customer orders.</p></div>
+      <button class="btn btn-blue" onclick="loadCustomerFiles()">Refresh</button>
+    </div>
+    <div id="customerFilesMessage" class="help" style="margin-bottom:10px"></div>
+    <table><thead><tr><th>Order</th><th>Customer</th><th>Product</th><th>Design File</th><th>Order Date</th></tr></thead>
+    <tbody id="customerFilesTable"><tr><td colspan="5" class="empty">Loading customer files…</td></tr></tbody></table>
+  </div>
+</div>
+
+<!-- PAYMENTS -->
+<div class="page" id="page-payments">
+  <div class="page-title"><h3>Payment Receipts</h3><p>Review customer bank-transfer receipts and download the original file.</p></div>
+  <div class="panel">
+    <div class="panel-header">
+      <div><h4>Customer Payment Receipts</h4><p style="font-size:12px;color:#777;margin-top:3px">Receipts stay in the private <b>payment-slips</b> bucket. Downloads use a temporary signed link.</p></div>
+      <button class="btn btn-blue" onclick="loadPaymentReceipts()">Refresh</button>
+    </div>
+    <div id="paymentReceiptsMessage" class="help" style="margin-bottom:10px"></div>
+    <table><thead><tr><th>Order</th><th>Customer</th><th>Amount</th><th>Reference</th><th>Status</th><th>Submitted</th><th>Design</th><th>Receipt</th></tr></thead>
+    <tbody id="paymentReceiptsTable"><tr><td colspan="8" class="empty">Loading receipts…</td></tr></tbody></table>
   </div>
 </div>
 
@@ -337,7 +364,7 @@ function showPage(page,button){
  document.getElementById("page-"+page)?.classList.add("active");
  document.querySelectorAll(".menu button").forEach(x=>x.classList.remove("active"));
  if(button)button.classList.add("active");
- const titles={dashboard:"Dashboard",categories:"Categories",pricing:"Pricing",delivery:"Delivery",orders:"Orders",settings:"Settings"};
+ const titles={dashboard:"Dashboard",categories:"Categories",pricing:"Pricing",delivery:"Delivery",orders:"Orders",payments:"Payments",settings:"Settings"};
  document.getElementById("pageTitle").textContent=titles[page]||"Dashboard";
  document.getElementById("sidebar").classList.remove("open");
  if(page==="dashboard")renderDashboard();
@@ -345,11 +372,20 @@ function showPage(page,button){
  if(page==="pricing")renderPricing();
  if(page==="delivery")renderDeliveries();
  if(page==="orders")renderOrders();
+ if(page==="orders")loadCustomerFiles();
+  if(page==="payments")loadPaymentReceipts();
  if(page==="settings")renderSettings();
 }
 function showPageByName(page){const b=[...document.querySelectorAll(".menu button")].find(x=>x.getAttribute("onclick")?.includes("'"+page+"'"));showPage(page,b)}
 function toggleSidebar(){document.getElementById("sidebar").classList.toggle("open")}
-function logout(){alert("Supabase logout will be connected in the final API stage.")}
+async function logout(){
+  try {
+    if (window.db && window.db.auth) await window.db.auth.signOut();
+  } catch (e) {
+    console.warn('Logout warning:', e);
+  }
+  window.location.href = 'login.html';
+}
 
 function renderDashboard(){
  const total=state.orders.length;
@@ -594,6 +630,240 @@ function setCurrentOrderStatus(status){
  const o=state.orders.find(x=>x.id===currentOrderId);if(!o)return;o.status=status;saveState();renderOrders();renderDashboard();openOrder(currentOrderId);
 }
 
+
+window.__customerFileDownloads = Object.create(null);
+
+function artworkStoragePath(value){
+  const raw=String(value||'').trim();
+  if(!raw)return '';
+  if(!/^https?:\/\//i.test(raw)) return raw.replace(/^\/+/, '');
+  try{
+    const u=new URL(raw);
+    const marker='/artwork/';
+    const i=u.pathname.indexOf(marker);
+    if(i>=0)return decodeURIComponent(u.pathname.slice(i+marker.length));
+  }catch(e){}
+  return raw;
+}
+
+function formatFileDate(value){
+  if(!value)return '—';
+  const d=new Date(value);
+  if(Number.isNaN(d.getTime()))return '—';
+  const pad=n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+function fileExtension(path, fallback='file'){
+  const clean=String(path||'').split('?')[0];
+  const ext=(clean.split('.').pop()||fallback).replace(/[^a-z0-9]/gi,'').toLowerCase();
+  return ext||fallback;
+}
+
+async function downloadArtworkFile(token){
+  try{
+    const item=window.__customerFileDownloads[token];
+    if(!item?.url)throw new Error('No design file is attached to this order.');
+    const path=artworkStoragePath(item.url);
+    if(!path)throw new Error('Design file path is empty.');
+
+    const {data:signed,error}=await window.db.storage.from('artwork').createSignedUrl(path,3600);
+    if(error)throw error;
+    if(!signed?.signedUrl)throw new Error('Could not create a secure design download link.');
+
+    const response=await fetch(signed.signedUrl);
+    if(!response.ok)throw new Error('Design download failed.');
+    const blob=await response.blob();
+
+    const ext=fileExtension(path,'file');
+    const stamp=formatFileDate(item.created_at).replace(/[: ]/g,'-');
+    const filename=`${item.order_number||item.order_id}-design-${stamp}-${item.index+1}.${ext}`;
+
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1500);
+  }catch(e){
+    console.error('Design download failed:',e);
+    alert('Design download failed: '+(e.message||e));
+  }
+}
+
+async function loadCustomerFiles(){
+  const table=document.getElementById('customerFilesTable');
+  const msg=document.getElementById('customerFilesMessage');
+  if(!table)return;
+  table.innerHTML='<tr><td colspan="5" class="empty">Loading customer files…</td></tr>';
+  if(msg)msg.textContent='';
+  window.__customerFileDownloads=Object.create(null);
+
+  try{
+    if(!window.db)throw new Error('Supabase client is not available.');
+
+    const {data:orders,error:ordersError}=await window.db.from('orders')
+      .select('id,order_number,created_at,customer_id,customers(name,phone)')
+      .order('created_at',{ascending:false})
+      .limit(200);
+    if(ordersError)throw ordersError;
+
+    const orderRows=orders||[];
+    if(!orderRows.length){
+      table.innerHTML='<tr><td colspan="5" class="empty">No customer orders found.</td></tr>';
+      return;
+    }
+
+    const ids=orderRows.map(o=>o.id);
+    const {data:items,error:itemError}=await window.db.from('order_items')
+      .select('id,order_id,product_name,artwork_urls')
+      .in('order_id',ids);
+    if(itemError)throw itemError;
+
+    const orderMap=Object.fromEntries(orderRows.map(o=>[o.id,o]));
+    const rows=[];
+
+    (items||[]).forEach(item=>{
+      const order=orderMap[item.order_id];
+      if(!order)return;
+      let urls=item.artwork_urls;
+      if(typeof urls==='string'){
+        try{urls=JSON.parse(urls);}catch(e){urls=[urls];}
+      }
+      if(!Array.isArray(urls))urls=urls?[urls]:[];
+
+      urls.filter(Boolean).forEach((url,index)=>{
+        const token=`${item.id}-${index}`;
+        window.__customerFileDownloads[token]={
+          url,order_id:order.id,order_number:order.order_number||order.id,
+          created_at:order.created_at,index
+        };
+        const customer=order.customers?.name||order.customers?.phone||'—';
+        rows.push(`<tr>
+          <td><strong>${esc(order.order_number||order.id)}</strong></td>
+          <td>${esc(customer)}</td>
+          <td>${esc(item.product_name||'—')}</td>
+          <td><button class="btn btn-blue btn-small" onclick="downloadArtworkFile('${esc(token)}')">Download Design</button></td>
+          <td>${esc(formatFileDate(order.created_at))}</td>
+        </tr>`);
+      });
+    });
+
+    table.innerHTML=rows.join('')||'<tr><td colspan="5" class="empty">No customer design files uploaded yet.</td></tr>';
+  }catch(e){
+    console.error('Customer files load failed:',e);
+    table.innerHTML='<tr><td colspan="5" class="empty">Could not load customer design files.</td></tr>';
+    if(msg)msg.textContent='Error: '+(e.message||e);
+  }
+}
+
+function receiptStoragePath(value){
+  const raw=String(value||'').trim();
+  if(!raw)return '';
+  if(!/^https?:\/\//i.test(raw)) return raw.replace(/^\/+/, '');
+  try{
+    const u=new URL(raw);
+    const marker='/payment-slips/';
+    const i=u.pathname.indexOf(marker);
+    if(i>=0)return decodeURIComponent(u.pathname.slice(i+marker.length));
+  }catch(e){}
+  return raw;
+}
+
+function paymentStatusLabel(v){
+  const map={pending:'Pending Payment',receipt_submitted:'Receipt Submitted',under_review:'Under Review',paid:'Paid',failed:'Failed',rejected:'Rejected',refunded:'Refunded'};
+  return map[v]||String(v||'Pending Payment');
+}
+
+async function loadPaymentReceipts(){
+  const table=document.getElementById('paymentReceiptsTable');
+  const msg=document.getElementById('paymentReceiptsMessage');
+  if(!table)return;
+  table.innerHTML='<tr><td colspan="8" class="empty">Loading receipts…</td></tr>';
+  if(msg)msg.textContent='';
+  window.__customerFileDownloads=window.__customerFileDownloads||Object.create(null);
+
+  try{
+    if(!window.db)throw new Error('Supabase client is not available.');
+    const {data,error}=await window.db.from('orders')
+      .select('id,total_amount,payment_method,payment_reference,payment_status,payment_receipt_url,payment_submitted_at,created_at,customers(name,phone)')
+      .not('payment_receipt_url','is',null)
+      .order('payment_submitted_at',{ascending:false});
+    if(error)throw error;
+
+    const rows=data||[];
+    const ids=rows.map(o=>o.id);
+    let items=[];
+    if(ids.length){
+      const r=await window.db.from('order_items')
+        .select('id,order_id,product_name,artwork_urls')
+        .in('order_id',ids);
+      if(r.error)throw r.error;
+      items=r.data||[];
+    }
+
+    const itemsByOrder={};
+    items.forEach(item=>{(itemsByOrder[item.order_id] ||= []).push(item);});
+
+    table.innerHTML=rows.map(o=>{
+      const customer=o.customers?.name||o.customers?.phone||'—';
+      const status=o.payment_status||'pending';
+      const designButtons=[];
+      (itemsByOrder[o.id]||[]).forEach(item=>{
+        let urls=item.artwork_urls;
+        if(typeof urls==='string'){try{urls=JSON.parse(urls);}catch(e){urls=[urls];}}
+        if(!Array.isArray(urls))urls=urls?[urls]:[];
+        urls.filter(Boolean).forEach((url,index)=>{
+          const token=`${item.id}-${index}`;
+          window.__customerFileDownloads[token]={
+            url,order_id:o.id,order_number:o.id||o.id,
+            created_at:o.created_at,index
+          };
+          designButtons.push(`<button class="btn btn-blue btn-small" style="margin:2px" onclick="downloadArtworkFile('${esc(token)}')">Design ${index+1}</button>`);
+        });
+      });
+      return `<tr>
+        <td><strong>${esc(o.id||o.id)}</strong></td>
+        <td>${esc(customer)}</td>
+        <td>${money(o.total_amount)}</td>
+        <td>${esc(o.payment_reference||'—')}</td>
+        <td><span class="badge ${status==='paid'?'':'status-pending'}">${esc(paymentStatusLabel(status))}</span></td>
+        <td>${esc(o.payment_submitted_at?formatFileDate(o.payment_submitted_at):o.created_at?formatFileDate(o.created_at):'—')}</td>
+        <td>${designButtons.join('')||'<span class="empty">No design</span>'}</td>
+        <td><button class="btn btn-blue btn-small" onclick="downloadPaymentReceipt('${esc(o.id)}')">Download</button></td>
+      </tr>`;
+    }).join('')||'<tr><td colspan="8" class="empty">No customer receipts uploaded yet.</td></tr>';
+  }catch(e){
+    console.error('Payment receipt load failed:',e);
+    table.innerHTML='<tr><td colspan="8" class="empty">Could not load payment receipts.</td></tr>';
+    if(msg)msg.textContent='Error: '+(e.message||e);
+  }
+}
+
+
+async function downloadPaymentReceipt(orderId){
+  try{
+    const {data:o,error}=await window.db.from('orders').select('order_number,payment_receipt_url,payment_submitted_at,created_at').eq('id',orderId).maybeSingle();
+    if(error)throw error;
+    if(!o?.payment_receipt_url)throw new Error('No receipt is attached to this order.');
+    const path=receiptStoragePath(o.payment_receipt_url);
+    if(!path)throw new Error('Receipt path is empty.');
+    const {data:signed,error:signedError}=await window.db.storage.from('payment-slips').createSignedUrl(path,3600);
+    if(signedError)throw signedError;
+    if(!signed?.signedUrl)throw new Error('Could not create a secure download link.');
+    const response=await fetch(signed.signedUrl);
+    if(!response.ok)throw new Error('Receipt download failed.');
+    const blob=await response.blob();
+    const ext=(path.split('.').pop()||'file').split('?')[0];
+    const stamp=formatFileDate(o.payment_submitted_at||o.created_at).replace(/[: ]/g,'-');
+    const filename=`${stamp}_payment-receipt.${ext}`;
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1500);
+  }catch(e){
+    console.error('Receipt download failed:',e);
+    alert('Receipt download failed: '+(e.message||e));
+  }
+}
+
 function renderSettings(){
  const s=state.settings;
  document.getElementById("setBusiness").value=s.business||"";
@@ -612,6 +882,33 @@ document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{if
 
 loadState();
 renderDashboard();
+</script>
+<script>
+(async function() {
+  try {
+    if (!window.db || !window.db.auth) return;
+    const { data: { user }, error } = await window.db.auth.getUser();
+    if (error || !user) {
+      window.location.href = 'login.html';
+      return;
+    }
+    const { data: adminRow } = await window.db
+      .from('admin_profiles')
+      .select('id')
+      .eq('id', user.id)
+      .maybeSingle();
+    if (!adminRow) {
+      await window.db.auth.signOut();
+      window.location.href = 'login.html';
+      return;
+    }
+    const adminUser = document.querySelector('.admin-user');
+    if (adminUser) adminUser.textContent = user.email || 'Super Admin';
+  } catch (e) {
+    console.error('Admin session check failed', e);
+    window.location.href = 'login.html';
+  }
+})();
 </script>
 </body>
 </html>

@@ -79,18 +79,38 @@
         <div id="cartItems"></div>
         <div id="cartSummary" style="display:none;" class="cart-summary">
             <div class="summary-line"><span>Items</span><span id="summaryCount">0</span></div>
-            <div class="summary-line total"><span>Subtotal</span><span id="summaryTotal">AED 0.00</span></div>
+            <div class="summary-line total"><span>Subtotal</span><span id="summaryTotal">LKR 0.00</span></div>
+            <fieldset style="border:0;margin-top:1rem">
+                <legend style="font-weight:700;color:var(--metallic-blue-dark);">Payment method</legend>
+                <label style="display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem;">
+                    <input type="radio" name="cartPaymentMethod" value="bank_transfer" style="width:auto;">
+                    Bank Transfer
+                </label>
+                <label id="payhereOption" style="display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem;">
+                    <input type="radio" name="cartPaymentMethod" value="payhere" id="cartPayHere" style="width:auto;" disabled>
+                    PayHere / Online Card Payment
+                    <span id="payhereAvailability" style="font-size:0.78rem;color:var(--text-light);">Coming soon</span>
+                </label>
+            </fieldset>
             <button type="button" class="checkout-btn" id="checkoutBtn"><i class="fas fa-check"></i> Place Order</button>
             <p id="checkoutMsg"></p>
             <p style="font-size:0.78rem;color:var(--text-light);margin-top:0.6rem;">Sign in required to checkout. Final price confirmed after artwork review.</p>
         </div>
     </div>
 
-    <footer class="site-footer"><p>&copy; 2026 Janu Print | FAB</p></footer>
+    <footer class="site-footer">
+        <p>&copy; 2026 Janu Print | FAB</p>
+        <div class="site-footer__links" style="margin-top:0.5rem;display:flex;flex-wrap:wrap;gap:0.75rem 1rem;justify-content:center;">
+            <a href="index.html#/refund-policy" style="color:#1e4563;text-decoration:none;">Refund policy</a>
+            <a href="index.html#/privacy-policy" style="color:#1e4563;text-decoration:none;">Privacy policy</a>
+            <a href="index.html#/terms" style="color:#1e4563;text-decoration:none;">Terms</a>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config/supabase-config.js"></script>
     <script src="assets/customer-auth.js"></script>
+    <script src="app/payment.js"></script>
     <script src="assets/cart.js"></script>
     <script src="assets/nav-user.js"></script>
     <script>
@@ -174,12 +194,19 @@
 
             const items = JPFCart.getItems();
             if (!items.length) return;
+            const paymentMethod = document.querySelector('input[name="cartPaymentMethod"]:checked')?.value;
+            if (!paymentMethod) {
+                msg.className = 'error';
+                msg.textContent = 'Choose a payment method before placing your order.';
+                return;
+            }
 
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Placing order...';
 
             try {
                 const orderId = crypto.randomUUID();
+                const paymentCapability = await window.JPFPayment.createPaymentCapability(orderId);
                 const total = JPFCart.getSubtotal();
                 const customerId = profile.userId || profile.id;
 
@@ -195,7 +222,8 @@
                     customer_id: customerId,
                     status: 'pending',
                     total_amount: total,
-                    payment_method: 'pending',
+                    payment_method: paymentMethod,
+                    payment_capability_hash: paymentCapability.hash,
                     delivery_option: 'pickup',
                     notes: 'Cart checkout from website'
                 });
@@ -216,17 +244,12 @@
                 const { error: itemsErr } = await window.db.from('order_items').insert(orderItems);
                 if (itemsErr) throw itemsErr;
 
-                await window.db.from('order_status_history').insert({
-                    order_id: orderId,
-                    status: 'pending',
-                    note: 'Order placed from shopping cart.'
-                });
+                // The database trigger creates the initial order status history row.
+                // Avoid inserting a duplicate record from the legacy cart flow.
 
                 JPFCart.clear();
                 renderCart();
-                msg.className = 'success';
-                msg.textContent = `Order placed! Total: ${JPFCart.money(total)}. View it in your account.`;
-                setTimeout(() => { window.location.href = 'account.html'; }, 2000);
+                window.location.href = `index.html#/pay/${orderId}`;
             } catch (err) {
                 msg.className = 'error';
                 msg.textContent = `Checkout failed: ${err.message}`;
