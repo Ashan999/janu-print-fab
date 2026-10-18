@@ -19,6 +19,8 @@ const base = p => Number(p.price_per_unit || p.price || 0);
 
 async function load() {
   const db = window.db;
+  const sessionResult = await window.JPFCustomerAuth?.getSession?.().catch(() => ({ data: { session: null } }));
+  const activeSession = sessionResult?.data?.session || null;
   const [c, p, f, o, d, s, ct, pr] = await Promise.all([
     db.from('categories').select('*').eq('is_visible', true).order('display_order'),
     db.from('products').select('*, categories(id, name, image_url)').eq('is_visible', true).order('display_order'),
@@ -27,14 +29,14 @@ async function load() {
     db.from('delivery_settings').select('*'),
     db.from('delivery_slots').select('*').eq('is_active', true).order('display_order'),
     db.from('contact_details').select('*').eq('id', 'main').maybeSingle(),
-    window.JPFCustomerAuth.getProfile().catch(() => null)
+    activeSession ? window.JPFCustomerAuth.getProfile().catch(() => null) : null
   ]);
   const bad = c.error || p.error || f.error || o.error;
   if (bad) throw bad;
   S.cats = c.data || []; S.prods = p.data || [];
   S.fields = grp(f.data || [], 'product_id'); S.opts = grp(o.data || [], 'product_field_id');
   S.dset = Object.fromEntries((d.data || []).map(x => [x.category_id, x]));
-  S.slots = s.data || []; S.contact = ct.data || null; S.profile = pr;
+  S.slots = s.data || []; S.contact = ct.data || null; S.profile = pr || null;
   if (window.JPFPayment && S.contact) window.JPFPayment.syncPayHereConfig(S.contact);
   S.ready = true;
 }
@@ -58,8 +60,8 @@ function shell(body, { flow = false, title = '', back = '' } = {}) {
   ${flow ? '' : footerHtml()}`;
   window.scrollTo(0, 0);
 }
-const prodCard = p => `<a class="pc" href="#/order/${p.id}"><div class="im" style="${img(p) ? `background-image:url('${esc(img(p))}')` : ''}">${img(p) ? '' : '🖨️'}</div><div class="pc-body"><small>${esc(categoryName(p) || 'Print product')}</small><b>${esc(p.name)}</b><span>${base(p) ? 'From ' + money(base(p)) : 'Get a quote'}</span><em>Order →</em></div></a>`;
-const catCard = c => `<a class="cat" href="#/shop/${c.id}" style="text-decoration:none;color:inherit"><div class="im" style="${c.image_url ? `background-image:url('${esc(c.image_url)}')` : ''}">${c.image_url ? '' : '🖨️'}</div><b>${esc(c.name)}</b><small>Browse products →</small></a>`;
+const prodCard = p => `<a class="pc" href="#/order/${encodeURIComponent(p.id)}"><div class="im" style="${img(p) ? `background-image:url('${esc(img(p))}')` : ''}">${img(p) ? '' : '🖨️'}</div><div class="pc-body"><small>${esc(categoryName(p) || 'Print product')}</small><b>${esc(p.name)}</b><span>${base(p) ? 'From ' + money(base(p)) : 'Get a quote'}</span><em>Order →</em></div></a>`;
+const catCard = c => `<a class="cat" href="#/shop/${encodeURIComponent(c.id)}" style="text-decoration:none;color:inherit"><div class="im" style="${c.image_url ? `background-image:url('${esc(c.image_url)}')` : ''}">${c.image_url ? '' : '🖨️'}</div><b>${esc(c.name)}</b><small>Browse products →</small></a>`;
 const wa = txt => S.contact?.whatsapp ? `https://wa.me/${String(S.contact.whatsapp).replace(/\D/g, '')}${txt ? '?text=' + encodeURIComponent(txt) : ''}` : '';
 
 /* ---------- screens ---------- */
@@ -169,7 +171,7 @@ function stOptions() {
     else h = `<input type="${t === 'date' ? 'date' : 'number'}" data-in="${f.id}" data-k="" value="${esc(v || '')}">`;
     return `<label class="l">${esc(f.field_label)}${req}</label>${h}`;
   }).join('');
-  return `<div class="card">${p.description ? `<p class="m" style="margin-bottom:8px">${esc(p.description)}</p>` : ''}${fl}
+  return `<div class="card">${img(p) ? `<img class="order-product-image" src="${esc(img(p))}" alt="${esc(p.name)}">` : ''}${p.description ? `<p class="m" style="margin-bottom:8px">${esc(p.description)}</p>` : ''}${fl}
   <label class="l">Quantity${min > 1 ? ` (min ${min})` : ''}</label><div class="qty"><button data-a="qm">−</button><input type="number" id="qty" min="${min}" value="${F.qty}"><button data-a="qp">+</button></div></div>`;
 }
 function stArt() {
@@ -191,6 +193,13 @@ function stDetails() {
   return `<div class="card">${S.profile ? '' : `<p class="m">Ordering as guest. <a href="customer-login.html">Log in</a> to track your orders.</p>`}
   ${i('name', 'Name', 'text', ' *')}${i('phone', 'Phone', 'tel', ' *')}${i('whatsapp', 'WhatsApp (if different)', 'tel')}${i('email', 'Email', 'email')}
   <label class="l">Address${F.dlv === 'delivery' ? ' *' : ''}</label><textarea data-c="address">${esc(c.address)}</textarea></div>`;
+}
+function stPayment(c) {
+  return `<div class="card"><h1>Payment</h1><p class="m">No payment methods are configured for this website.</p>
+  <div class="ln"><span>Payment method</span><span>Arrange with the business</span></div>
+  <div class="ln"><span>Payment status</span><span class="badge pending">Pending</span></div>
+  <p class="m">Online payment is unavailable. Do not send payment details here. The business will confirm an available method after receiving your order.</p>
+  </div><div class="card"><b>Order total</b><div class="ln"><span>Items</span><span>${money(c.items)}</span></div>${c.fee ? `<div class="ln"><span>Delivery</span><span>${money(c.fee)}</span></div>` : ''}${c.urg ? `<div class="ln"><span>Urgent charge</span><span>${money(c.urg)}</span></div>` : ''}${c.slotFee ? `<div class="ln"><span>Time slot</span><span>${money(c.slotFee)}</span></div>` : ''}<div class="ln t"><span>Total due</span><span>${money(c.total)}</span></div></div>`;
 }
 function stReview(c) {
   const p = F.p, ok = '<span style="color:var(--ok)">✓</span>';
@@ -317,7 +326,7 @@ async function upload(files) {
 async function place() {
   if (F.placing) return;
   F.placing = true; F.err = ''; flow();
-  const c = calc(), p = F.p, cu = F.cust, oid = F.id, itemId = crypto.randomUUID();
+  const c = calc(), p = F.p, cu = F.cust, oid = F.id, itemId = F.itemId;
   try {
     const cid = S.profile ? (S.profile.userId || S.profile.id) : (F.cid = F.cid || crypto.randomUUID());
     const cust = { id: cid, name: cu.name.trim(), phone: cu.phone.trim(), whatsapp: cu.whatsapp.trim() || null, email: cu.email.trim() || null, address: cu.address.trim() || null };
@@ -330,12 +339,20 @@ async function place() {
     const r2 = await window.db.from('orders').insert({ id: oid, customer_id: cid, status: 'pending', total_amount: c.total, payment_method: F.pm, payment_capability_hash: paymentCapabilityHash, delivery_option: F.dlv, delivery_date: F.date || null, notes: note || null, special_instructions: note || null,
       delivery_slot_id: c.slot ? c.slot.id : null, delivery_fee: c.fee, urgent_order: !!(F.urgent && dset()?.urgent_available), production_days: days() || null, estimated_ready_date: F.date || addDays(days() || 0),
       delivery_address: F.dlv === 'delivery' ? (cu.address.trim() || null) : null, customer_phone: cu.phone.trim() });
-    if (r2.error && r2.error.code !== '23505') throw r2.error;
+    if (r2.error) {
+      if (r2.error.code !== '23505') throw r2.error;
+      const existing = await window.db.from('orders').select('id').eq('id', oid).maybeSingle();
+      if (existing.error || !existing.data) throw r2.error;
+    }
     const deliv = { method: F.dlv, urgent: F.urgent, date: F.date, slot: c.slot ? c.slot.slot_name : null, slot_time: c.slot ? `${c.slot.start_time || ''}-${c.slot.end_time || ''}` : null, delivery_fee: c.fee, urgent_fee: c.urg, slot_fee: c.slotFee };
     const r3 = await window.db.from('order_items').insert({ id: itemId, order_id: oid, product_id: p.id, category_id: p.category_id || null, product_name: p.name, quantity: F.qty, unit_price: base(p), line_total: c.items, production_days: days() || null,
       artwork_urls: F.files.filter(f => f.status === 'ok').map(f => f.url), artwork_notes: (F.mode === 'whatsapp' ? 'Artwork will be sent via WhatsApp. ' : '') + note || null,
       selected_options: { product_category: p.categories?.name || null, selections: c.sel, delivery: deliv, artwork_method: F.mode } });
-    if (r3.error && r3.error.code !== '23505') throw r3.error;
+    if (r3.error) {
+      if (r3.error.code !== '23505') throw r3.error;
+      const existingItem = await window.db.from('order_items').select('id').eq('id', itemId).eq('order_id', oid).maybeSingle();
+      if (existingItem.error || !existingItem.data) throw r3.error;
+    }
     /* Initial 'pending' history row is created by the database trigger (see database/order-initial-status.sql). */
     let row = null; try { row = (await window.db.from('orders').select('*').eq('id', oid).maybeSingle()).data; } catch (_) {}
     S.done = { id: oid, order_number: row?.order_number || null, created_at: row?.created_at || new Date().toISOString(), total_amount: c.total, status: 'pending', delivery_option: F.dlv, delivery_date: F.date, payment_method: F.pm, payment_status: 'pending', delivery_fee: c.fee, estimated_ready_date: F.date || addDays(days() || 0), delivery_address: cust.address, customer_phone: cust.phone,
@@ -383,8 +400,21 @@ async function orderDetail(id, o) {
 function account() {
   const p = S.profile;
   if (!p) return loginPrompt('Log in to see your profile and orders.');
-  shell(`<h1>Account</h1><div class="card"><div class="ln"><span>Name</span><b>${esc(p.name)}</b></div><div class="ln"><span>Phone</span><b>${esc(p.phone || '—')}</b></div><div class="ln"><span>Email</span><b>${esc(p.email || '—')}</b></div></div>
-  <a class="btn full" href="#/orders">My Orders</a><button class="btn alt full" data-a="logout">Log out</button>`);
+  const orderCount = Array.isArray(S.orders) ? S.orders.length : 0;
+  shell(`<h1>My Account</h1>
+  <div class="card">
+    <div class="ln"><span>Name</span><b>${esc(p.name || 'Customer')}</b></div>
+    <div class="ln"><span>Phone</span><b>${esc(p.phone || '—')}</b></div>
+    <div class="ln"><span>Email</span><b>${esc(p.email || '—')}</b></div>
+    <div class="ln"><span>NIC</span><b>${esc(p.nic || '—')}</b></div>
+  </div>
+  <div class="card">
+    <div class="ln"><span>Orders</span><b>${orderCount}</b></div>
+    <div class="ln"><span>Account status</span><b>${orderCount ? 'Active customer' : 'New customer'}</b></div>
+  </div>
+  <a class="btn full" href="#/orders">View Orders</a>
+  <a class="btn alt full" href="#/shop">Continue Shopping</a>
+  <button class="btn alt full" data-a="logout">Log out</button>`);
 }
 function done() {
   const o = S.done; if (!o) return (location.hash = '#/home');

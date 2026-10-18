@@ -24,13 +24,21 @@ async function JPFUpdateNav() {
     if (!window.JPFCustomerAuth || !window.db) return;
 
     try {
-        const profile = await JPFCustomerAuth.getProfile();
+        const sessionData = await JPFCustomerAuth.getSession?.().catch(() => ({ data: { session: null } }));
+        const activeSession = sessionData?.data?.session || null;
+        const profile = activeSession ? await JPFCustomerAuth.getProfile().catch(() => null) : null;
+
         if (profile && navGuest && navUser) {
             navGuest.style.display = 'none';
             navUser.style.display = 'list-item';
             if (navHistory) navHistory.style.display = 'list-item';
             if (navLogoutWrap) navLogoutWrap.style.display = 'list-item';
             if (navUserName) navUserName.textContent = profile.name?.split(' ')[0] || 'Account';
+        } else if (navGuest && navUser) {
+            navGuest.style.display = 'list-item';
+            navUser.style.display = 'none';
+            if (navHistory) navHistory.style.display = 'none';
+            if (navLogoutWrap) navLogoutWrap.style.display = 'none';
         }
     } catch (err) {
         console.warn('Nav auth check:', err.message);

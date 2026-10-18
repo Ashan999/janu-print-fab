@@ -23,12 +23,21 @@
         align-items: center; justify-content: center; gap: 0.6rem; margin-bottom: 1rem;
     }
     .btn-google:hover { border-color: var(--metallic-blue); background: #f9fdff; }
+    .btn-google:disabled, button:disabled { opacity: 0.7; cursor: wait; }
     .divider { text-align: center; color: var(--text-light); font-size: 0.82rem; margin: 1rem 0; position: relative; }
     .divider::before, .divider::after {
         content: ''; position: absolute; top: 50%; width: 38%; height: 1px; background: #ddd;
     }
     .divider::before { left: 0; }
     .divider::after { right: 0; }
+    .field-wrap { position: relative; }
+    .field-wrap input { padding-right: 42px; }
+    .field-toggle {
+        position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+        border: none; background: transparent; color: var(--text-light); font-size: 0.92rem; width: 28px; height: 28px;
+        display: grid; place-items: center; cursor: pointer; border-radius: 50%;
+    }
+    .field-toggle:hover { background: rgba(30,69,99,0.08); }
 </style>
 </head>
 <body class="auth-page">
@@ -56,7 +65,10 @@
                 <label for="loginPhone">Phone Number</label>
                 <input type="tel" id="loginPhone" required placeholder="+947... or +971...">
                 <label for="loginPassword">Password</label>
-                <input type="password" id="loginPassword" required placeholder="Your password">
+                <div class="field-wrap">
+                    <input type="password" id="loginPassword" required placeholder="Your password">
+                    <button type="button" class="field-toggle" data-target="loginPassword" aria-label="Show password">👁</button>
+                </div>
                 <button type="submit" id="loginBtn"><i class="fas fa-right-to-bracket"></i> Login</button>
             </form>
         </div>
@@ -74,9 +86,15 @@
                 <label for="regNic">NIC Number</label>
                 <input type="text" id="regNic" required placeholder="National Identity Card number">
                 <label for="regPassword">Password</label>
-                <input type="password" id="regPassword" required minlength="6" placeholder="Min 6 characters">
+                <div class="field-wrap">
+                    <input type="password" id="regPassword" required minlength="6" placeholder="Min 6 characters">
+                    <button type="button" class="field-toggle" data-target="regPassword" aria-label="Show password">👁</button>
+                </div>
                 <label for="regPassword2">Confirm Password</label>
-                <input type="password" id="regPassword2" required minlength="6" placeholder="Repeat password">
+                <div class="field-wrap">
+                    <input type="password" id="regPassword2" required minlength="6" placeholder="Repeat password">
+                    <button type="button" class="field-toggle" data-target="regPassword2" aria-label="Show password">👁</button>
+                </div>
                 <button type="submit" id="registerBtn"><i class="fas fa-user-plus"></i> Create Account</button>
             </form>
         </div>
@@ -89,10 +107,21 @@
     <script src="assets/customer-auth.js"></script>
     <script>
         const statusMsg = document.getElementById('statusMsg');
+        const normalizePhone = (value) => {
+            const cleaned = String(value || '').replace(/\s+/g, '');
+            const digits = cleaned.replace(/\D/g, '');
+            if (!digits) return '';
+            return cleaned.startsWith('+') ? `+${digits}` : `+${digits}`;
+        };
+        const validateFullName = (value) => value.trim().length >= 2;
+        const validatePhone = (value) => normalizePhone(value).length >= 10 && normalizePhone(value).length <= 16;
+        const validateNic = (value) => /^[A-Za-z0-9]{8,20}$/.test(String(value || '').trim());
+        const validatePassword = (value) => String(value || '').length >= 6 && !/\s/.test(value);
 
         function showStatus(text, type) {
-            statusMsg.textContent = text;
+            statusMsg.textContent = text || '';
             statusMsg.className = type ? `auth-msg ${type}` : 'auth-msg';
+            statusMsg.style.display = text ? 'block' : 'none';
         }
 
         document.querySelectorAll('.auth-tab').forEach(tab => {
@@ -101,17 +130,34 @@
                 document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
                 tab.classList.add('active');
                 document.getElementById(tab.dataset.tab === 'login' ? 'panelLogin' : 'panelRegister').classList.add('active');
-                statusMsg.className = 'auth-msg';
-                statusMsg.style.display = 'none';
+                showStatus('', '');
+            });
+        });
+
+        document.querySelectorAll('.field-toggle').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const input = document.getElementById(btn.dataset.target);
+                if (!input) return;
+                const visible = input.type === 'text';
+                input.type = visible ? 'password' : 'text';
+                btn.textContent = visible ? '👁' : '🙈';
+                btn.setAttribute('aria-label', visible ? 'Show password' : 'Hide password');
+                input.focus();
             });
         });
 
         async function doGoogleAuth() {
+            const button = document.activeElement && document.activeElement.tagName === 'BUTTON' ? document.activeElement : null;
+            const googleBtns = [document.getElementById('googleLoginBtn'), document.getElementById('googleRegisterBtn')];
+            googleBtns.forEach(btn => { if (btn) btn.disabled = true; });
             try {
                 showStatus('Redirecting to Google...', 'success');
                 await JPFCustomerAuth.signInWithGoogle();
             } catch (err) {
-                showStatus(err.message || 'Google sign-in failed. Enable Google provider in Supabase dashboard.', 'error');
+                showStatus(err.message || 'Google sign-in failed. Please try again or use phone sign-in.', 'error');
+            } finally {
+                googleBtns.forEach(btn => { if (btn) btn.disabled = false; });
+                if (button && button.dataset && button.dataset.target) button.focus();
             }
         }
 
@@ -120,17 +166,28 @@
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const phone = normalizePhone(document.getElementById('loginPhone').value);
+            const password = document.getElementById('loginPassword').value;
+            if (!validatePhone(phone)) {
+                showStatus('Enter a valid phone number with the country code.', 'error');
+                return;
+            }
+            if (!password || !validatePassword(password)) {
+                showStatus('Password must be at least 6 characters and contain no spaces.', 'error');
+                return;
+            }
+
             const btn = document.getElementById('loginBtn');
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
             try {
                 await JPFCustomerAuth.loginWithPhone({
-                    phone: document.getElementById('loginPhone').value.trim(),
-                    password: document.getElementById('loginPassword').value
+                    phone,
+                    password
                 });
                 window.location.href = 'account.html';
             } catch (err) {
-                showStatus(err.message, 'error');
+                showStatus(err.message || 'Unable to log in. Please check your details and try again.', 'error');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-right-to-bracket"></i> Login';
@@ -139,10 +196,30 @@
 
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const name = document.getElementById('regName').value.trim();
+            const phone = normalizePhone(document.getElementById('regPhone').value);
+            const nic = document.getElementById('regNic').value.trim();
             const pw = document.getElementById('regPassword').value;
             const pw2 = document.getElementById('regPassword2').value;
+
+            if (!validateFullName(name)) {
+                showStatus('Please enter your full name.', 'error');
+                return;
+            }
+            if (!validatePhone(phone)) {
+                showStatus('Please enter a valid phone number with the country code.', 'error');
+                return;
+            }
+            if (!validateNic(nic)) {
+                showStatus('Please enter a valid NIC or ID number.', 'error');
+                return;
+            }
+            if (!validatePassword(pw)) {
+                showStatus('Password must be at least 6 characters and must not contain spaces.', 'error');
+                return;
+            }
             if (pw !== pw2) {
-                showStatus('Passwords do not match.', 'error');
+                showStatus('Passwords do not match. Please re-enter them.', 'error');
                 return;
             }
 
@@ -151,15 +228,15 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
             try {
                 await JPFCustomerAuth.registerWithPhone({
-                    name: document.getElementById('regName').value.trim(),
-                    phone: document.getElementById('regPhone').value.trim(),
-                    nic: document.getElementById('regNic').value.trim(),
+                    name,
+                    phone,
+                    nic,
                     password: pw
                 });
-                showStatus('Account created! You can now shop and track orders.', 'success');
+                showStatus('Account created successfully. Redirecting to your account...', 'success');
                 setTimeout(() => { window.location.href = 'account.html'; }, 1200);
             } catch (err) {
-                showStatus(err.message, 'error');
+                showStatus(err.message || 'Unable to create your account right now. Please try again.', 'error');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
@@ -168,10 +245,12 @@
 
         (async () => {
             try {
+                const sessionData = await JPFCustomerAuth.getSession?.().catch(() => ({ data: { session: null } }));
+                if (!sessionData?.data?.session) return;
                 const profile = await JPFCustomerAuth.handleOAuthCallback();
                 if (profile) window.location.href = 'account.html';
             } catch (err) {
-                showStatus(err.message, 'error');
+                showStatus(err.message || 'Google sign-in could not be completed. Please try again.', 'error');
             }
         })();
     </script>
