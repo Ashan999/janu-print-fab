@@ -245,8 +245,10 @@
 
         (async () => {
             try {
-                const sessionData = await JPFCustomerAuth.getSession?.().catch(() => ({ data: { session: null } }));
-                if (!sessionData?.data?.session) return;
+                // JPFCustomerAuth.getSession() returns the session object directly,
+                // not Supabase's { data: { session } } response wrapper.
+                const session = await JPFCustomerAuth.getSession?.().catch(() => null);
+                if (!session) return;
                 const profile = await JPFCustomerAuth.handleOAuthCallback();
                 if (profile) window.location.href = 'account.html';
             } catch (err) {
