@@ -245,8 +245,6 @@
 
         (async () => {
             try {
-                // JPFCustomerAuth.getSession() returns the session object directly,
-                // not Supabase's { data: { session } } response wrapper.
                 const session = await JPFCustomerAuth.getSession?.().catch(() => null);
                 if (!session) return;
                 const profile = await JPFCustomerAuth.handleOAuthCallback();
