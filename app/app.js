@@ -19,8 +19,7 @@ const base = p => Number(p.price_per_unit || p.price || 0);
 
 async function load() {
   const db = window.db;
-  const sessionResult = await window.JPFCustomerAuth?.getSession?.().catch(() => ({ data: { session: null } }));
-  const activeSession = sessionResult?.data?.session || null;
+  const activeSession = await window.JPFCustomerAuth?.getSession?.().catch(() => null);
   const [c, p, f, o, d, s, ct, pr] = await Promise.all([
     db.from('categories').select('*').eq('is_visible', true).order('display_order'),
     db.from('products').select('*, categories(id, name, image_url)').eq('is_visible', true).order('display_order'),
