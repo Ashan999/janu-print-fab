@@ -4,15 +4,38 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1e4563">
-<title>Janu Print | FAB — Order custom printing</title>
+
+<title>Janu Print | FAB — My Account</title>
+
 <link rel="stylesheet" href="app/app.css">
+
+<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config/supabase-config.js"></script>
+
+<!-- Payment configuration -->
+<script src="config/payhere-config.js"></script>
+
+<!-- Customer authentication -->
 <script src="assets/customer-auth.js"></script>
+
+<!-- Payment module -->
+<script src="app/payment.js"></script>
+
+<!-- Public policies -->
+<script src="app/policies.js"></script>
+
 </head>
 <body>
+
 <div id="app"></div>
-<script>window.JP_START='account';</script>
+
+<script>
+window.JP_START = 'account';
+</script>
+
+<!-- Main application -->
 <script src="app/app.js"></script>
+
 </body>
 </html>
