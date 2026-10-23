@@ -15,13 +15,11 @@ const grp = (a, k) => a.reduce((g, x) => ((g[x[k]] = g[x[k]] || []).push(x), g),
 const img = p => p.featured_image || (Array.isArray(p.images) && p.images[0]) || p.categories?.image_url || '';
 const categoryName = p => p.categories?.name || '';
 const homeProducts = () => S.prods.filter(p => { const n = String(p.name || '').trim().toLowerCase(); const c = String(categoryName(p) || '').trim().toLowerCase(); return n && (!c || n !== c); });
-const hasPublishedPrice = p => p?.price_is_published === true && Number(p.price_per_unit ?? p.price ?? 0) > 0;
-const base = p => hasPublishedPrice(p) ? Number(p.price_per_unit ?? p.price) : 0;
+const base = p => Number(p.price_per_unit || p.price || 0);
 
 async function load() {
   const db = window.db;
-  const sessionResult = await window.JPFCustomerAuth?.getSession?.().catch(() => ({ data: { session: null } }));
-  const activeSession = sessionResult?.data?.session || null;
+  const activeSession = await window.JPFCustomerAuth?.getSession?.().catch(() => null);
   const [c, p, f, o, d, s, ct, pr] = await Promise.all([
     db.from('categories').select('*').eq('is_visible', true).order('display_order'),
     db.from('products').select('*, categories(id, name, image_url)').eq('is_visible', true).order('display_order'),
@@ -61,7 +59,7 @@ function shell(body, { flow = false, title = '', back = '' } = {}) {
   ${flow ? '' : footerHtml()}`;
   window.scrollTo(0, 0);
 }
-const prodCard = p => `<a class="pc" href="#/order/${encodeURIComponent(p.id)}"><div class="im" style="${img(p) ? `background-image:url('${esc(img(p))}')` : ''}">${img(p) ? '' : '🖨️'}</div><div class="pc-body"><small>${esc(categoryName(p) || 'Print product')}</small><b>${esc(p.name)}</b><span>${hasPublishedPrice(p) ? 'From ' + money(base(p)) : 'Get a quote'}</span><em>Order →</em></div></a>`;
+const prodCard = p => `<a class="pc" href="#/order/${encodeURIComponent(p.id)}"><div class="im" style="${img(p) ? `background-image:url('${esc(img(p))}')` : ''}">${img(p) ? '' : '🖨️'}</div><div class="pc-body"><small>${esc(categoryName(p) || 'Print product')}</small><b>${esc(p.name)}</b><span>${base(p) ? 'From ' + money(base(p)) : 'Get a quote'}</span><em>Order →</em></div></a>`;
 const catCard = c => `<a class="cat" href="#/shop/${encodeURIComponent(c.id)}" style="text-decoration:none;color:inherit"><div class="im" style="${c.image_url ? `background-image:url('${esc(c.image_url)}')` : ''}">${c.image_url ? '' : '🖨️'}</div><b>${esc(c.name)}</b><small>Browse products →</small></a>`;
 const wa = txt => S.contact?.whatsapp ? `https://wa.me/${String(S.contact.whatsapp).replace(/\D/g, '')}${txt ? '?text=' + encodeURIComponent(txt) : ''}` : '';
 
@@ -132,10 +130,10 @@ function selections() {
   flds().forEach(f => {
     const v = F.sel[f.id], os = S.opts[f.id] || [], t = f.field_type;
     if (v == null || v === '' || v === false) return;
-    if (t === 'select' || t === 'radio') { const o = os.find(x => x.id === v); if (o) out.push({ label: f.field_label, value: o.label, price: hasPublishedPrice(F.p) ? Number(o.price_modifier || 0) : 0 }); }
-    else if (t === 'toggle' || t === 'checkbox') out.push({ label: f.field_label, value: 'Yes', price: hasPublishedPrice(F.p) ? Number(f.price_modifier || 0) : 0 });
-    else if (t === 'dimension') { if (v.w && v.h) { const a = sqm(v.w, v.h, v.u); out.push({ label: f.field_label, value: `${v.w} x ${v.h} ${v.u}`, price: hasPublishedPrice(F.p) ? a * Number(f.price_modifier || 0) : 0, meta: a.toFixed(3) + ' sqm' }); } }
-    else if (t === 'number') out.push({ label: f.field_label, value: v, price: hasPublishedPrice(F.p) ? Number(v) * Number(f.price_modifier || 0) : 0 });
+    if (t === 'select' || t === 'radio') { const o = os.find(x => x.id === v); if (o) out.push({ label: f.field_label, value: o.label, price: Number(o.price_modifier || 0) }); }
+    else if (t === 'toggle' || t === 'checkbox') out.push({ label: f.field_label, value: 'Yes', price: Number(f.price_modifier || 0) });
+    else if (t === 'dimension') { if (v.w && v.h) { const a = sqm(v.w, v.h, v.u); out.push({ label: f.field_label, value: `${v.w} x ${v.h} ${v.u}`, price: a * Number(f.price_modifier || 0), meta: a.toFixed(3) + ' sqm' }); } }
+    else if (t === 'number') out.push({ label: f.field_label, value: v, price: Number(v) * Number(f.price_modifier || 0) });
     else out.push({ label: f.field_label, value: v, price: 0 });
   });
   return out;
@@ -162,8 +160,8 @@ function stOptions() {
   const fl = flds().map(f => {
     const os = S.opts[f.id] || [], v = F.sel[f.id], t = f.field_type, req = f.is_required ? ' *' : '';
     let h = '';
-    if (t === 'select' || t === 'radio') h = `<div class="opts">${os.map(o => opt(v === o.id, 'pick', f.id + '|' + o.id, o.label, hasPublishedPrice(F.p) && Number(o.price_modifier) ? '+' + money(o.price_modifier) : '')).join('')}</div>`;
-    else if (t === 'toggle' || t === 'checkbox') h = `<div class="opts">${opt(!!v, 'tog', f.id, 'Yes', hasPublishedPrice(F.p) && Number(f.price_modifier) ? '+' + money(f.price_modifier) : '')}</div>`;
+    if (t === 'select' || t === 'radio') h = `<div class="opts">${os.map(o => opt(v === o.id, 'pick', f.id + '|' + o.id, o.label, Number(o.price_modifier) ? '+' + money(o.price_modifier) : '')).join('')}</div>`;
+    else if (t === 'toggle' || t === 'checkbox') h = `<div class="opts">${opt(!!v, 'tog', f.id, 'Yes', Number(f.price_modifier) ? '+' + money(f.price_modifier) : '')}</div>`;
     else if (t === 'dimension') { const d = v || { w: '', h: '', u: 'cm' };
       h = `${os.length ? `<div class="opts" style="margin-bottom:8px">${os.map(o => opt(d.preset === o.id, 'preset', f.id + '|' + o.id, o.label, o.preset_width ? `${o.preset_width}×${o.preset_height} ${o.preset_unit || 'cm'}` : '')).join('')}</div>` : ''}
       <div class="dim"><input type="number" min="0" step="0.01" placeholder="Width" data-in="${f.id}" data-k="w" value="${esc(d.w)}"><input type="number" min="0" step="0.01" placeholder="Height" data-in="${f.id}" data-k="h" value="${esc(d.h)}">
