@@ -15,7 +15,8 @@ const grp = (a, k) => a.reduce((g, x) => ((g[x[k]] = g[x[k]] || []).push(x), g),
 const img = p => p.featured_image || (Array.isArray(p.images) && p.images[0]) || p.categories?.image_url || '';
 const categoryName = p => p.categories?.name || '';
 const homeProducts = () => S.prods.filter(p => { const n = String(p.name || '').trim().toLowerCase(); const c = String(categoryName(p) || '').trim().toLowerCase(); return n && (!c || n !== c); });
-const base = p => Number(p.price_per_unit || p.price || 0);
+const hasPublishedPrice = p => p?.price_is_published === true && Number(p.price_per_unit ?? p.price ?? 0) > 0;
+const base = p => hasPublishedPrice(p) ? Number(p.price_per_unit ?? p.price) : 0;
 
 async function load() {
   const db = window.db;
@@ -59,7 +60,7 @@ function shell(body, { flow = false, title = '', back = '' } = {}) {
   ${flow ? '' : footerHtml()}`;
   window.scrollTo(0, 0);
 }
-const prodCard = p => `<a class="pc" href="#/order/${encodeURIComponent(p.id)}"><div class="im" style="${img(p) ? `background-image:url('${esc(img(p))}')` : ''}">${img(p) ? '' : '🖨️'}</div><div class="pc-body"><small>${esc(categoryName(p) || 'Print product')}</small><b>${esc(p.name)}</b><span>${base(p) ? 'From ' + money(base(p)) : 'Get a quote'}</span><em>Order →</em></div></a>`;
+const prodCard = p => `<a class="pc" href="#/order/${encodeURIComponent(p.id)}"><div class="im" style="${img(p) ? `background-image:url('${esc(img(p))}')` : ''}">${img(p) ? '' : '🖨️'}</div><div class="pc-body"><small>${esc(categoryName(p) || 'Print product')}</small><b>${esc(p.name)}</b><span>${hasPublishedPrice(p) ? 'From ' + money(base(p)) : 'Get a quote'}</span><em>Order →</em></div></a>`;
 const catCard = c => `<a class="cat" href="#/shop/${encodeURIComponent(c.id)}" style="text-decoration:none;color:inherit"><div class="im" style="${c.image_url ? `background-image:url('${esc(c.image_url)}')` : ''}">${c.image_url ? '' : '🖨️'}</div><b>${esc(c.name)}</b><small>Browse products →</small></a>`;
 const wa = txt => S.contact?.whatsapp ? `https://wa.me/${String(S.contact.whatsapp).replace(/\D/g, '')}${txt ? '?text=' + encodeURIComponent(txt) : ''}` : '';
 
@@ -130,10 +131,10 @@ function selections() {
   flds().forEach(f => {
     const v = F.sel[f.id], os = S.opts[f.id] || [], t = f.field_type;
     if (v == null || v === '' || v === false) return;
-    if (t === 'select' || t === 'radio') { const o = os.find(x => x.id === v); if (o) out.push({ label: f.field_label, value: o.label, price: Number(o.price_modifier || 0) }); }
-    else if (t === 'toggle' || t === 'checkbox') out.push({ label: f.field_label, value: 'Yes', price: Number(f.price_modifier || 0) });
-    else if (t === 'dimension') { if (v.w && v.h) { const a = sqm(v.w, v.h, v.u); out.push({ label: f.field_label, value: `${v.w} x ${v.h} ${v.u}`, price: a * Number(f.price_modifier || 0), meta: a.toFixed(3) + ' sqm' }); } }
-    else if (t === 'number') out.push({ label: f.field_label, value: v, price: Number(v) * Number(f.price_modifier || 0) });
+    if (t === 'select' || t === 'radio') { const o = os.find(x => x.id === v); if (o) out.push({ label: f.field_label, value: o.label, price: hasPublishedPrice(F.p) ? Number(o.price_modifier || 0) : 0 }); }
+    else if (t === 'toggle' || t === 'checkbox') out.push({ label: f.field_label, value: 'Yes', price: hasPublishedPrice(F.p) ? Number(f.price_modifier || 0) : 0 });
+    else if (t === 'dimension') { if (v.w && v.h) { const a = sqm(v.w, v.h, v.u); out.push({ label: f.field_label, value: `${v.w} x ${v.h} ${v.u}`, price: hasPublishedPrice(F.p) ? a * Number(f.price_modifier || 0) : 0, meta: a.toFixed(3) + ' sqm' }); } }
+    else if (t === 'number') out.push({ label: f.field_label, value: v, price: hasPublishedPrice(F.p) ? Number(v) * Number(f.price_modifier || 0) : 0 });
     else out.push({ label: f.field_label, value: v, price: 0 });
   });
   return out;
@@ -146,13 +147,13 @@ function calc() {
   return { sel, unit, items, fee, urg, slot, slotFee, total: items + fee + urg + slotFee };
 }
 function flow() {
-  const c = calc(), last = F.step === STEP.length - 1;
+  const c = calc(), last = F.step === STEP.length - 1, quoteMode = !hasPublishedPrice(F.p);
   shell(`<div class="steps">${STEP.map((_, i) => `<i class="${i <= F.step ? 'on' : ''}"></i>`).join('')}</div><p class="m">Step ${F.step + 1} of ${STEP.length} · ${STEP[F.step]}</p>
   ${F.err ? `<div class="err">${esc(F.err)}</div>` : ''}<div id="stepbody">${[stOptions, stArt, stDelivery, stDetails, stReview, stPayment][F.step](c)}</div>
-  <div class="bar"><div><small>${F.step >= 4 ? 'Total' : 'Estimated total'}</small><strong id="tot">${money(c.total)}</strong></div><span class="sp"></span>
-  <button class="btn" id="next" data-a="next" ${F.placing || F.busy ? 'disabled' : ''}>${last ? (F.placing ? 'Processing Order…' : 'Place Order') : (F.step === 4 ? 'Continue to Payment' : 'Continue')}</button></div>`, { flow: true, title: F.p.name });
+  <div class="bar"><div><small>${quoteMode ? 'Price' : (F.step >= 4 ? 'Total' : 'Estimated total')}</small><strong id="tot">${quoteMode ? 'Get a quote' : money(c.total)}</strong></div><span class="sp"></span>
+  <button class="btn" id="next" data-a="next" ${F.placing || F.busy ? 'disabled' : ''}>${last ? (F.placing ? 'Processing Order…' : (quoteMode ? 'Submit Inquiry' : 'Place Order')) : (F.step === 4 ? (quoteMode ? 'Continue' : 'Continue to Payment') : 'Continue')}</button></div>`, { flow: true, title: F.p.name });
 }
-const bar = () => { const c = calc(); const t = $('#tot'); if (t) t.textContent = money(c.total); };
+const bar = () => { const c = calc(); const t = $('#tot'); if (t) t.textContent = F && hasPublishedPrice(F.p) ? money(c.total) : 'Get a quote'; };
 const opt = (on, a, id, label, sub = '') => `<button class="opt ${on ? 'on' : ''}" data-a="${a}" data-id="${id}">${esc(label)}${sub ? ` <small>${sub}</small>` : ''}</button>`;
 
 function stOptions() {
@@ -160,8 +161,8 @@ function stOptions() {
   const fl = flds().map(f => {
     const os = S.opts[f.id] || [], v = F.sel[f.id], t = f.field_type, req = f.is_required ? ' *' : '';
     let h = '';
-    if (t === 'select' || t === 'radio') h = `<div class="opts">${os.map(o => opt(v === o.id, 'pick', f.id + '|' + o.id, o.label, Number(o.price_modifier) ? '+' + money(o.price_modifier) : '')).join('')}</div>`;
-    else if (t === 'toggle' || t === 'checkbox') h = `<div class="opts">${opt(!!v, 'tog', f.id, 'Yes', Number(f.price_modifier) ? '+' + money(f.price_modifier) : '')}</div>`;
+    if (t === 'select' || t === 'radio') h = `<div class="opts">${os.map(o => opt(v === o.id, 'pick', f.id + '|' + o.id, o.label, hasPublishedPrice(F.p) && Number(o.price_modifier) ? '+' + money(o.price_modifier) : '')).join('')}</div>`;
+    else if (t === 'toggle' || t === 'checkbox') h = `<div class="opts">${opt(!!v, 'tog', f.id, 'Yes', hasPublishedPrice(F.p) && Number(f.price_modifier) ? '+' + money(f.price_modifier) : '')}</div>`;
     else if (t === 'dimension') { const d = v || { w: '', h: '', u: 'cm' };
       h = `${os.length ? `<div class="opts" style="margin-bottom:8px">${os.map(o => opt(d.preset === o.id, 'preset', f.id + '|' + o.id, o.label, o.preset_width ? `${o.preset_width}×${o.preset_height} ${o.preset_unit || 'cm'}` : '')).join('')}</div>` : ''}
       <div class="dim"><input type="number" min="0" step="0.01" placeholder="Width" data-in="${f.id}" data-k="w" value="${esc(d.w)}"><input type="number" min="0" step="0.01" placeholder="Height" data-in="${f.id}" data-k="h" value="${esc(d.h)}">
@@ -194,6 +195,7 @@ function stDetails() {
   <label class="l">Address${F.dlv === 'delivery' ? ' *' : ''}</label><textarea data-c="address">${esc(c.address)}</textarea></div>`;
 }
 function stPayment(c) {
+  if (!hasPublishedPrice(F.p)) return `<div class="card"><h1>Price confirmation</h1><p class="m">This product does not have a published price yet. You can submit your inquiry; Janu Print will confirm the final price before payment. Do not make a payment until the price is confirmed.</p></div>`;
   return `<div class="card"><h1>Payment</h1><p class="m">No payment methods are configured for this website.</p>
   <div class="ln"><span>Payment method</span><span>Arrange with the business</span></div>
   <div class="ln"><span>Payment status</span><span class="badge pending">Pending</span></div>
@@ -201,11 +203,11 @@ function stPayment(c) {
   </div><div class="card"><b>Order total</b><div class="ln"><span>Items</span><span>${money(c.items)}</span></div>${c.fee ? `<div class="ln"><span>Delivery</span><span>${money(c.fee)}</span></div>` : ''}${c.urg ? `<div class="ln"><span>Urgent charge</span><span>${money(c.urg)}</span></div>` : ''}${c.slotFee ? `<div class="ln"><span>Time slot</span><span>${money(c.slotFee)}</span></div>` : ''}<div class="ln t"><span>Total due</span><span>${money(c.total)}</span></div></div>`;
 }
 function stReview(c) {
-  const p = F.p, ok = '<span style="color:var(--ok)">✓</span>';
+  const p = F.p, quoteMode = !hasPublishedPrice(F.p), ok = '<span style="color:var(--ok)">✓</span>';
   return `<div class="card"><b>${esc(p.name)}</b>${c.sel.map(s => `<div class="ln"><span>${esc(s.label)}</span><span>${esc(s.value)}</span></div>`).join('')}<div class="ln"><span>Quantity</span><span>${F.qty}</span></div></div>
   <div class="card"><div class="ln"><span>Artwork</span><span>${F.mode === 'upload' ? (F.files.length ? ok + ' ' + F.files.length + ' file(s)' : 'None') : 'Via WhatsApp'}</span></div>
   <div class="ln"><span>${F.dlv === 'delivery' ? 'Delivery' : 'Pickup'}</span><span>${fdate(F.date)}${c.slot ? ' · ' + esc(c.slot.slot_name) : ''}</span></div><div class="ln"><span>Customer</span><span>${esc(F.cust.name)} · ${esc(F.cust.phone)}</span></div></div>
-  <div class="card"><div class="ln"><span>Subtotal</span><span>${money(c.items)}</span></div>${c.fee ? `<div class="ln"><span>Delivery</span><span>${money(c.fee)}</span></div>` : ''}${c.urg ? `<div class="ln"><span>Urgent charge</span><span>${money(c.urg)}</span></div>` : ''}${c.slotFee ? `<div class="ln"><span>Time slot</span><span>${money(c.slotFee)}</span></div>` : ''}<div class="ln t"><span>Total</span><span>${money(c.total)}</span></div>
+  <div class="card">${quoteMode ? '<div class="ln t"><span>Price</span><span>Get a quote</span></div>' : `<div class="ln"><span>Subtotal</span><span>${money(c.items)}</span></div>${c.fee ? `<div class="ln"><span>Delivery</span><span>${money(c.fee)}</span></div>` : ''}${c.urg ? `<div class="ln"><span>Urgent charge</span><span>${money(c.urg)}</span></div>` : ''}${c.slotFee ? `<div class="ln"><span>Time slot</span><span>${money(c.slotFee)}</span></div>` : ''}<div class="ln t"><span>Total</span><span>${money(c.total)}</span></div>`}
   <p class="m">Next, you will choose how to pay.</p></div>`;
 }
 
@@ -306,7 +308,7 @@ function validate() {
   if (s === 1) { if (F.busy) return 'Please wait for the upload to finish.'; if ((S.fields[F.p.id] || []).some(f => f.field_type === 'file' && f.is_required) && F.mode === 'upload' && !F.files.some(f => f.status === 'ok')) return 'Please upload your artwork or choose WhatsApp.'; }
   if (s === 2 && !F.date) return 'Please choose a date.';
   if (s === 3) { const c = F.cust; if (!c.name.trim() || !c.phone.trim()) return 'Name and phone are required.'; if (F.dlv === 'delivery' && !c.address.trim()) return 'Address is required for delivery.'; }
-  if (s === 5) { if (!F.pm) return 'Please choose a payment method.'; if (F.pm === 'payhere' && !payhereReady()) return 'Card payment is not available yet. Please choose Bank Transfer.'; }
+  if (s === 5 && hasPublishedPrice(F.p)) { if (!F.pm) return 'Please choose a payment method.'; if (F.pm === 'payhere' && !payhereReady()) return 'Card payment is not available yet. Please choose Bank Transfer.'; }
   return '';
 }
 
@@ -335,7 +337,7 @@ async function place() {
     const paymentToken = getPaymentToken(oid);
     if (!paymentToken) throw new Error('Secure payment session is missing. Please start the order again.');
     const paymentCapabilityHash = await sha256Hex(paymentToken);
-    const r2 = await window.db.from('orders').insert({ id: oid, customer_id: cid, status: 'pending', total_amount: c.total, payment_method: F.pm, payment_capability_hash: paymentCapabilityHash, delivery_option: F.dlv, delivery_date: F.date || null, notes: note || null, special_instructions: note || null,
+    const r2 = await window.db.from('orders').insert({ id: oid, customer_id: cid, status: 'pending', total_amount: hasPublishedPrice(p) ? c.total : 0, payment_method: hasPublishedPrice(p) ? F.pm : null, payment_capability_hash: paymentCapabilityHash, delivery_option: F.dlv, delivery_date: F.date || null, notes: note || null, special_instructions: note || null,
       delivery_slot_id: c.slot ? c.slot.id : null, delivery_fee: c.fee, urgent_order: !!(F.urgent && dset()?.urgent_available), production_days: days() || null, estimated_ready_date: F.date || addDays(days() || 0),
       delivery_address: F.dlv === 'delivery' ? (cu.address.trim() || null) : null, customer_phone: cu.phone.trim() });
     if (r2.error) {
@@ -344,9 +346,9 @@ async function place() {
       if (existing.error || !existing.data) throw r2.error;
     }
     const deliv = { method: F.dlv, urgent: F.urgent, date: F.date, slot: c.slot ? c.slot.slot_name : null, slot_time: c.slot ? `${c.slot.start_time || ''}-${c.slot.end_time || ''}` : null, delivery_fee: c.fee, urgent_fee: c.urg, slot_fee: c.slotFee };
-    const r3 = await window.db.from('order_items').insert({ id: itemId, order_id: oid, product_id: p.id, category_id: p.category_id || null, product_name: p.name, quantity: F.qty, unit_price: base(p), line_total: c.items, production_days: days() || null,
+    const r3 = await window.db.from('order_items').insert({ id: itemId, order_id: oid, product_id: p.id, category_id: p.category_id || null, product_name: p.name, quantity: F.qty, unit_price: hasPublishedPrice(p) ? base(p) : 0, line_total: hasPublishedPrice(p) ? c.items : 0, production_days: days() || null,
       artwork_urls: F.files.filter(f => f.status === 'ok').map(f => f.url), artwork_notes: (F.mode === 'whatsapp' ? 'Artwork will be sent via WhatsApp. ' : '') + note || null,
-      selected_options: { product_category: p.categories?.name || null, selections: c.sel, delivery: deliv, artwork_method: F.mode } });
+      selected_options: { product_category: p.categories?.name || null, selections: c.sel, delivery: deliv, artwork_method: F.mode, quote_required: !hasPublishedPrice(p) } });
     if (r3.error) {
       if (r3.error.code !== '23505') throw r3.error;
       const existingItem = await window.db.from('order_items').select('id').eq('id', itemId).eq('order_id', oid).maybeSingle();
@@ -354,9 +356,9 @@ async function place() {
     }
     /* Initial 'pending' history row is created by the database trigger (see database/order-initial-status.sql). */
     let row = null; try { row = (await window.db.from('orders').select('*').eq('id', oid).maybeSingle()).data; } catch (_) {}
-    S.done = { id: oid, order_number: row?.order_number || null, created_at: row?.created_at || new Date().toISOString(), total_amount: c.total, status: 'pending', delivery_option: F.dlv, delivery_date: F.date, payment_method: F.pm, payment_status: 'pending', delivery_fee: c.fee, estimated_ready_date: F.date || addDays(days() || 0), delivery_address: cust.address, customer_phone: cust.phone,
-      customer: cust, order_items: [{ product_name: p.name, quantity: F.qty, unit_price: base(p), line_total: c.items, production_days: days(), artwork_urls: F.files.map(f => f.url), selected_options: { selections: c.sel, delivery: deliv } }] };
-    S.orders = null; F = null; location.hash = '#/pay/' + oid;
+    S.done = { price_quote_required: !hasPublishedPrice(p), id: oid, order_number: row?.order_number || null, created_at: row?.created_at || new Date().toISOString(), total_amount: hasPublishedPrice(p) ? c.total : 0, status: 'pending', delivery_option: F.dlv, delivery_date: F.date, payment_method: F.pm, payment_status: 'pending', delivery_fee: c.fee, estimated_ready_date: F.date || addDays(days() || 0), delivery_address: cust.address, customer_phone: cust.phone,
+      customer: cust, order_items: [{ product_name: p.name, quantity: F.qty, unit_price: hasPublishedPrice(p) ? base(p) : 0, line_total: hasPublishedPrice(p) ? c.items : 0, production_days: days(), artwork_urls: F.files.map(f => f.url), selected_options: { selections: c.sel, delivery: deliv } }] };
+    S.orders = null; F = null; location.hash = hasPublishedPrice(p) ? '#/pay/' + oid : '#/done';
   } catch (e) { F.placing = false; F.err = /orders_payment_method_check/.test(e.message || '') ? `The payment method "${F.pm}" is not allowed by the database. Run the payment_method diagnostic in database/payment-flow-hardening.sql and align the constraint.` : 'Order could not be placed: ' + (e.message || e); flow(); window.scrollTo(0, 0); }
 }
 
@@ -418,9 +420,10 @@ function account() {
 function done() {
   const o = S.done; if (!o) return (location.hash = '#/home');
   const d = o.order_items[0].selected_options.delivery;
-  shell(`<div class="ok"><div class="tick">✓</div><h1>Order Received</h1><p class="m">${esc(ref(o))}</p></div><div class="card">
-  <div class="ln"><span>Status</span><span class="badge pending">pending</span></div>${window.JPFPayment ? `<div class="ln"><span>Payment</span><span class="badge ${window.JPFPayment.badgeClass(o.payment_status || 'pending')}">${esc(window.JPFPayment.labelStatus(o.payment_status || 'pending'))}</span></div>` : ''}<div class="ln"><span>Estimated ready</span><span>${fdate(o.estimated_ready_date)}</span></div><div class="ln"><span>${o.delivery_option === 'delivery' ? 'Delivery' : 'Pickup'}</span><span>${fdate(o.delivery_date)}${d.slot ? ' · ' + esc(d.slot) : ''}</span></div><div class="ln t"><span>Total</span><span>${money(o.total_amount)}</span></div></div>
-  ${PAY_OPEN.includes(o.payment_status || 'pending') ? `<a class="btn full" href="#/pay/${o.id}">Complete Payment</a>` : ''}<button class="btn alt full" data-a="inv" data-id="done">Download Invoice</button>${S.profile ? `<a class="btn alt full" href="#/orders/${o.id}">View Order</a>` : ''}
+  const quoteMode = !!o.price_quote_required;
+  shell(`<div class="ok"><div class="tick">✓</div><h1>${quoteMode ? 'Inquiry Received' : 'Order Received'}</h1><p class="m">${esc(ref(o))}</p></div><div class="card">
+  ${quoteMode ? '<p class="m">Your request has been received. We will confirm the price before asking you to pay.</p>' : ''}<div class="ln"><span>Status</span><span class="badge pending">pending</span></div>${!quoteMode && window.JPFPayment ? `<div class="ln"><span>Payment</span><span class="badge ${window.JPFPayment.badgeClass(o.payment_status || 'pending')}">${esc(window.JPFPayment.labelStatus(o.payment_status || 'pending'))}</span></div>` : ''}<div class="ln"><span>Estimated ready</span><span>${fdate(o.estimated_ready_date)}</span></div><div class="ln"><span>${o.delivery_option === 'delivery' ? 'Delivery' : 'Pickup'}</span><span>${fdate(o.delivery_date)}${d.slot ? ' · ' + esc(d.slot) : ''}</span></div>${quoteMode ? '<div class="ln t"><span>Price</span><span>Get a quote</span></div>' : `<div class="ln t"><span>Total</span><span>${money(o.total_amount)}</span></div>`}</div>
+  ${!quoteMode && PAY_OPEN.includes(o.payment_status || 'pending') ? `<a class="btn full" href="#/pay/${o.id}">Complete Payment</a>` : ''}<button class="btn alt full" data-a="inv" data-id="done">Download Invoice</button>${S.profile ? `<a class="btn alt full" href="#/orders/${o.id}">View Order</a>` : ''}
   ${wa() ? `<a class="btn alt full" target="_blank" rel="noopener" href="${wa(`New order ${ref(o)}: ${o.order_items[0].product_name} ×${o.order_items[0].quantity}, total ${money(o.total_amount)}`)}">WhatsApp Order</a>` : ''}<a class="btn alt full" href="#/home">Back Home</a>`);
 }
 function invoice(o) {
