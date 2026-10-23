@@ -128,9 +128,14 @@ table{width:100%;border-collapse:collapse}th,td{padding:12px 8px;border-bottom:1
 
 <!-- PRICING -->
 <div class="page" id="page-pricing">
-  <div class="page-title"><h3>Pricing</h3><p>Manage option and combination prices</p></div>
+  <div class="page-title"><h3>Product Prices</h3><p>Only prices saved and published here will appear on the customer website.</p></div>
   <div class="panel">
-    <div class="panel-header"><h4>Pricing Rules</h4><button class="btn btn-primary" onclick="openPriceModal()">+ Add Price</button></div>
+    <div class="panel-header"><h4>Customer Website Prices</h4><button class="btn btn-blue" onclick="loadAdminProductPrices()">Refresh products</button></div>
+    <p class="help" style="margin-bottom:12px">Enter a price and tick Publish to show it to customers. Unticked products show “Get a quote” instead of a price.</p>
+    <div id="adminProductPrices"><div class="empty">Loading products…</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h4>Legacy Pricing Rules</h4><button class="btn btn-primary" onclick="openPriceModal()">+ Add Rule</button></div>
     <div id="pricingList"></div>
   </div>
 </div>
@@ -388,7 +393,7 @@ function showPage(page,button){
  document.getElementById("sidebar").classList.remove("open");
  if(page==="dashboard")renderDashboard();
  if(page==="categories")renderCategories();
- if(page==="pricing")renderPricing();
+ if(page==="pricing"){renderPricing();loadAdminProductPrices();}
  if(page==="delivery")renderDeliveries();
  if(page==="orders"){renderOrders();loadLiveOrders(false);loadCustomerFiles();}
   if(page==="payments")loadPaymentReceipts();
@@ -515,6 +520,42 @@ function saveValue(){
 function deleteValue(index){
  const c=state.categories.find(x=>x.id===currentCategoryId);const o=c.options.find(x=>x.id===currentOptionId);
  o.values.splice(index,1);saveState();renderValues();renderOptions();
+}
+
+let adminPriceProducts=[];
+async function loadAdminProductPrices(){
+ const host=document.getElementById('adminProductPrices');
+ if(!host)return;
+ host.innerHTML='<div class="empty">Loading products…</div>';
+ try{
+  const {data,error}=await window.db.from('products').select('id,name,price,price_per_unit,price_is_published,category_id,categories(name)').order('display_order');
+  if(error)throw error;
+  adminPriceProducts=data||[];
+  if(!adminPriceProducts.length){host.innerHTML='<div class="empty">No products found in Supabase.</div>';return;}
+  host.innerHTML=`<table><thead><tr><th>Product</th><th>Category</th><th>Price (LKR)</th><th>Visible to customers</th><th>Action</th></tr></thead><tbody>${adminPriceProducts.map(p=>{
+   const published=p.price_is_published===true;
+   const price=published?Number(p.price_per_unit ?? p.price ?? 0):'';
+   return `<tr><td><strong>${esc(p.name)}</strong></td><td>${esc(p.categories?.name||'—')}</td><td style="min-width:130px"><input id="admin-price-${esc(p.id)}" type="number" min="0" step="0.01" value="${price}" placeholder="No price" style="width:120px;padding:8px;border:1px solid #ddd;border-radius:6px"></td><td><label class="switch"><input id="admin-publish-${esc(p.id)}" type="checkbox" ${published?'checked':''}> Publish price</label></td><td><button class="btn btn-primary btn-small" onclick="saveAdminProductPrice('${esc(p.id)}')">Save</button></td></tr>`;
+  }).join('')}</tbody></table>`;
+ }catch(e){
+  console.error('Product prices failed to load:',e);
+  host.innerHTML=`<div class="empty">Could not load product prices. ${esc(e.message||e)}<br><br>Run <code>database/product-price-publishing.sql</code> in Supabase SQL Editor, then refresh.</div>`;
+ }
+}
+async function saveAdminProductPrice(id){
+ const input=document.getElementById('admin-price-'+id),toggle=document.getElementById('admin-publish-'+id);
+ const publish=!!toggle?.checked, raw=input?.value.trim();
+ if(publish && (raw===''||!Number.isFinite(Number(raw))||Number(raw)<=0)){alert('Enter a price greater than 0, or turn off Publish price.');return;}
+ const price=raw===''?null:Number(raw);
+ try{
+  const patch={price_is_published:publish,price_per_unit:publish?price:null,price:publish?price:null};
+  const {error}=await window.db.from('products').update(patch).eq('id',id);
+  if(error)throw error;
+  const p=adminPriceProducts.find(x=>String(x.id)===String(id));
+  if(p){p.price_is_published=publish;p.price_per_unit=publish?price:null;p.price=publish?price:null;}
+  alert(publish?'Price saved and published to the customer website.':'Price hidden from the customer website.');
+  await loadAdminProductPrices();
+ }catch(e){alert('Could not save product price: '+(e.message||e));}
 }
 
 function renderPricing(){
