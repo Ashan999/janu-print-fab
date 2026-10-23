@@ -24,8 +24,7 @@ async function JPFUpdateNav() {
     if (!window.JPFCustomerAuth || !window.db) return;
 
     try {
-        const sessionData = await JPFCustomerAuth.getSession?.().catch(() => ({ data: { session: null } }));
-        const activeSession = sessionData?.data?.session || null;
+        const activeSession = await JPFCustomerAuth.getSession().catch(() => null);
         const profile = activeSession ? await JPFCustomerAuth.getProfile().catch(() => null) : null;
 
         if (profile && navGuest && navUser) {
