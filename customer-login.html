@@ -83,8 +83,8 @@
                 <input type="text" id="regName" required placeholder="Your full name">
                 <label for="regPhone">Phone Number</label>
                 <input type="tel" id="regPhone" required placeholder="+947... or +971...">
-                <label for="regNic">NIC Number (Optional)</label>
-                <input type="text" id="regNic" placeholder="National Identity Card number (optional)">
+                <label for="regNic">NIC Number</label>
+                <input type="text" id="regNic" required placeholder="National Identity Card number">
                 <label for="regPassword">Password</label>
                 <div class="field-wrap">
                     <input type="password" id="regPassword" required minlength="6" placeholder="Min 6 characters">
@@ -114,8 +114,8 @@
             return cleaned.startsWith('+') ? `+${digits}` : `+${digits}`;
         };
         const validateFullName = (value) => value.trim().length >= 2;
-        const validatePhone = (value) => { const digits = String(value || '').replace(/\D/g, ''); return digits.length >= 10 && digits.length <= 15; };
-        const validateNic = (value) => !String(value || '').trim() || /^[A-Za-z0-9]{8,20}$/.test(String(value || '').trim());
+        const validatePhone = (value) => normalizePhone(value).length >= 10 && normalizePhone(value).length <= 16;
+        const validateNic = (value) => /^[A-Za-z0-9]{8,20}$/.test(String(value || '').trim());
         const validatePassword = (value) => String(value || '').length >= 6 && !/\s/.test(value);
 
         function showStatus(text, type) {
@@ -211,7 +211,7 @@
                 return;
             }
             if (!validateNic(nic)) {
-                showStatus('If you enter a NIC, please check its format.', 'error');
+                showStatus('Please enter a valid NIC or ID number.', 'error');
                 return;
             }
             if (!validatePassword(pw)) {
@@ -245,7 +245,7 @@
 
         (async () => {
             try {
-                const session = await JPFCustomerAuth.getSession?.().catch(() => null);
+                const session = await JPFCustomerAuth.getSession().catch(() => null);
                 if (!session) return;
                 const profile = await JPFCustomerAuth.handleOAuthCallback();
                 if (profile) window.location.href = 'account.html';
