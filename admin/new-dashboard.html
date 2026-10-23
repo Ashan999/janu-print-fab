@@ -135,6 +135,11 @@ table{width:100%;border-collapse:collapse}th,td{padding:12px 8px;border-bottom:1
     <div id="adminProductPrices"><div class="empty">Loading products…</div></div>
   </div>
   <div class="panel">
+    <div class="panel-header"><h4>Product Option Prices</h4><button class="btn btn-blue" onclick="loadAdminOptionPrices()">Refresh options</button></div>
+    <p class="help" style="margin-bottom:12px">Control extra charges for product options, toggles, dimensions (per square metre where configured), and quantities. These values are used only when the product base price is published.</p>
+    <div id="adminOptionPrices"><div class="empty">Loading product options…</div></div>
+  </div>
+  <div class="panel">
     <div class="panel-header"><h4>Legacy Pricing Rules</h4><button class="btn btn-primary" onclick="openPriceModal()">+ Add Rule</button></div>
     <div id="pricingList"></div>
   </div>
@@ -393,7 +398,7 @@ function showPage(page,button){
  document.getElementById("sidebar").classList.remove("open");
  if(page==="dashboard")renderDashboard();
  if(page==="categories")renderCategories();
- if(page==="pricing"){renderPricing();loadAdminProductPrices();}
+ if(page==="pricing"){renderPricing();loadAdminProductPrices();loadAdminOptionPrices();}
  if(page==="delivery")renderDeliveries();
  if(page==="orders"){renderOrders();loadLiveOrders(false);loadCustomerFiles();}
   if(page==="payments")loadPaymentReceipts();
@@ -556,6 +561,37 @@ async function saveAdminProductPrice(id){
   alert(publish?'Price saved and published to the customer website.':'Price hidden from the customer website.');
   await loadAdminProductPrices();
  }catch(e){alert('Could not save product price: '+(e.message||e));}
+}
+
+let adminOptionFields=[];
+async function loadAdminOptionPrices(){
+ const host=document.getElementById('adminOptionPrices'); if(!host)return;
+ host.innerHTML='<div class="empty">Loading product options…</div>';
+ try{
+  const [fr,orr,pr]=await Promise.all([
+   window.db.from('product_fields').select('id,product_id,field_label,field_type,price_modifier,is_enabled').order('display_order'),
+   window.db.from('product_field_options').select('id,product_field_id,label,price_modifier').order('display_order'),
+   window.db.from('products').select('id,name').order('display_order')
+  ]);
+  if(fr.error)throw fr.error; if(orr.error)throw orr.error; if(pr.error)throw pr.error;
+  const products=new Map((pr.data||[]).map(p=>[String(p.id),p.name]));
+  const optionsByField=new Map(); (orr.data||[]).forEach(o=>{const k=String(o.product_field_id);if(!optionsByField.has(k))optionsByField.set(k,[]);optionsByField.get(k).push(o)});
+  adminOptionFields=(fr.data||[]).map(f=>({...f,product_name:products.get(String(f.product_id))||'Unknown product',options:optionsByField.get(String(f.id))||[]}));
+  if(!adminOptionFields.length){host.innerHTML='<div class="empty">No product fields found.</div>';return;}
+  host.innerHTML=adminOptionFields.map(f=>`<div style="border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin:10px 0"><div style="display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap"><div><strong>${esc(f.product_name)} · ${esc(f.field_label)}</strong><div class="help">${esc(f.field_type||'option')} ${f.field_type==='dimension'?'(price per sqm)':''}</div></div><label>Field extra / rate <input type="number" step="0.01" id="field-price-${esc(f.id)}" value="${Number(f.price_modifier||0)}" style="width:115px;padding:7px;border:1px solid #ddd;border-radius:6px"></label><button class="btn btn-primary btn-small" onclick="saveAdminFieldPrice('${esc(f.id)}')">Save field</button></div>${f.options.length?`<table style="margin-top:10px"><thead><tr><th>Option</th><th>Extra price</th><th>Action</th></tr></thead><tbody>${f.options.map(o=>`<tr><td>${esc(o.label)}</td><td><input type="number" step="0.01" id="option-price-${esc(o.id)}" value="${Number(o.price_modifier||0)}" style="width:115px;padding:7px;border:1px solid #ddd;border-radius:6px"></td><td><button class="btn btn-primary btn-small" onclick="saveAdminOptionPrice('${esc(o.id)}')">Save</button></td></tr>`).join('')}</tbody></table>`:'<p class="help">No selectable options for this field.</p>'}</div>`).join('');
+ }catch(e){console.error('Product option prices failed to load:',e);host.innerHTML=`<div class="empty">Could not load product option prices: ${esc(e.message||e)}</div>`;}
+}
+async function saveAdminFieldPrice(id){
+ const input=document.getElementById('field-price-'+id), value=Number(input?.value);
+ if(!Number.isFinite(value)){alert('Enter a valid price or rate.');return;}
+ try{const {error}=await window.db.from('product_fields').update({price_modifier:value}).eq('id',id);if(error)throw error;alert('Field price/rate saved.');await loadAdminOptionPrices();}
+ catch(e){alert('Could not save field price: '+(e.message||e));}
+}
+async function saveAdminOptionPrice(id){
+ const input=document.getElementById('option-price-'+id), value=Number(input?.value);
+ if(!Number.isFinite(value)){alert('Enter a valid option price.');return;}
+ try{const {error}=await window.db.from('product_field_options').update({price_modifier:value}).eq('id',id);if(error)throw error;alert('Option price saved.');await loadAdminOptionPrices();}
+ catch(e){alert('Could not save option price: '+(e.message||e));}
 }
 
 function renderPricing(){
