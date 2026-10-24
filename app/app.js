@@ -60,7 +60,7 @@ function shell(body, { flow = false, title = '', back = '' } = {}) {
   ${flow ? '' : footerHtml()}`;
   window.scrollTo(0, 0);
 }
-const prodCard = p => `<a class="pc" href="#/order/${encodeURIComponent(p.id)}"><div class="im" style="${img(p) ? `background-image:url('${esc(img(p))}')` : ''}">${img(p) ? '' : '🖨️'}</div><div class="pc-body"><small>${esc(categoryName(p) || 'Print product')}</small><b>${esc(p.name)}</b><span>${hasPublishedPrice(p) ? 'From ' + money(base(p)) : 'Get a quote'}</span><em>Order →</em></div></a>`;
+const prodCard = p => `<a class="pc" href="#/order/${encodeURIComponent(p.id)}"><div class="im" style="${img(p) ? `background-image:url('${esc(img(p))}')` : ''}">${img(p) ? '' : '🖨️'}</div><div class="pc-body"><small>${esc(categoryName(p) || 'Print product')}</small><b>${esc(p.name)}</b><span>${hasPublishedPrice(p) ? 'From ' + money(base(p)) : 'Contact us on WhatsApp'}</span><em>${hasPublishedPrice(p) ? 'Order →' : 'WhatsApp →'}</em></div></a>`;
 const catCard = c => `<a class="cat" href="#/shop/${encodeURIComponent(c.id)}" style="text-decoration:none;color:inherit"><div class="im" style="${c.image_url ? `background-image:url('${esc(c.image_url)}')` : ''}">${c.image_url ? '' : '🖨️'}</div><b>${esc(c.name)}</b><small>Browse products →</small></a>`;
 const wa = txt => S.contact?.whatsapp ? `https://wa.me/${String(S.contact.whatsapp).replace(/\D/g, '')}${txt ? '?text=' + encodeURIComponent(txt) : ''}` : '';
 
@@ -68,11 +68,11 @@ const wa = txt => S.contact?.whatsapp ? `https://wa.me/${String(S.contact.whatsa
 function home() {
   const c = S.contact || {};
   const featured = homeProducts().slice(0, 8);
-  shell(`<div class="home-hero"><div><span class="eyebrow">Janu Print | FAB</span><h1>Print something great.</h1><p class="m">Choose a service, pick a product, and get your order started in minutes.</p></div><a class="btn hero-btn" href="#/shop">Start an Order →</a></div>
-  <h2>What do you need?</h2><p class="section-note">Choose a printing service</p><div class="row category-row">${S.cats.map(catCard).join('') || '<p class="m">No services yet.</p>'}</div>
-  ${featured.length ? `<div class="section-head"><div><h2>Popular products</h2><p class="section-note">Products ready to order</p></div><a href="#/shop">View all →</a></div><div class="row product-row">${featured.map(prodCard).join('')}</div>` : ''}
-  <h2>Quick actions</h2><div class="acts"><a href="#/shop">🛒 Start Order</a><a href="#/orders">📦 View Orders</a>
-  ${wa() ? `<a href="${wa('Hello Janu Print | FAB')}" target="_blank" rel="noopener">💬 WhatsApp</a>` : ''}${c.phone ? `<a href="tel:${esc(c.phone)}">📞 Call us</a>` : ''}</div>`);
+  shell(`<section class="home-hero" aria-labelledby="homeTitle"><div><span class="eyebrow">Janu Print | FAB</span><h1 id="homeTitle">Print something great.</h1><p class="m">Choose a service, pick a product, and get your order started in minutes.</p><ol class="home-steps" aria-label="How ordering works"><li>Choose a service</li><li>Pick a product</li><li>Send your order or quote request</li></ol></div><a class="btn hero-btn" href="#/shop">Start an Order →</a></section>
+  <section aria-labelledby="homeServices"><h2 id="homeServices">What do you need?</h2><p class="section-note">Choose a printing service</p><div class="row category-row">${S.cats.map(catCard).join('') || '<div class="empty home-empty">Services will appear here soon. You can still <a href="#/shop">browse the shop</a>.</div>'}</div></section>
+  ${featured.length ? `<section aria-labelledby="homePopular"><div class="section-head"><div><h2 id="homePopular">Popular products</h2><p class="section-note">Products ready to order. If a product has no listed price, choose it to request a quote.</p></div><a href="#/shop">View all products →</a></div><div class="row product-row">${featured.map(prodCard).join('')}</div></section>` : ''}
+  <section aria-labelledby="homeActions"><h2 id="homeActions">Quick actions</h2><div class="acts"><a href="#/shop">🛒 Start Order</a><a href="#/orders">📦 View Orders</a>
+  ${wa() ? `<a href="${wa('Hello Janu Print | FAB')}" target="_blank" rel="noopener">💬 WhatsApp</a>` : ''}${c.phone ? `<a href="tel:${esc(c.phone)}">📞 Call us</a>` : ''}</div></section>`);
 }
 
 function shop(catId) {
@@ -114,6 +114,14 @@ const STEP = ['Options', 'Artwork', 'Delivery', 'Details', 'Review', 'Payment'];
 function startFlow(id) {
   const p = S.prods.find(x => x.id === id);
   if (!p) return (location.hash = '#/shop');
+  // Products without an explicitly published price are not online-orderable.
+  // Route customers to WhatsApp instead of creating a zero-value inquiry/order.
+  if (!hasPublishedPrice(p)) {
+    const message = `Hi Janu Print | FAB, I would like to discuss ${p.name}. Please help me with the available options and pricing.`;
+    const contactLink = wa(message);
+    shell(`<div class="card"><h1>${esc(p.name)}</h1>${img(p) ? `<img class="order-product-image" src="${esc(img(p))}" alt="${esc(p.name)}">` : ''}<p class="m">Online ordering is not available for this product yet. Contact us on WhatsApp to discuss the product and confirm pricing.</p>${contactLink ? `<a class="btn full" href="${esc(contactLink)}" target="_blank" rel="noopener">Contact us on WhatsApp</a>` : `<p class="m">WhatsApp contact is not configured yet. Please use the contact details on our website.</p>`}<a class="btn alt full" href="#/shop">Back to Shop</a></div>`, { title: p.name, back: '#/shop' });
+    return;
+  }
   const pf = S.profile || {};
   const orderId = crypto.randomUUID();
   setPaymentToken(orderId, randomPaymentToken());
@@ -326,6 +334,12 @@ async function upload(files) {
 
 async function place() {
   if (F.placing) return;
+  // Safety guard: never write zero-value quote requests into the orders tables.
+  if (!hasPublishedPrice(F.p)) {
+    F.err = 'This product is not available for online ordering. Please contact us on WhatsApp.';
+    flow();
+    return;
+  }
   F.placing = true; F.err = ''; flow();
   const c = calc(), p = F.p, cu = F.cust, oid = F.id, itemId = F.itemId;
   try {
