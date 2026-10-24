@@ -194,6 +194,38 @@
 
             const items = JPFCart.getItems();
             if (!items.length) return;
+
+            // Re-check prices against Supabase before creating an order. Cart data is
+            // client-side and may be stale or contain products whose prices are hidden.
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking prices...';
+            const productIds = [...new Set(items.map(item => item.productId).filter(Boolean))];
+            if (productIds.length) {
+                const { data: products, error: productsError } = await window.db
+                    .from('products')
+                    .select('id, name, price_per_unit, price, price_is_published')
+                    .in('id', productIds);
+                if (productsError) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-check"></i> Place Order';
+                    msg.className = 'error';
+                    msg.textContent = 'Could not verify product prices. Please try again.';
+                    return;
+                }
+                const productById = new Map((products || []).map(product => [String(product.id), product]));
+                const invalidItems = items.filter(item => {
+                    const product = productById.get(String(item.productId));
+                    return !product || product.price_is_published !== true || Number(product.price_per_unit ?? product.price ?? 0) <= 0;
+                });
+                if (invalidItems.length) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-check"></i> Place Order';
+                    msg.className = 'error';
+                    msg.textContent = 'Some products do not have a published price. Please remove them from the cart and contact us on WhatsApp for pricing.';
+                    return;
+                }
+            }
+
             const paymentMethod = document.querySelector('input[name="cartPaymentMethod"]:checked')?.value;
             if (!paymentMethod) {
                 msg.className = 'error';
@@ -201,7 +233,6 @@
                 return;
             }
 
-            btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Placing order...';
 
             try {
