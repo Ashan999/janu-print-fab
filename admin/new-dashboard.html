@@ -75,6 +75,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:12px 8px;border-bottom:1
   <nav class="menu">
     <button class="active" onclick="showPage('dashboard',this)">Dashboard</button>
     <button onclick="showPage('categories',this)">Categories</button>
+    <button onclick="showPage('products',this)">Products</button>
     <button onclick="showPage('pricing',this)">Pricing</button>
     <button onclick="showPage('delivery',this)">Delivery</button>
     <button onclick="showPage('orders',this)">Orders</button>
@@ -120,6 +121,15 @@ table{width:100%;border-collapse:collapse}th,td{padding:12px 8px;border-bottom:1
       <button class="btn btn-primary" onclick="openCategoryModal()">+ Add Category</button>
     </div>
     <table><thead><tr><th>Category</th><th>Options</th><th>Status</th><th>Action</th></tr></thead><tbody id="categoryTable"></tbody></table>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<div class="page" id="page-products">
+  <div class="page-title"><h3>Products</h3><p>Manage the products shown on the customer Shop page. Products without a category are included too.</p></div>
+  <div class="panel">
+    <div class="panel-header"><div><h4>Shop Products</h4><p id="productsMessage" style="font-size:12px;color:#777;margin-top:3px">Loading products from Supabase…</p></div><div class="actions"><button class="btn btn-gray" onclick="loadAdminCatalog()">Refresh</button><button class="btn btn-primary" onclick="openProductModal()">+ Add Product</button></div></div>
+    <div style="overflow-x:auto"><table><thead><tr><th>Product</th><th>Category</th><th>Price (LKR)</th><th>Price display</th><th>Shop visibility</th><th>Actions</th></tr></thead><tbody id="productsTable"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody></table></div>
   </div>
 </div>
 
@@ -215,7 +225,6 @@ table{width:100%;border-collapse:collapse}th,td{padding:12px 8px;border-bottom:1
   <div class="form-grid">
     <div class="field"><label>Category Name</label><input id="catName" placeholder="Example: DTF Custom Print"></div>
     <div class="field"><label>Status</label><select id="catStatus"><option value="true">Active</option><option value="false">Hidden</option></select></div>
-    <div class="field full"><label>Description</label><textarea id="catDescription" placeholder="Short description"></textarea></div>
   </div>
   <div class="actions" style="justify-content:flex-end;margin-top:15px">
     <button class="btn btn-gray" onclick="closeModal('categoryModal')">Cancel</button>
@@ -254,6 +263,26 @@ table{width:100%;border-collapse:collapse}th,td{padding:12px 8px;border-bottom:1
     <div style="margin-top:10px"><button class="btn btn-primary" onclick="saveValue()">+ Add Value</button></div>
   </div>
   <table><thead><tr><th>Value</th><th>Price</th><th>Status</th><th>Action</th></tr></thead><tbody id="valuesTable"></tbody></table>
+</div>
+</div>
+
+<!-- PRODUCT MODAL -->
+<div class="modal" id="productModal">
+<div class="modal-box">
+  <div class="modal-header"><h3 id="productModalTitle">Add Product</h3><button class="close" onclick="closeModal('productModal')">×</button></div>
+  <div class="form-grid">
+    <div class="field full"><label>Product Name *</label><input id="productName" placeholder="e.g. DTF Custom Print"></div>
+    <div class="field full"><label>Category</label><select id="productCategory"><option value="">No category</option></select><small class="help">Uncategorized products will still appear in this admin list.</small></div>
+    <div class="field full"><label>Description</label><textarea id="productDescription" placeholder="Product details"></textarea></div>
+    <div class="field"><label>Price (LKR)</label><input id="productPrice" type="number" min="0" step="0.01" value="0"></div>
+    <div class="field"><label>Discount price (optional)</label><input id="productDiscount" type="number" min="0" step="0.01" placeholder="Leave blank for none"></div>
+    <div class="field full"><label>Product image URL</label><input id="productImage" type="url" placeholder="https://..."><small class="help">Use a public image URL. Existing image URLs are preserved when editing unless changed.</small></div>
+    <div class="field"><label>Price display</label><select id="productPricePublished"><option value="true">Show price / order normally</option><option value="false">Get a quote / contact WhatsApp</option></select></div>
+    <div class="field"><label>Shop visibility</label><select id="productVisible"><option value="true">Visible</option><option value="false">Hidden</option></select></div>
+    <div class="field"><label>Display order</label><input id="productOrder" type="number" step="1" value="0"></div>
+  </div>
+  <p class="help" style="margin-top:10px">Saving updates the Supabase products table used by the Shop page. Existing orders are not changed.</p>
+  <div class="actions" style="justify-content:flex-end;margin-top:15px"><button class="btn btn-gray" onclick="closeModal('productModal')">Cancel</button><button class="btn btn-primary" id="saveProductButton" onclick="saveProduct()">Save Product</button></div>
 </div>
 </div>
 
@@ -348,6 +377,7 @@ let state={
  settings:{business:"Janu Print | FAB",whatsapp:"",phone:"",currency:"LKR",whatsappEnabled:true,uploadEnabled:true}
 };
 let editingCategoryId=null,currentCategoryId=null,currentOptionId=null,currentOrderId=null;
+let adminCategories=[], adminProducts=[], editingProductId=null;
 
 function loadState(){
  const raw=localStorage.getItem(KEY);
@@ -364,11 +394,12 @@ function showPage(page,button){
  document.getElementById("page-"+page)?.classList.add("active");
  document.querySelectorAll(".menu button").forEach(x=>x.classList.remove("active"));
  if(button)button.classList.add("active");
- const titles={dashboard:"Dashboard",categories:"Categories",pricing:"Pricing",delivery:"Delivery",orders:"Orders",payments:"Payments",settings:"Settings"};
+ const titles={dashboard:"Dashboard",categories:"Categories",products:"Products",pricing:"Pricing",delivery:"Delivery",orders:"Orders",payments:"Payments",settings:"Settings"};
  document.getElementById("pageTitle").textContent=titles[page]||"Dashboard";
  document.getElementById("sidebar").classList.remove("open");
  if(page==="dashboard")renderDashboard();
  if(page==="categories")renderCategories();
+ if(page==="products")loadAdminCatalog();
  if(page==="pricing")renderPricing();
  if(page==="delivery")renderDeliveries();
  if(page==="orders")renderOrders();
@@ -401,48 +432,148 @@ function renderDashboard(){
 }
 
 function renderCategories(){
- document.getElementById("categoryTable").innerHTML=state.categories.map(c=>`
+ const rows = (adminCategories.length ? adminCategories : state.categories).map(c=>({...c, options:Array.isArray(c.options)?c.options:[]}));
+ document.getElementById("categoryTable").innerHTML=rows.map(c=>`
  <tr>
-  <td><strong>${esc(c.name)}</strong><div style="font-size:10px;color:#888">${esc(c.description)}</div></td>
+  <td><strong>${esc(c.name)}</strong><div style="font-size:10px;color:#888">${esc(c.description||'')}</div></td>
   <td>${c.options.length} options</td>
-  <td><span class="badge ${c.active?"":"off"}">${c.active?"Active":"Hidden"}</span></td>
+  <td><span class="badge ${(c.is_visible ?? c.active)!==false?"":"off"}">${(c.is_visible ?? c.active)!==false?"Active":"Hidden"}</span></td>
   <td><div class="actions">
    <button class="btn btn-blue btn-small" onclick="openOptions('${c.id}')">Options</button>
    <button class="btn btn-gray btn-small" onclick="editCategory('${c.id}')">Edit</button>
    <button class="btn btn-danger btn-small" onclick="deleteCategory('${c.id}')">Delete</button>
   </div></td>
- </tr>`).join("");
+ </tr>`).join("") || `<tr><td colspan="4" class="empty">No categories yet.</td></tr>`;
 }
 function openCategoryModal(){
  editingCategoryId=null;
  document.getElementById("categoryModalTitle").textContent="Add Category";
  document.getElementById("catName").value="";
- document.getElementById("catDescription").value="";
  document.getElementById("catStatus").value="true";
  openModal("categoryModal");
 }
 function editCategory(id){
- const c=state.categories.find(x=>x.id===id);if(!c)return;
+ const c=adminCategories.find(x=>x.id===id) || state.categories.find(x=>x.id===id);if(!c)return;
  editingCategoryId=id;
  document.getElementById("categoryModalTitle").textContent="Edit Category";
  document.getElementById("catName").value=c.name;
- document.getElementById("catDescription").value=c.description||"";
- document.getElementById("catStatus").value=String(c.active);
+ document.getElementById("catStatus").value=String(c.is_visible ?? c.active ?? true);
  openModal("categoryModal");
 }
-function saveCategory(){
+function categorySlug(name){return String(name||'').normalize('NFKD').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'') || ('category-'+Date.now());}
+async function saveCategory(){
  const name=document.getElementById("catName").value.trim();
  if(!name){alert("Enter category name.");return}
- if(editingCategoryId){
-  const c=state.categories.find(x=>x.id===editingCategoryId);c.name=name;c.description=document.getElementById("catDescription").value.trim();c.active=document.getElementById("catStatus").value==="true";
- }else{
-  state.categories.push({id:"cat"+Date.now(),name,description:document.getElementById("catDescription").value.trim(),active:true,delivery:{days:1,fee:0,urgent:false,urgentMode:"tomorrow",urgentFee:0},options:[]});
- }
- saveState();closeModal("categoryModal");renderCategories();
+ if(!window.db){alert('Supabase connection is not available.');return;}
+ const is_visible=document.getElementById("catStatus").value==="true";
+ try {
+   if(editingCategoryId){
+     const existing=adminCategories.find(x=>x.id===editingCategoryId);
+     const payload={name,slug:categorySlug(name),is_visible};
+     const {error}=await window.db.from('categories').update(payload).eq('id',editingCategoryId);
+     if(error)throw error;
+   } else {
+     const nextOrder=adminCategories.reduce((m,c)=>Math.max(m,Number(c.display_order)||0),0)+1;
+     const {error}=await window.db.from('categories').insert({name,slug:categorySlug(name),display_order:nextOrder,is_visible});
+     if(error)throw error;
+   }
+   closeModal('categoryModal');
+   await loadAdminCatalog();
+   alert('Category saved to Supabase.');
+ } catch(e){console.error('Save category failed',e);alert('Could not save category: '+(e.message||e));}
 }
-function deleteCategory(id){
- if(!confirm("Delete this category?"))return;
- state.categories=state.categories.filter(x=>x.id!==id);saveState();renderCategories();
+async function deleteCategory(id){
+ const c=adminCategories.find(x=>x.id===id);
+ if(!c)return;
+ if(!confirm(`Delete category “${c.name}”? Products assigned to it may prevent deletion. Consider hiding it instead.`))return;
+ try{
+   const {error}=await window.db.from('categories').delete().eq('id',id);
+   if(error)throw error;
+   await loadAdminCatalog();
+ }catch(e){console.error('Delete category failed',e);alert('Could not delete category. If products use it, reassign those products or hide the category instead. Details: '+(e.message||e));}
+}
+
+async function loadAdminCatalog(){
+ const msg=document.getElementById('productsMessage');
+ const tbody=document.getElementById('productsTable');
+ if(msg)msg.textContent='Loading categories and products from Supabase…';
+ if(tbody)tbody.innerHTML='<tr><td colspan="6" class="empty">Loading…</td></tr>';
+ try{
+   const [cats,prods]=await Promise.all([
+     window.db.from('categories').select('*').order('display_order').order('name'),
+     window.db.from('products').select('*, categories(id,name)').order('display_order').order('name')
+   ]);
+   if(cats.error)throw cats.error;
+   if(prods.error)throw prods.error;
+   adminCategories=cats.data||[];
+   adminProducts=prods.data||[];
+   // Keep the existing category-options UI usable, while replacing demo categories with real DB categories.
+   state.categories=adminCategories.map(c=>({id:c.id,name:c.name,description:c.description||'',active:c.is_visible!==false,is_visible:c.is_visible,options:state.categories.find(x=>x.id===c.id)?.options||[],delivery:{days:1,fee:0,urgent:false,urgentMode:'tomorrow',urgentFee:0}}));
+   renderCategories();
+   renderProducts();
+   const select=document.getElementById('productCategory');
+   if(select){const old=select.value;select.innerHTML='<option value="">No category</option>'+adminCategories.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');if([...select.options].some(o=>o.value===old))select.value=old;}
+   if(msg)msg.textContent=`${adminProducts.length} products loaded from Supabase, including uncategorized products.`;
+ }catch(e){
+   console.error('Could not load products/categories',e);
+   if(msg)msg.textContent='Could not load Supabase products/categories: '+(e.message||e);
+   if(tbody)tbody.innerHTML=`<tr><td colspan="6" class="empty">Could not load products. Check Supabase permissions and table columns.</td></tr>`;
+ }
+}
+function renderProducts(){
+ const tbody=document.getElementById('productsTable');if(!tbody)return;
+ tbody.innerHTML=adminProducts.map(p=>{
+   const cat=p.categories?.name || adminCategories.find(c=>c.id===p.category_id)?.name || 'Uncategorized';
+   const price=Number(p.discount_price||p.price||0);
+   const published=p.price_is_published!==false;
+   return `<tr><td><strong>${esc(p.name)}</strong><div style="font-size:10px;color:#888;max-width:280px;white-space:normal">${esc(p.description||'')}</div></td><td>${esc(cat)}</td><td>${money(price)}</td><td><span class="badge ${published?'':'off'}">${published?'Published':'Get a quote'}</span></td><td><span class="badge ${p.is_visible===false?'off':''}">${p.is_visible===false?'Hidden':'Visible'}</span></td><td><div class="actions"><button class="btn btn-gray btn-small" onclick="editProduct('${p.id}')">Edit</button><button class="btn ${p.is_visible===false?'btn-blue':'btn-danger'} btn-small" onclick="toggleProductVisibility('${p.id}')">${p.is_visible===false?'Show':'Hide'}</button></div></td></tr>`;
+ }).join('') || '<tr><td colspan="6" class="empty">No products found in Supabase.</td></tr>';
+}
+function openProductModal(){
+ editingProductId=null;
+ document.getElementById('productModalTitle').textContent='Add Product';
+ document.getElementById('productName').value='';document.getElementById('productDescription').value='';
+ document.getElementById('productPrice').value='0';document.getElementById('productDiscount').value='';
+ document.getElementById('productImage').value='';document.getElementById('productPricePublished').value='false';
+ document.getElementById('productVisible').value='true';document.getElementById('productOrder').value=String(adminProducts.reduce((m,p)=>Math.max(m,Number(p.display_order)||0),0)+1);
+ document.getElementById('productCategory').value='';openModal('productModal');
+}
+function editProduct(id){
+ const p=adminProducts.find(x=>x.id===id);if(!p)return;editingProductId=id;
+ document.getElementById('productModalTitle').textContent='Edit Product';
+ document.getElementById('productName').value=p.name||'';document.getElementById('productDescription').value=p.description||'';
+ document.getElementById('productPrice').value=String(p.price??0);document.getElementById('productDiscount').value=p.discount_price==null?'':String(p.discount_price);
+ document.getElementById('productImage').value=p.featured_image||((Array.isArray(p.images)&&p.images[0])||'');
+ document.getElementById('productPricePublished').value=String(p.price_is_published!==false);
+ document.getElementById('productVisible').value=String(p.is_visible!==false);document.getElementById('productOrder').value=String(p.display_order??0);
+ document.getElementById('productCategory').value=p.category_id||'';openModal('productModal');
+}
+async function saveProduct(){
+ const name=document.getElementById('productName').value.trim();if(!name){alert('Enter a product name.');return;}
+ const rawPrice=document.getElementById('productPrice').value;const price=Number(rawPrice);
+ if(!Number.isFinite(price)||price<0){alert('Enter a valid price.');return;}
+ const rawDiscount=document.getElementById('productDiscount').value.trim();const discount=rawDiscount===''?null:Number(rawDiscount);
+ if(discount!==null&&(!Number.isFinite(discount)||discount<0)){alert('Enter a valid discount price.');return;}
+ const image=document.getElementById('productImage').value.trim();
+ const old=editingProductId?adminProducts.find(p=>p.id===editingProductId):null;
+ const oldImages=Array.isArray(old?.images)?old.images:[];
+ const payload={name,category_id:document.getElementById('productCategory').value||null,description:document.getElementById('productDescription').value.trim(),price,discount_price:discount,images:image?[image]:oldImages,is_visible:document.getElementById('productVisible').value==='true',display_order:Number(document.getElementById('productOrder').value)||0,price_is_published:document.getElementById('productPricePublished').value==='true'};
+ try{
+   const button=document.getElementById('saveProductButton');button.disabled=true;button.textContent='Saving…';
+   let result;
+   if(editingProductId) result=await window.db.from('products').update(payload).eq('id',editingProductId);
+   else result=await window.db.from('products').insert(payload);
+   if(result.error)throw result.error;
+   closeModal('productModal');await loadAdminCatalog();alert('Product saved to Supabase.');
+ }catch(e){
+   console.error('Save product failed',e);
+   alert('Could not save product: '+(e.message||e)+'\n\nIf Supabase reports a missing column, share the error so the field names can be matched to your schema.');
+ }finally{const button=document.getElementById('saveProductButton');button.disabled=false;button.textContent='Save Product';}
+}
+async function toggleProductVisibility(id){
+ const p=adminProducts.find(x=>x.id===id);if(!p)return;
+ try{const {error}=await window.db.from('products').update({is_visible:p.is_visible===false}).eq('id',id);if(error)throw error;await loadAdminCatalog();}
+ catch(e){console.error('Product visibility update failed',e);alert('Could not update product visibility: '+(e.message||e));}
 }
 
 function openOptions(categoryId){
@@ -506,7 +637,7 @@ function renderPricing(){
  `</tbody></table>`;
 }
 function openPriceModal(){
- document.getElementById("priceCategory").innerHTML=state.categories.map(c=>`<option>${esc(c.name)}</option>`).join("");
+ document.getElementById("priceCategory").innerHTML=(adminCategories.length?adminCategories:state.categories).map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join("");
  document.getElementById("priceRule").value="";document.getElementById("priceAmount").value="";document.getElementById("priceMethod").value="Fixed";openModal("priceModal");
 }
 function savePrice(){
@@ -904,6 +1035,7 @@ renderDashboard();
     }
     const adminUser = document.querySelector('.admin-user');
     if (adminUser) adminUser.textContent = user.email || 'Super Admin';
+    await loadAdminCatalog();
   } catch (e) {
     console.error('Admin session check failed', e);
     window.location.href = 'login.html';
