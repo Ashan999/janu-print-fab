@@ -66,7 +66,8 @@ const JPFCustomerAuth = (() => {
     }
 
     async function getSession() {
-        const { data: { session } } = await window.db.auth.getSession();
+        const { data: { session }, error } = await window.db.auth.getSession();
+        if (error) throw error;
         return session;
     }
 

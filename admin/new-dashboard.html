@@ -65,6 +65,14 @@ table{width:100%;border-collapse:collapse}th,td{padding:12px 8px;border-bottom:1
 .order-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .order-summary .mini-card{padding:12px}
 @media(max-width:900px){.delivery-grid,.order-summary{grid-template-columns:1fr}}
+.topbar-actions{display:flex;align-items:center;gap:14px}
+.order-alert-toggle{border:1px solid #dce3e8;border-radius:7px;background:#fff;color:#1e4563;padding:8px 11px;font-size:12px}
+.order-alert{position:fixed;top:78px;right:20px;z-index:11000;width:min(360px,calc(100vw - 30px));padding:15px 16px;border-radius:10px;background:#1e4563;color:#fff;box-shadow:0 10px 28px rgba(15,37,54,.24);display:none}
+.order-alert.show{display:block;animation:order-alert-in .2s ease-out}
+.order-alert strong{display:block;font-size:14px}
+.order-alert span{display:block;margin-top:3px;color:rgba(255,255,255,.85);font-size:12px}
+.order-alert button{margin-top:10px;border:0;border-radius:6px;background:#00c3dd;color:#fff;padding:7px 10px;font-size:11px;font-weight:600}
+@keyframes order-alert-in{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../config/supabase-config.js"></script>
@@ -92,7 +100,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:12px 8px;border-bottom:1
     <button class="mobile-menu" onclick="toggleSidebar()">☰</button>
     <h2 id="pageTitle">Dashboard</h2>
   </div>
-  <div class="admin-user">Super Admin</div>
+  <div class="topbar-actions"><button id="orderAlertToggle" class="order-alert-toggle" onclick="enableOrderAlerts(this)" type="button">Enable alerts</button><div class="admin-user">Super Admin</div></div>
 </header>
 
 <section class="content">
@@ -345,6 +353,8 @@ table{width:100%;border-collapse:collapse}th,td{padding:12px 8px;border-bottom:1
 </div>
 </div>
 
+<div id="orderAlert" class="order-alert" role="status" aria-live="polite"></div>
+
 <script>
 const KEY="janu_print_demo_v2";
 let state={
@@ -380,6 +390,7 @@ let state={
 };
 let editingCategoryId=null,currentCategoryId=null,currentOptionId=null,currentOrderId=null;
 let liveOrders=[],liveOrdersLoaded=false,liveOrdersError="",orderRealtimeChannel=null,orderRefreshTimer=null;
+let seenOrderIds=new Set(),alertSoundEnabled=false,alertAudioContext=null,orderAlertTimer=null;
 let adminCategories=[], adminProducts=[], editingProductId=null, categoryImageFile=null, productImageFile=null;
 
 function loadState(){
@@ -785,10 +796,64 @@ async function loadLiveOrders(){
  try{
   const {data,error}=await window.db.from('orders').select('*, customers(name,phone), order_items(id,order_id,product_name,quantity,unit_price,line_total,artwork_urls,artwork_notes,selected_options)').order('created_at',{ascending:false}).limit(200);
   if(error)throw error;
-  liveOrders=(data||[]).map(o=>({...o,customer:o.customers?.name||o.customers?.phone||o.customer_phone||'Customer',phone:o.customers?.phone||o.customer_phone||''}));
+  const orders=data||[];
+  if(liveOrdersLoaded){
+   for(const order of orders){
+    const id=String(order.id);
+    if(!seenOrderIds.has(id))showNewOrderAlert(order);
+   }
+  }
+  orders.forEach(order=>seenOrderIds.add(String(order.id)));
+  liveOrders=orders.map(o=>({...o,customer:o.customers?.name||o.customers?.phone||o.customer_phone||'Customer',phone:o.customers?.phone||o.customer_phone||''}));
   liveOrdersLoaded=true;liveOrdersError='';renderOrders();renderDashboard();
  }catch(e){
   liveOrdersError=e.message||String(e);console.error('Live orders failed:',e);renderOrders();renderDashboard();
+ }
+}
+function enableOrderAlerts(button){
+ try{
+  const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+  if(!AudioContextClass)throw new Error('This browser does not support audio alerts.');
+  alertAudioContext=alertAudioContext||new AudioContextClass();
+  const permissionRequest=window.Notification&&Notification.permission==='default'?Notification.requestPermission():Promise.resolve(window.Notification?.permission||'unsupported');
+  Promise.resolve(permissionRequest).catch(error=>console.warn('Could not enable browser notifications:',error));
+  alertAudioContext.resume().then(()=>{
+   alertSoundEnabled=true;
+   button.textContent='Sound on';
+   button.setAttribute('aria-pressed','true');
+  }).catch(error=>{
+   console.warn('Could not enable order alert sound:',error);
+   alert('Could not enable sound. Check your browser audio settings and try again.');
+  });
+ }catch(error){
+  console.warn('Could not enable order alert sound:',error);
+  alert(error.message||'Could not enable sound in this browser.');
+ }
+}
+function playOrderAlertSound(){
+ if(!alertSoundEnabled||!alertAudioContext)return;
+ try{
+  const now=alertAudioContext.currentTime;
+  const oscillator=alertAudioContext.createOscillator();
+  const gain=alertAudioContext.createGain();
+  oscillator.type='sine';oscillator.frequency.setValueAtTime(880,now);
+  gain.gain.setValueAtTime(0.0001,now);gain.gain.exponentialRampToValueAtTime(0.22,now+0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001,now+0.35);
+  oscillator.connect(gain);gain.connect(alertAudioContext.destination);
+  oscillator.start(now);oscillator.stop(now+0.36);
+ }catch(error){console.warn('Could not play order alert sound:',error)}
+}
+function showNewOrderAlert(order){
+ const alertBox=document.getElementById('orderAlert');
+ if(!alertBox)return;
+ alertBox.innerHTML=`<strong>New order received</strong><span>${esc(orderRef(order))} · ${esc(order.customer||order.customers?.name||order.customer_phone||'Customer')}</span><button type="button" onclick="showPageByName('orders');document.getElementById('orderAlert').classList.remove('show')">View orders</button>`;
+ alertBox.classList.add('show');
+ clearTimeout(orderAlertTimer);
+ orderAlertTimer=setTimeout(()=>alertBox.classList.remove('show'),9000);
+ playOrderAlertSound();
+ if(window.Notification&&Notification.permission==='granted'){
+  try{new Notification('New order received',{body:`${orderRef(order)} · ${order.customer||order.customers?.name||order.customer_phone||'Customer'}`,tag:String(order.id)})}
+  catch(error){console.warn('Could not show browser order notification:',error)}
  }
 }
 async function updateOrderStatus(id,status,keepModal=false){
@@ -1047,6 +1112,14 @@ async function downloadPaymentReceipt(orderId){
   }
 }
 
+async function loadContactSettings(){
+ const {data,error}=await window.db.from('contact_details').select('business_name,whatsapp,phone').eq('id','main').maybeSingle();
+ if(error)throw error;
+ if(data){
+  state.settings={...state.settings,business:data.business_name||state.settings.business,whatsapp:data.whatsapp||'',phone:data.phone||state.settings.phone};
+  saveState();
+ }
+}
 function renderSettings(){
  const s=state.settings;
  document.getElementById("setBusiness").value=s.business||"";
@@ -1056,9 +1129,18 @@ function renderSettings(){
  document.getElementById("setWhatsAppEnabled").value=String(s.whatsappEnabled!==false);
  document.getElementById("setUploadEnabled").value=String(s.uploadEnabled!==false);
 }
-function saveSettings(){
- state.settings={business:document.getElementById("setBusiness").value.trim(),whatsapp:document.getElementById("setWhatsapp").value.trim(),phone:document.getElementById("setPhone").value.trim(),currency:document.getElementById("setCurrency").value.trim()||"LKR",whatsappEnabled:document.getElementById("setWhatsAppEnabled").value==="true",uploadEnabled:document.getElementById("setUploadEnabled").value==="true"};
- saveState();alert("Settings saved locally.");renderDashboard();
+async function saveSettings(){
+ const nextSettings={business:document.getElementById("setBusiness").value.trim(),whatsapp:document.getElementById("setWhatsapp").value.trim(),phone:document.getElementById("setPhone").value.trim(),currency:document.getElementById("setCurrency").value.trim()||"LKR",whatsappEnabled:document.getElementById("setWhatsAppEnabled").value==="true",uploadEnabled:document.getElementById("setUploadEnabled").value==="true"};
+ try{
+  const {data,error}=await window.db.from('contact_details').update({whatsapp:nextSettings.whatsapp||null}).eq('id','main').select('id').maybeSingle();
+  if(error)throw error;
+  if(!data)throw new Error('Main contact settings row was not found. WhatsApp was not saved.');
+  state.settings=nextSettings;
+  saveState();alert("WhatsApp number published to the customer page. Other settings saved locally.");renderDashboard();
+ }catch(error){
+  console.error('Settings could not be saved:',error);
+  alert('Could not publish the WhatsApp number: '+(error.message||error));
+ }
 }
 
 document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)m.classList.remove("open")}));
@@ -1070,16 +1152,19 @@ renderDashboard();
 (async function() {
   try {
     if (!window.db || !window.db.auth) return;
-    const { data: { user }, error } = await window.db.auth.getUser();
-    if (error || !user) {
+    const { data: { session }, error } = await window.db.auth.getSession();
+    if (error) throw error;
+    const user = session?.user;
+    if (!user) {
       window.location.href = 'login.html';
       return;
     }
-    const { data: adminRow } = await window.db
+    const { data: adminRow, error: adminError } = await window.db
       .from('admin_profiles')
       .select('id')
       .eq('id', user.id)
       .maybeSingle();
+    if (adminError) throw adminError;
     if (!adminRow) {
       await window.db.auth.signOut();
       window.location.href = 'login.html';
@@ -1087,11 +1172,12 @@ renderDashboard();
     }
     const adminUser = document.querySelector('.admin-user');
     if (adminUser) adminUser.textContent = user.email || 'Super Admin';
+    await loadContactSettings();
     await loadAdminCatalog();
     startOrderRefresh();
   } catch (e) {
     console.error('Admin session check failed', e);
-    window.location.href = 'login.html';
+    document.querySelector('.content').innerHTML=`<div class="panel"><h3>Admin page could not be loaded</h3><p class="help" style="margin-top:8px">${esc(e.message||e)}</p><button class="btn btn-blue" style="margin-top:12px" onclick="location.reload()">Retry</button></div>`;
   }
 })();
 </script>

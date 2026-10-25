@@ -20,7 +20,7 @@ const base = p => hasPublishedPrice(p) ? Number(p.price ?? p.price_per_unit) : 0
 
 async function load() {
   const db = window.db;
-  const activeSession = await window.JPFCustomerAuth?.getSession?.().catch(() => null);
+  const activeSession = await window.JPFCustomerAuth?.getSession?.();
   const [c, p, f, o, d, s, ct, pr] = await Promise.all([
     db.from('categories').select('*').eq('is_visible', true).order('display_order'),
     db.from('products').select('*, categories(id, name, image_url)').eq('is_visible', true).order('display_order'),
@@ -29,7 +29,7 @@ async function load() {
     db.from('delivery_settings').select('*'),
     db.from('delivery_slots').select('*').eq('is_active', true).order('display_order'),
     db.from('contact_details').select('*').eq('id', 'main').maybeSingle(),
-    activeSession ? window.JPFCustomerAuth.getProfile().catch(() => null) : null
+    activeSession ? window.JPFCustomerAuth.getProfile() : null
   ]);
   const bad = c.error || p.error || f.error || o.error;
   if (bad) throw bad;
@@ -57,12 +57,16 @@ function shell(body, { flow = false, title = '', back = '' } = {}) {
     `<img src="${LOGO}" alt=""><b>Janu Print <span>| FAB</span></b>`}<span class="sp"></span>${flow ? '' : `<a class="ib" href="#/account" aria-label="Account">👤</a>`}</header>
   <main class="${flow ? 'flow' : ''}">${body}</main>
   ${flow ? '' : `<nav class="nav"><a href="#/home" class="${on('home')}"><i>🏠</i>Home</a><a href="#/shop" class="${on('shop')}"><i>🛍️</i>Shop</a><a href="#/orders" class="${on('orders')}"><i>📦</i>Orders</a><a href="#/account" class="${on('account')}"><i>👤</i>Account</a></nav>`}
+  ${!flow && wa() ? `<a class="whatsapp-fab" href="${wa('Hello Janu Print | FAB')}" target="_blank" rel="noopener noreferrer" aria-label="Chat with us on WhatsApp"><span aria-hidden="true">💬</span><span>WhatsApp</span></a>` : ''}
   ${flow ? '' : footerHtml()}`;
   window.scrollTo(0, 0);
 }
 const prodCard = p => `<a class="pc" href="#/order/${encodeURIComponent(p.id)}"><div class="im" style="${img(p) ? `background-image:url('${esc(img(p))}')` : ''}">${img(p) ? '' : '🖨️'}</div><div class="pc-body"><small>${esc(categoryName(p) || 'Print product')}</small><b>${esc(p.name)}</b><span>${hasPublishedPrice(p) ? 'From ' + money(base(p)) : 'Contact us on WhatsApp'}</span><em>${hasPublishedPrice(p) ? 'Order →' : 'WhatsApp →'}</em></div></a>`;
 const catCard = c => `<a class="cat" href="#/shop/${encodeURIComponent(c.id)}" style="text-decoration:none;color:inherit"><div class="im" style="${c.image_url ? `background-image:url('${esc(c.image_url)}')` : ''}">${c.image_url ? '' : '🖨️'}</div><b>${esc(c.name)}</b><small>Browse products →</small></a>`;
-const wa = txt => S.contact?.whatsapp ? `https://wa.me/${String(S.contact.whatsapp).replace(/\D/g, '')}${txt ? '?text=' + encodeURIComponent(txt) : ''}` : '';
+const wa = txt => {
+  const number = String(S.contact?.whatsapp || '').replace(/\D/g, '');
+  return number ? `https://wa.me/${number}${txt ? '?text=' + encodeURIComponent(txt) : ''}` : '';
+};
 
 /* ---------- screens ---------- */
 function home() {
