@@ -8,15 +8,15 @@ const money = v => `${CUR} ${Number(v || 0).toLocaleString('en-US', { maximumFra
 const fdate = d => d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
 const addDays = n => { const d = new Date(); d.setDate(d.getDate() + Number(n || 0)); return d.toISOString().slice(0, 10); };
 const ref = o => o.order_number || ('JP-' + String(o.id).slice(0, 8).toUpperCase());
-const S = { cats: [], prods: [], fields: {}, opts: {}, dset: {}, slots: [], contact: null, profile: null, orders: null, q: '', cat: 'all', tab: 'active', done: null, ready: false };
+const S = { cats: [], prods: [], fields: {}, opts: {}, dset: {}, slots: [], contact: null, profile: null, orders: null, q: '', cat: 'all', tab: 'active', done: null, editingProfile: false, profileBusy: false, profileDraft: null, profileMessage: '', ready: false };
 let F = null;
 
 const grp = (a, k) => a.reduce((g, x) => ((g[x[k]] = g[x[k]] || []).push(x), g), {});
 const img = p => p.featured_image || (Array.isArray(p.images) && p.images[0]) || p.categories?.image_url || '';
 const categoryName = p => p.categories?.name || '';
 const homeProducts = () => S.prods.filter(p => { const n = String(p.name || '').trim().toLowerCase(); const c = String(categoryName(p) || '').trim().toLowerCase(); return n && (!c || n !== c); });
-const hasPublishedPrice = p => p?.price_is_published === true && Number(p.price_per_unit ?? p.price ?? 0) > 0;
-const base = p => hasPublishedPrice(p) ? Number(p.price_per_unit ?? p.price) : 0;
+const hasPublishedPrice = p => p?.price_is_published === true && Number(p.price ?? p.price_per_unit ?? 0) > 0;
+const base = p => hasPublishedPrice(p) ? Number(p.price ?? p.price_per_unit) : 0;
 
 async function load() {
   const db = window.db;
@@ -416,21 +416,23 @@ function account() {
   const p = S.profile;
   if (!p) return loginPrompt('Log in to see your profile and orders.');
   const orderCount = Array.isArray(S.orders) ? S.orders.length : 0;
-  shell(`<h1>My Account</h1>
-  <div class="card">
+  const profileFields = S.editingProfile ? `<form id="profileForm" class="card">
+    <label>Name<input id="profileName" name="name" autocomplete="name" required maxlength="120" value="${esc(S.profileDraft?.name ?? p.name ?? '')}"></label>
+    <label>Phone<input id="profilePhone" name="phone" autocomplete="tel" inputmode="tel" maxlength="30" value="${esc(S.profileDraft?.phone ?? p.phone ?? '')}"></label>
+    ${S.profileMessage ? `<p class="${S.profileMessage.startsWith('Saved') ? 'success' : 'err'}" role="status">${esc(S.profileMessage)}</p>` : ''}
+    <div class="actions"><button class="btn" type="submit" ${S.profileBusy ? 'disabled' : ''}>${S.profileBusy ? 'Saving…' : 'Save changes'}</button><button class="btn alt" type="button" data-a="profile-cancel" ${S.profileBusy ? 'disabled' : ''}>Cancel</button></div>
+  </form>` : `<div class="card">
     <div class="ln"><span>Name</span><b>${esc(p.name || 'Customer')}</b></div>
     <div class="ln"><span>Phone</span><b>${esc(p.phone || '—')}</b></div>
     <div class="ln"><span>Email</span><b>${esc(p.email || '—')}</b></div>
     <div class="ln"><span>NIC</span><b>${esc(p.nic || '—')}</b></div>
-  </div>
-  <div class="card">
-    <div class="ln"><span>Orders</span><b>${orderCount}</b></div>
-    <div class="ln"><span>Account status</span><b>${orderCount ? 'Active customer' : 'New customer'}</b></div>
-  </div>
-  <a class="btn full" href="#/orders">View Orders</a>
-  <a class="btn alt full" href="#/shop">Continue Shopping</a>
-  <button class="btn alt full" data-a="logout">Log out</button>`);
+    <button class="btn alt full" data-a="profile-edit">Edit profile</button>
+  </div>`;
+  shell(`<h1>My Account</h1>${profileFields}${S.profileMessage && !S.editingProfile ? `<p class="m" role="status">${esc(S.profileMessage)}</p>` : ''}
+  <div class="card"><div class="ln"><span>Orders</span><b>${orderCount}</b></div><div class="ln"><span>Account status</span><b>${orderCount ? 'Active customer' : 'New customer'}</b></div></div>
+  <a class="btn full" href="#/orders">View Orders</a><a class="btn alt full" href="#/shop">Continue Shopping</a><button class="btn alt full" data-a="logout">Log out</button>`);
 }
+
 function done() {
   const o = S.done; if (!o) return (location.hash = '#/home');
   const d = o.order_items[0].selected_options.delivery;
@@ -456,11 +458,32 @@ function invoice(o) {
 }
 
 /* ---------- events & router ---------- */
+document.addEventListener('submit', async e => {
+  if (e.target.id !== 'profileForm') return;
+  e.preventDefault();
+  const formData = { name: document.getElementById('profileName').value, phone: document.getElementById('profilePhone').value };
+  S.profileDraft = formData;
+  S.profileBusy = true; S.profileMessage = ''; account();
+  try {
+    S.profile = await window.JPFCustomerAuth.saveProfile(formData);
+    S.profileDraft = null; S.editingProfile = false; S.profileMessage = 'Profile saved.';
+  } catch (err) { S.profileMessage = err.message || 'Could not save your profile.'; }
+  finally { S.profileBusy = false; account(); }
+});
+
+
+
+
+
+
+
 document.addEventListener('click', async e => {
   const b = e.target.closest('[data-a]'); if (!b) return; const a = b.dataset.a, id = b.dataset.id;
   if (a === 'back') return history.length > 1 ? history.back() : (location.hash = '#/home');
   if (a === 'cat') { S.cat = id; return shop(); }
   if (a === 'tab') { S.tab = id; return orders(); }
+  if (a === 'profile-edit') { S.editingProfile = true; S.profileMessage = ''; return account(); }
+  if (a === 'profile-cancel') { S.editingProfile = false; S.profileDraft = null; S.profileMessage = ''; return account(); }
   if (a === 'logout') { await window.JPFCustomerAuth.logout(); S.profile = null; S.orders = null; return route(); }
   if (a === 'payment-submit') {
     b.disabled = true;

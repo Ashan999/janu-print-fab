@@ -23,24 +23,45 @@ const JPFCustomerAuth = (() => {
 
     async function syncCustomerRecord(user) {
         const meta = user.user_metadata || {};
-        const profile = {
+        const seed = {
             id: user.id,
             name: meta.full_name || meta.name || user.email?.split('@')[0] || 'Customer',
             phone: meta.phone || '',
             email: user.email?.includes('@januprintfab.customer') ? (meta.contact_email || null) : user.email,
             country: meta.country || null
         };
+        if (meta.nic) seed.nic = meta.nic;
 
-        const payload = { ...profile };
-        if (meta.nic) payload.nic = meta.nic;
-
-        const { error } = await window.db.from('customers').upsert(payload, { onConflict: 'id' });
-        if (error && error.message.includes('nic')) {
-            delete payload.nic;
-            await window.db.from('customers').upsert(payload, { onConflict: 'id' });
+        const { data: existing, error: readError } = await window.db
+            .from('customers').select('*').eq('id', user.id).maybeSingle();
+        if (readError) throw readError;
+        let row = existing;
+        if (!row) {
+            let result = await window.db.from('customers').upsert(seed, { onConflict: 'id' }).select('*').single();
+            if (result.error && /nic/i.test(result.error.message || '')) {
+                delete seed.nic;
+                result = await window.db.from('customers').upsert(seed, { onConflict: 'id' }).select('*').single();
+            }
+            if (result.error) throw result.error;
+            row = result.data;
         }
+        const profile = { ...row, userId: user.id };
+        localStorage.setItem(SESSION_KEY, JSON.stringify(profile));
+        return profile;
+    }
 
-        localStorage.setItem(SESSION_KEY, JSON.stringify({ ...profile, nic: meta.nic || '', userId: user.id }));
+    async function saveProfile({ name, phone }) {
+        const session = await getSession();
+        if (!session?.user?.id) throw new Error('Please sign in again to update your profile.');
+        const payload = { name: String(name || '').trim(), phone: String(phone || '').trim() };
+        if (!payload.name) throw new Error('Enter your name.');
+        if (payload.phone && !/^\+?[0-9 ()-]{7,20}$/.test(payload.phone)) throw new Error('Enter a valid phone number.');
+        const { data, error } = await window.db.from('customers').update(payload)
+            .eq('id', session.user.id).select('*').maybeSingle();
+        if (error) throw error;
+        if (!data) throw new Error('Your profile could not be updated. Check the customers table update policy for authenticated users.');
+        const profile = { ...data, userId: session.user.id };
+        localStorage.setItem(SESSION_KEY, JSON.stringify(profile));
         return profile;
     }
 
@@ -126,25 +147,7 @@ const JPFCustomerAuth = (() => {
             .eq('customer_id', profile.userId || profile.id)
             .order('created_at', { ascending: false });
 
-        if (byId && byId.length) return byId;
-
-        if (!profile.phone) return [];
-
-        const { data: customers } = await window.db
-            .from('customers')
-            .select('id')
-            .eq('phone', profile.phone);
-
-        if (!customers?.length) return [];
-
-        const ids = customers.map(c => c.id);
-        const { data: byPhone } = await window.db
-            .from('orders')
-            .select('*, order_items(*)')
-            .in('customer_id', ids)
-            .order('created_at', { ascending: false });
-
-        return byPhone || [];
+        return byId || [];
     }
 
     async function logout() {
@@ -162,6 +165,7 @@ const JPFCustomerAuth = (() => {
         loginWithPhone,
         handleOAuthCallback,
         syncCustomerRecord,
+        saveProfile,
         loadOrderHistory,
         logout
     };

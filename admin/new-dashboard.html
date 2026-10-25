@@ -225,6 +225,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:12px 8px;border-bottom:1
   <div class="form-grid">
     <div class="field"><label>Category Name</label><input id="catName" placeholder="Example: DTF Custom Print"></div>
     <div class="field"><label>Status</label><select id="catStatus"><option value="true">Active</option><option value="false">Hidden</option></select></div>
+    <div class="field full"><label>Category image</label><input id="catImageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif" onchange="previewCategoryImage(event)"><small class="help">Choose an image up to 5 MB. Saved in the gallery bucket.</small><div id="catImagePreview" class="help"></div></div>
   </div>
   <div class="actions" style="justify-content:flex-end;margin-top:15px">
     <button class="btn btn-gray" onclick="closeModal('categoryModal')">Cancel</button>
@@ -276,7 +277,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:12px 8px;border-bottom:1
     <div class="field full"><label>Description</label><textarea id="productDescription" placeholder="Product details"></textarea></div>
     <div class="field"><label>Price (LKR)</label><input id="productPrice" type="number" min="0" step="0.01" value="0"></div>
     <div class="field"><label>Discount price (optional)</label><input id="productDiscount" type="number" min="0" step="0.01" placeholder="Leave blank for none"></div>
-    <div class="field full"><label>Product image URL</label><input id="productImage" type="url" placeholder="https://..."><small class="help">Use a public image URL. Existing image URLs are preserved when editing unless changed.</small></div>
+    <div class="field full"><label>Product image URL</label><input id="productImage" type="url" placeholder="https://..."><small class="help">Or upload a new image below.</small><input id="productImageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif" onchange="previewProductImage(event)"><small class="help">Choose an image up to 5 MB. Saved in the products bucket.</small><div id="productImagePreview" class="help"></div></div>
     <div class="field"><label>Price display</label><select id="productPricePublished"><option value="true">Show price / order normally</option><option value="false">Get a quote / contact WhatsApp</option></select></div>
     <div class="field"><label>Shop visibility</label><select id="productVisible"><option value="true">Visible</option><option value="false">Hidden</option></select></div>
     <div class="field"><label>Display order</label><input id="productOrder" type="number" step="1" value="0"></div>
@@ -377,7 +378,7 @@ let state={
  settings:{business:"Janu Print | FAB",whatsapp:"",phone:"",currency:"LKR",whatsappEnabled:true,uploadEnabled:true}
 };
 let editingCategoryId=null,currentCategoryId=null,currentOptionId=null,currentOrderId=null;
-let adminCategories=[], adminProducts=[], editingProductId=null;
+let adminCategories=[], adminProducts=[], editingProductId=null, categoryImageFile=null, productImageFile=null;
 
 function loadState(){
  const raw=localStorage.getItem(KEY);
@@ -450,6 +451,7 @@ function openCategoryModal(){
  document.getElementById("categoryModalTitle").textContent="Add Category";
  document.getElementById("catName").value="";
  document.getElementById("catStatus").value="true";
+ categoryImageFile=null;document.getElementById('catImageFile').value='';document.getElementById('catImagePreview').innerHTML='';
  openModal("categoryModal");
 }
 function editCategory(id){
@@ -458,29 +460,37 @@ function editCategory(id){
  document.getElementById("categoryModalTitle").textContent="Edit Category";
  document.getElementById("catName").value=c.name;
  document.getElementById("catStatus").value=String(c.is_visible ?? c.active ?? true);
+ categoryImageFile=null;document.getElementById('catImageFile').value='';document.getElementById('catImagePreview').innerHTML=c.image_url?`<img src="${esc(c.image_url)}" alt="Category image preview" style="max-width:140px;max-height:90px;object-fit:cover;border-radius:8px">`:'';
  openModal("categoryModal");
 }
 function categorySlug(name){return String(name||'').normalize('NFKD').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'') || ('category-'+Date.now());}
+function previewCategoryImage(event){
+ const file=event.target.files?.[0];categoryImageFile=null;
+ if(!file){document.getElementById('catImagePreview').innerHTML='';return;}
+ if(!/^image\/(jpeg|png|webp|gif)$/.test(file.type)||file.size>5*1024*1024){event.target.value='';alert('Choose a JPEG, PNG, WebP, or GIF image up to 5 MB.');return;}
+ categoryImageFile=file;const url=URL.createObjectURL(file);document.getElementById('catImagePreview').innerHTML=`<img src="${url}" alt="Selected category image preview" style="max-width:140px;max-height:90px;object-fit:cover;border-radius:8px">`;
+}
 async function saveCategory(){
  const name=document.getElementById("catName").value.trim();
  if(!name){alert("Enter category name.");return}
  if(!window.db){alert('Supabase connection is not available.');return;}
  const is_visible=document.getElementById("catStatus").value==="true";
+ let uploadedPath=null;
  try {
-   if(editingCategoryId){
-     const existing=adminCategories.find(x=>x.id===editingCategoryId);
-     const payload={name,slug:categorySlug(name),is_visible};
-     const {error}=await window.db.from('categories').update(payload).eq('id',editingCategoryId);
-     if(error)throw error;
-   } else {
-     const nextOrder=adminCategories.reduce((m,c)=>Math.max(m,Number(c.display_order)||0),0)+1;
-     const {error}=await window.db.from('categories').insert({name,slug:categorySlug(name),display_order:nextOrder,is_visible});
-     if(error)throw error;
+   const existing=editingCategoryId?adminCategories.find(x=>x.id===editingCategoryId):null;
+   let image_url=existing?.image_url||null;
+   if(categoryImageFile){
+     const ext=categoryImageFile.name.split('.').pop().toLowerCase();
+     uploadedPath=`categories/${crypto.randomUUID()}.${ext}`;
+     const {error:uploadError}=await window.db.storage.from('gallery').upload(uploadedPath,categoryImageFile,{contentType:categoryImageFile.type,upsert:false});
+     if(uploadError)throw uploadError;
+     image_url=window.db.storage.from('gallery').getPublicUrl(uploadedPath).data.publicUrl;
    }
-   closeModal('categoryModal');
-   await loadAdminCatalog();
-   alert('Category saved to Supabase.');
- } catch(e){console.error('Save category failed',e);alert('Could not save category: '+(e.message||e));}
+   const payload={name,slug:categorySlug(name),is_visible,image_url};
+   if(editingCategoryId){const {error}=await window.db.from('categories').update(payload).eq('id',editingCategoryId);if(error)throw error;}
+   else {const nextOrder=adminCategories.reduce((m,c)=>Math.max(m,Number(c.display_order)||0),0)+1;const {error}=await window.db.from('categories').insert({...payload,display_order:nextOrder});if(error)throw error;}
+   closeModal('categoryModal');categoryImageFile=null;await loadAdminCatalog();alert('Category saved to Supabase.');
+ } catch(e){if(uploadedPath)await window.db.storage.from('gallery').remove([uploadedPath]).catch(()=>{});console.error('Save category failed',e);alert('Could not save category: '+(e.message||e)+'\nCheck that the gallery bucket allows this admin upload and that categories.image_url exists.');}
 }
 async function deleteCategory(id){
  const c=adminCategories.find(x=>x.id===id);
@@ -524,8 +534,8 @@ function renderProducts(){
  const tbody=document.getElementById('productsTable');if(!tbody)return;
  tbody.innerHTML=adminProducts.map(p=>{
    const cat=p.categories?.name || adminCategories.find(c=>c.id===p.category_id)?.name || 'Uncategorized';
-   const price=Number(p.discount_price||p.price||0);
-   const published=p.price_is_published!==false;
+   const price=Number(p.discount_price||p.price||p.price_per_unit||0);
+   const published=p.price_is_published===true && Number(p.price ?? p.price_per_unit ?? 0)>0;
    return `<tr><td><strong>${esc(p.name)}</strong><div style="font-size:10px;color:#888;max-width:280px;white-space:normal">${esc(p.description||'')}</div></td><td>${esc(cat)}</td><td>${money(price)}</td><td><span class="badge ${published?'':'off'}">${published?'Published':'Get a quote'}</span></td><td><span class="badge ${p.is_visible===false?'off':''}">${p.is_visible===false?'Hidden':'Visible'}</span></td><td><div class="actions"><button class="btn btn-gray btn-small" onclick="editProduct('${p.id}')">Edit</button><button class="btn ${p.is_visible===false?'btn-blue':'btn-danger'} btn-small" onclick="toggleProductVisibility('${p.id}')">${p.is_visible===false?'Show':'Hide'}</button></div></td></tr>`;
  }).join('') || '<tr><td colspan="6" class="empty">No products found in Supabase.</td></tr>';
 }
@@ -534,7 +544,7 @@ function openProductModal(){
  document.getElementById('productModalTitle').textContent='Add Product';
  document.getElementById('productName').value='';document.getElementById('productDescription').value='';
  document.getElementById('productPrice').value='0';document.getElementById('productDiscount').value='';
- document.getElementById('productImage').value='';document.getElementById('productPricePublished').value='false';
+ document.getElementById('productImage').value='';productImageFile=null;document.getElementById('productImageFile').value='';document.getElementById('productImagePreview').innerHTML='';document.getElementById('productPricePublished').value='false';
  document.getElementById('productVisible').value='true';document.getElementById('productOrder').value=String(adminProducts.reduce((m,p)=>Math.max(m,Number(p.display_order)||0),0)+1);
  document.getElementById('productCategory').value='';openModal('productModal');
 }
@@ -542,11 +552,17 @@ function editProduct(id){
  const p=adminProducts.find(x=>x.id===id);if(!p)return;editingProductId=id;
  document.getElementById('productModalTitle').textContent='Edit Product';
  document.getElementById('productName').value=p.name||'';document.getElementById('productDescription').value=p.description||'';
- document.getElementById('productPrice').value=String(p.price??0);document.getElementById('productDiscount').value=p.discount_price==null?'':String(p.discount_price);
- document.getElementById('productImage').value=p.featured_image||((Array.isArray(p.images)&&p.images[0])||'');
- document.getElementById('productPricePublished').value=String(p.price_is_published!==false);
+ document.getElementById('productPrice').value=String(p.price??p.price_per_unit??0);document.getElementById('productDiscount').value=p.discount_price==null?'':String(p.discount_price);
+ document.getElementById('productImage').value=p.featured_image||((Array.isArray(p.images)&&p.images[0])||'');productImageFile=null;document.getElementById('productImageFile').value='';document.getElementById('productImagePreview').innerHTML=(p.featured_image||p.images?.[0])?`<img src="${esc(p.featured_image||p.images[0])}" alt="Product image preview" style="max-width:140px;max-height:90px;object-fit:cover;border-radius:8px">`:'';
+ document.getElementById('productPricePublished').value=String(p.price_is_published===true);
  document.getElementById('productVisible').value=String(p.is_visible!==false);document.getElementById('productOrder').value=String(p.display_order??0);
  document.getElementById('productCategory').value=p.category_id||'';openModal('productModal');
+}
+function previewProductImage(event){
+ const file=event.target.files?.[0];productImageFile=null;
+ if(!file){document.getElementById('productImagePreview').innerHTML='';return;}
+ if(!/^image\/(jpeg|png|webp|gif)$/.test(file.type)||file.size>5*1024*1024){event.target.value='';alert('Choose a JPEG, PNG, WebP, or GIF image up to 5 MB.');return;}
+ productImageFile=file;const url=URL.createObjectURL(file);document.getElementById('productImagePreview').innerHTML=`<img src="${url}" alt="Selected product image preview" style="max-width:140px;max-height:90px;object-fit:cover;border-radius:8px">`;
 }
 async function saveProduct(){
  const name=document.getElementById('productName').value.trim();if(!name){alert('Enter a product name.');return;}
@@ -554,18 +570,21 @@ async function saveProduct(){
  if(!Number.isFinite(price)||price<0){alert('Enter a valid price.');return;}
  const rawDiscount=document.getElementById('productDiscount').value.trim();const discount=rawDiscount===''?null:Number(rawDiscount);
  if(discount!==null&&(!Number.isFinite(discount)||discount<0)){alert('Enter a valid discount price.');return;}
- const image=document.getElementById('productImage').value.trim();
+ let image=document.getElementById('productImage').value.trim();
  const old=editingProductId?adminProducts.find(p=>p.id===editingProductId):null;
  const oldImages=Array.isArray(old?.images)?old.images:[];
- const payload={name,category_id:document.getElementById('productCategory').value||null,description:document.getElementById('productDescription').value.trim(),price,discount_price:discount,images:image?[image]:oldImages,is_visible:document.getElementById('productVisible').value==='true',display_order:Number(document.getElementById('productOrder').value)||0,price_is_published:document.getElementById('productPricePublished').value==='true'};
+ let uploadedPath=null;
  try{
    const button=document.getElementById('saveProductButton');button.disabled=true;button.textContent='Saving…';
+   if(productImageFile){const ext=productImageFile.name.split('.').pop().toLowerCase();uploadedPath=`products/${crypto.randomUUID()}.${ext}`;const {error:uploadError}=await window.db.storage.from('products').upload(uploadedPath,productImageFile,{contentType:productImageFile.type,upsert:false});if(uploadError)throw uploadError;image=window.db.storage.from('products').getPublicUrl(uploadedPath).data.publicUrl;}
+ const payload={name,category_id:document.getElementById('productCategory').value||null,description:document.getElementById('productDescription').value.trim(),price,discount_price:discount,featured_image:image||null,images:image?[image]:oldImages,is_visible:document.getElementById('productVisible').value==='true',display_order:Number(document.getElementById('productOrder').value)||0,price_is_published:document.getElementById('productPricePublished').value==='true'};
    let result;
    if(editingProductId) result=await window.db.from('products').update(payload).eq('id',editingProductId);
    else result=await window.db.from('products').insert(payload);
    if(result.error)throw result.error;
    closeModal('productModal');await loadAdminCatalog();alert('Product saved to Supabase.');
  }catch(e){
+   if(uploadedPath)await window.db.storage.from('products').remove([uploadedPath]).catch(()=>{});
    console.error('Save product failed',e);
    alert('Could not save product: '+(e.message||e)+'\n\nIf Supabase reports a missing column, share the error so the field names can be matched to your schema.');
  }finally{const button=document.getElementById('saveProductButton');button.disabled=false;button.textContent='Save Product';}
