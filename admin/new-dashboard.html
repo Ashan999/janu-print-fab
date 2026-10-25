@@ -399,6 +399,10 @@ function loadState(){
 }
 function saveState(){localStorage.setItem(KEY,JSON.stringify(state));}
 function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function supabaseErrorDetails(error){
+ const fields=[['code',error?.code],['message',error?.message||String(error)],['details',error?.details],['hint',error?.hint],['HTTP status',error?.status]];
+ return fields.filter(([,value])=>value!==undefined&&value!==null&&value!=='').map(([name,value])=>`${name}: ${value}`).join('\n');
+}
 function money(v){return `${state.settings.currency||"LKR"} ${Number(v||0).toFixed(2)}`}
 function openModal(id){document.getElementById(id).classList.add("open")}
 function closeModal(id){document.getElementById(id).classList.remove("open")}
@@ -488,22 +492,34 @@ async function saveCategory(){
  if(!name){alert("Enter category name.");return}
  if(!window.db){alert('Supabase connection is not available.');return;}
  const is_visible=document.getElementById("catStatus").value==="true";
- let uploadedPath=null;
+ let uploadedPath=null,uploadSucceeded=false;
+ let operation=editingCategoryId?'update category row':'insert category row';
  try {
    const existing=editingCategoryId?adminCategories.find(x=>x.id===editingCategoryId):null;
    let image_url=existing?.image_url||null;
    if(categoryImageFile){
      const ext=categoryImageFile.name.split('.').pop().toLowerCase();
      uploadedPath=`categories/${crypto.randomUUID()}.${ext}`;
+     operation="upload category image to Storage bucket 'gallery'";
      const {error:uploadError}=await window.db.storage.from('gallery').upload(uploadedPath,categoryImageFile,{contentType:categoryImageFile.type,upsert:false});
      if(uploadError)throw uploadError;
+     uploadSucceeded=true;
      image_url=window.db.storage.from('gallery').getPublicUrl(uploadedPath).data.publicUrl;
    }
    const payload={name,slug:categorySlug(name),is_visible,image_url};
+   operation=editingCategoryId?'update category row in public.categories':'insert category row in public.categories';
    if(editingCategoryId){const {error}=await window.db.from('categories').update(payload).eq('id',editingCategoryId);if(error)throw error;}
    else {const nextOrder=adminCategories.reduce((m,c)=>Math.max(m,Number(c.display_order)||0),0)+1;const {error}=await window.db.from('categories').insert({...payload,display_order:nextOrder});if(error)throw error;}
    closeModal('categoryModal');categoryImageFile=null;await loadAdminCatalog();alert('Category saved to Supabase.');
- } catch(e){if(uploadedPath)await window.db.storage.from('gallery').remove([uploadedPath]).catch(()=>{});console.error('Save category failed',e);alert('Could not save category: '+(e.message||e)+'\nCheck that the gallery bucket allows this admin upload and that categories.image_url exists.');}
+ } catch(e){
+   let cleanupError=null;
+   if(uploadedPath&&uploadSucceeded){
+     try{const {error}=await window.db.storage.from('gallery').remove([uploadedPath]);if(error)cleanupError=error;}
+     catch(error){cleanupError=error}
+   }
+   console.error('Save category failed during '+operation,e);
+   alert(`Could not ${operation}:\n${supabaseErrorDetails(e)}${cleanupError?`\n\nThe uploaded image could not be removed: ${supabaseErrorDetails(cleanupError)}`:''}`);
+ }
 }
 async function deleteCategory(id){
  const c=adminCategories.find(x=>x.id===id);
@@ -586,20 +602,26 @@ async function saveProduct(){
  let image=document.getElementById('productImage').value.trim();
  const old=editingProductId?adminProducts.find(p=>p.id===editingProductId):null;
  const oldImages=Array.isArray(old?.images)?old.images:[];
- let uploadedPath=null;
+ let uploadedPath=null,uploadSucceeded=false;
+ let operation=editingProductId?'update product row':'insert product row';
  try{
    const button=document.getElementById('saveProductButton');button.disabled=true;button.textContent='Saving…';
-   if(productImageFile){const ext=productImageFile.name.split('.').pop().toLowerCase();uploadedPath=`products/${crypto.randomUUID()}.${ext}`;const {error:uploadError}=await window.db.storage.from('products').upload(uploadedPath,productImageFile,{contentType:productImageFile.type,upsert:false});if(uploadError)throw uploadError;image=window.db.storage.from('products').getPublicUrl(uploadedPath).data.publicUrl;}
+   if(productImageFile){const ext=productImageFile.name.split('.').pop().toLowerCase();uploadedPath=`products/${crypto.randomUUID()}.${ext}`;operation="upload product image to Storage bucket 'products'";const {error:uploadError}=await window.db.storage.from('products').upload(uploadedPath,productImageFile,{contentType:productImageFile.type,upsert:false});if(uploadError)throw uploadError;uploadSucceeded=true;image=window.db.storage.from('products').getPublicUrl(uploadedPath).data.publicUrl;}
  const payload={name,category_id:document.getElementById('productCategory').value||null,description:document.getElementById('productDescription').value.trim(),price,discount_price:discount,featured_image:image||null,images:image?[image]:oldImages,is_visible:document.getElementById('productVisible').value==='true',display_order:Number(document.getElementById('productOrder').value)||0,price_is_published:document.getElementById('productPricePublished').value==='true'};
    let result;
+   operation=editingProductId?'update row in public.products':'insert row in public.products';
    if(editingProductId) result=await window.db.from('products').update(payload).eq('id',editingProductId);
    else result=await window.db.from('products').insert(payload);
    if(result.error)throw result.error;
    closeModal('productModal');await loadAdminCatalog();alert('Product saved to Supabase.');
  }catch(e){
-   if(uploadedPath)await window.db.storage.from('products').remove([uploadedPath]).catch(()=>{});
-   console.error('Save product failed',e);
-   alert('Could not save product: '+(e.message||e)+'\n\nIf Supabase reports a missing column, share the error so the field names can be matched to your schema.');
+   let cleanupError=null;
+   if(uploadedPath&&uploadSucceeded){
+     try{const {error}=await window.db.storage.from('products').remove([uploadedPath]);if(error)cleanupError=error;}
+     catch(error){cleanupError=error}
+   }
+   console.error('Save product failed during '+operation,e);
+   alert(`Could not ${operation}:\n${supabaseErrorDetails(e)}${cleanupError?`\n\nThe uploaded image could not be removed: ${supabaseErrorDetails(cleanupError)}`:''}`);
  }finally{const button=document.getElementById('saveProductButton');button.disabled=false;button.textContent='Save Product';}
 }
 async function toggleProductVisibility(id){
@@ -1113,12 +1135,14 @@ async function downloadPaymentReceipt(orderId){
 }
 
 async function loadContactSettings(){
- const {data,error}=await window.db.from('contact_details').select('business_name,whatsapp,phone').eq('id','main').maybeSingle();
- if(error)throw error;
- if(data){
-  state.settings={...state.settings,business:data.business_name||state.settings.business,whatsapp:data.whatsapp||'',phone:data.phone||state.settings.phone};
-  saveState();
+ const {data,error}=await window.db.from('contact_details').select('whatsapp,phone').eq('id','main').maybeSingle();
+ if(error){
+  console.warn('Optional contact settings could not be loaded; admin dashboard will continue with saved settings.',error);
+  return;
  }
+ if(!data)return;
+ state.settings={...state.settings,whatsapp:data.whatsapp||'',phone:data.phone||state.settings.phone};
+ saveState();
 }
 function renderSettings(){
  const s=state.settings;
