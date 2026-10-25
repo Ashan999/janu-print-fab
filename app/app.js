@@ -238,12 +238,18 @@ function stPayment(c) {
   <p class="m">Your order is created when you tap Place Order. You complete payment on the next screen.</p></div>`;
 }
 function bankForm(o) {
-  return `<div style="margin-top:12px">${window.JPFPayment.bankDetailsHtml(S.contact, esc)}<div class="ln t"><span>Amount to transfer</span><span>${money(o.total_amount)}</span></div>
-  <label class="l">Transaction / reference number</label><input type="text" id="payment-reference" value="${esc((o.payment_reference || '').trim())}" autocomplete="off">
-  <label class="l">Receipt (JPG, PNG, WebP or PDF, max 8 MB)</label><input type="file" id="payment-receipt" accept=".png,.jpg,.jpeg,.webp,.pdf">
-  <label class="l">Note for our team (optional)</label><textarea id="payment-note"></textarea>
-  <div class="err" id="payerr" hidden></div>
-  <button class="btn full" data-a="payment-submit" data-id="${esc(o.id)}" type="button">Submit payment receipt</button></div>`;
+  return `<div class="bank-payment-layout">${window.JPFPayment.bankDetailsHtml(S.contact, esc)}
+    <section class="bank-payment-form" aria-label="Submit bank transfer details">
+      <div class="payment-transfer-amount"><span>Amount to transfer</span><strong>${money(o.total_amount)}</strong></div>
+      <div class="payment-fields">
+        <div class="payment-field"><label class="l" for="payment-reference">Transaction / reference number</label><input type="text" id="payment-reference" value="${esc((o.payment_reference || '').trim())}" autocomplete="off"></div>
+        <div class="payment-field"><label class="l" for="payment-receipt">Receipt <span>(JPG, PNG, WebP or PDF · max 8 MB)</span></label><input type="file" id="payment-receipt" accept=".png,.jpg,.jpeg,.webp,.pdf"><small id="payment-receipt-name" class="payment-file-name" aria-live="polite">No receipt selected</small></div>
+        <div class="payment-field payment-note-field"><label class="l" for="payment-note">Note for our team <span>(optional)</span></label><textarea id="payment-note"></textarea></div>
+      </div>
+      <div class="err" id="payerr" hidden role="alert"></div>
+      <button class="btn full payment-submit" data-a="payment-submit" data-id="${esc(o.id)}" type="button">Submit payment receipt</button>
+    </section>
+  </div>`;
 }
 function payhereBtn(o) {
   if (!payhereReady()) return `<p class="m">Card payment is not available yet.</p>${bankForm(o)}`;
@@ -288,8 +294,9 @@ async function payView(id) {
   if (s === 'paid') act = '<p class="m">Payment confirmed. Thank you!</p>';
   else if (s === 'receipt_submitted' || s === 'under_review') act = '<p class="m">We received your payment details. Our team will verify them and update your order.</p>';
   else if (open) act = (m === 'payhere' && S.bankFor !== id) ? payhereBtn(o) : bankForm(o);
+  const bankTransferOpen = open && (m !== 'payhere' || S.bankFor === id);
   shell(`<h1>Payment</h1><p class="m">${esc(ref(o))}</p>${msg ? `<div class="err">${esc(msg)}</div>` : ''}
-  <div class="card"><div class="ln"><span>Method</span><span>${esc(P.labelMethod(m))}</span></div><div class="ln"><span>Status</span><span class="badge ${P.badgeClass(s)}">${esc(P.labelStatus(s))}</span></div><div class="ln t"><span>Total</span><span>${money(o.total_amount)}</span></div>${act}</div>
+  <div class="card payment-status-card"><div class="ln"><span>Method</span><span>${esc(P.labelMethod(m))}</span></div><div class="ln"><span>Status</span><span class="badge ${P.badgeClass(s)}">${esc(P.labelStatus(s))}</span></div>${bankTransferOpen ? '' : `<div class="ln t"><span>Total</span><span>${money(o.total_amount)}</span></div>`}${act}</div>
   <a class="btn alt full" href="${afterPay(id)}">${open ? 'Pay later' : 'Continue to order confirmation'}</a>`);
 }
 async function payReturn(id) {
@@ -486,9 +493,10 @@ document.addEventListener('click', async e => {
   if (a === 'profile-cancel') { S.editingProfile = false; S.profileDraft = null; S.profileMessage = ''; return account(); }
   if (a === 'logout') { await window.JPFCustomerAuth.logout(); S.profile = null; S.orders = null; return route(); }
   if (a === 'payment-submit') {
-    b.disabled = true;
-    const msg = await submitBankPayment(id);
-    if (msg) { payErr(msg); b.disabled = false; return; }
+    b.disabled = true; b.textContent = 'Submitting…';
+    let msg = '';
+    try { msg = await submitBankPayment(id); } catch (err) { msg = 'Payment details could not be saved: ' + errMsg(err); }
+    if (msg) { payErr(msg); b.disabled = false; b.textContent = 'Submit payment receipt'; return; }
     S.orders = null; if (S.done && S.done.id === id) { S.done.payment_method = 'bank_transfer'; S.done.payment_status = 'receipt_submitted'; }
     return route();
   }
@@ -536,7 +544,13 @@ document.addEventListener('input', e => {
   else return;
   bar();
 });
-document.addEventListener('change', e => { if (e.target.id === 'file' && F) upload([...e.target.files]); });
+document.addEventListener('change', e => {
+  if (e.target.id === 'file' && F) upload([...e.target.files]);
+  if (e.target.id === 'payment-receipt') {
+    const label = $('#payment-receipt-name'), file = e.target.files?.[0];
+    if (label) label.textContent = file ? `${file.name} · ${(file.size / (1024 * 1024)).toFixed(2)} MB` : 'No receipt selected';
+  }
+});
 window.addEventListener('hashchange', route);
 
 async function route() {

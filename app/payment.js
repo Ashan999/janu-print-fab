@@ -44,13 +44,15 @@
     const branch = c.bank_branch || c.payment_bank_branch || 'Hambantota';
     const name = c.bank_account_name || c.payment_account_name || 'M.K. Ashan Virantha';
     const number = c.bank_account_number || c.payment_account_number || '107810154261';
-    return `<div class="card">
-      <b>Bank Transfer</b>
-      <div class="ln"><span>Bank</span><span>${esc(bank)}</span></div>
-      <div class="ln"><span>Branch</span><span>${esc(branch)}</span></div>
-      <div class="ln"><span>Account Name</span><span>${esc(name)}</span></div>
-      <div class="ln"><span>Account Number</span><span>${esc(number)}</span></div>
-    </div>`;
+    return `<section class="card payment-bank-details" aria-label="Bank transfer details">
+      <b>Bank transfer details</b>
+      <div class="payment-bank-grid">
+        <div class="payment-bank-item"><span>Bank</span><strong>${esc(bank)}</strong></div>
+        <div class="payment-bank-item"><span>Branch</span><strong>${esc(branch)}</strong></div>
+        <div class="payment-bank-item"><span>Account name</span><strong>${esc(name)}</strong></div>
+        <div class="payment-bank-item payment-account-number"><span>Account number</span><strong>${esc(number)}</strong></div>
+      </div>
+    </section>`;
   }
 
   async function uploadReceipt(db, orderId, file) {
