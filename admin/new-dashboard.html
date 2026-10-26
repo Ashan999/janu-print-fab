@@ -1,1018 +1,306 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#142b3b">
-<meta name="description" content="Janu Print | FAB administration dashboard">
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Janu Print | FAB - Admin</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap');
-:root{--navy:#142b3b;--navy2:#1d4054;--cyan:#16c5d8;--cyan-soft:#e4fbfd;--gold:#e5b84b;--ink:#172a38;--muted:#778694;--line:#e5ebef;--paper:#f4f7f9;--white:#fff;--green:#16835d;--green-bg:#e4f7ef;--amber:#a66a08;--amber-bg:#fff3d8;--blue:#2679b9;--blue-bg:#e7f3ff;--red:#b83b43;--red-bg:#fff0f0;--purple:#7157bd;--purple-bg:#f0ebff;--shadow:0 10px 28px rgba(24,47,63,.055);--radius:18px}
-*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:'DM Sans',system-ui,sans-serif;background:var(--paper);color:var(--ink);font-size:14px;line-height:1.5}button,input,select,textarea{font:inherit}button{cursor:pointer;transition:transform .15s,background .15s,box-shadow .15s}button:active{transform:translateY(1px)}
-.sidebar{position:fixed;inset:0 auto 0 0;width:258px;background:linear-gradient(165deg,#18384c 0%,#102635 100%);color:#fff;padding:24px 16px 18px;overflow-y:auto;z-index:1000;box-shadow:8px 0 30px rgba(17,40,55,.08)}
-.brand{position:relative;padding:8px 12px 24px;margin-bottom:23px;border-bottom:1px solid rgba(255,255,255,.12)}.brand:before{content:'JP';display:grid;place-items:center;width:42px;height:42px;float:left;margin-right:11px;border-radius:13px;background:linear-gradient(135deg,var(--cyan),#5de0d2);color:#103246;font:800 17px Manrope,sans-serif;box-shadow:0 7px 20px #16c5d833}.brand h1{font:800 16px/1.4 Manrope,sans-serif;letter-spacing:-.35px;padding-top:2px}.brand span{display:block;color:#a9c0ce;font-size:11px;letter-spacing:.5px;text-transform:uppercase;margin-top:3px}.menu{display:flex;flex-direction:column;gap:6px}.menu:before{content:'WORKSPACE';font-size:10px;font-weight:700;letter-spacing:1.5px;color:#7895a7;padding:0 13px 7px}.menu button{position:relative;display:flex;align-items:center;gap:12px;width:100%;border:1px solid transparent;background:transparent;color:#b9cbd5;padding:12px 14px;border-radius:12px;text-align:left;font-size:13px;font-weight:600;transition:.2s}.menu button:before{content:'•';font-size:20px;line-height:10px;color:#7393a5}.menu button:hover{background:rgba(255,255,255,.07);color:#fff}.menu button.active{background:linear-gradient(100deg,#17c5d8 0%,#48d9d9 100%);color:#103346;box-shadow:0 8px 20px rgba(22,197,216,.18)}.menu button.active:before{color:#103346}.logout{margin-top:24px;border-top:1px solid rgba(255,255,255,.12);padding-top:16px}.logout button{border-radius:11px!important;color:#c4d3dc!important;font-size:13px!important;font-weight:600}.logout button:hover{background:rgba(255,255,255,.08)!important;color:#fff!important}
-.main{margin-left:258px;min-height:100vh}.topbar{position:sticky;top:0;z-index:100;height:76px;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:space-between;padding:0 clamp(18px,3vw,38px);border-bottom:1px solid var(--line)}.topbar h2{font:800 20px Manrope,sans-serif;color:var(--navy);letter-spacing:-.5px}.admin-user{display:flex;align-items:center;gap:10px;font-size:12px;color:#536575;font-weight:700}.admin-user:before{content:'A';display:grid;place-items:center;width:35px;height:35px;border-radius:50%;background:#e3f8fa;color:#137c8a;font-weight:800;border:1px solid #c8eff2}.content{padding:clamp(18px,3vw,36px);max-width:1800px;margin:0 auto}.page{display:none;animation:fadeUp .22s ease}.page.active{display:block}@keyframes fadeUp{from{opacity:.6;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}.page-title{margin-bottom:25px;display:flex;flex-direction:column;gap:5px}.page-title h3{font:800 25px Manrope,sans-serif;color:var(--navy);letter-spacing:-.7px}.page-title p{font-size:13px;color:var(--muted)}
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:24px}.stat-card,.panel{background:var(--white);border:1px solid #e8edf1;border-radius:var(--radius);box-shadow:var(--shadow)}.stat-card{position:relative;overflow:hidden;padding:22px 22px 20px;min-height:130px}.stat-card:after{content:'';position:absolute;width:90px;height:90px;border-radius:50%;right:-28px;top:-32px;background:var(--cyan-soft);opacity:.85}.stat-card:nth-child(2):after{background:var(--amber-bg)}.stat-card:nth-child(3):after{background:var(--purple-bg)}.stat-card:nth-child(4):after{background:var(--green-bg)}.stat-card span{position:relative;z-index:1;display:block;color:#71818d;font-size:12px;font-weight:700;letter-spacing:.15px}.stat-card strong{position:relative;z-index:1;display:block;margin-top:12px;font:800 32px/1.1 Manrope,sans-serif;color:var(--navy);letter-spacing:-1px}.panel{padding:23px;margin-bottom:22px;min-width:0}.panel-header{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:18px}.panel-header h4{font:800 15px Manrope,sans-serif;color:var(--navy)}.panel-header p{font-size:12px;color:var(--muted);margin-top:5px}
-.btn{border:1px solid transparent;padding:10px 15px;border-radius:10px;font-size:12px;font-weight:700;white-space:nowrap}.btn-primary{background:var(--gold);color:#243847;box-shadow:0 5px 12px #e5b84b2b}.btn-primary:hover{background:#f0c75f;box-shadow:0 7px 16px #e5b84b44}.btn-blue{background:var(--cyan-soft);color:#087b89;border-color:#c9f1f4}.btn-blue:hover{background:#cff7fa}.btn-gray{background:#f0f3f5;color:#50616e;border-color:#e2e8ec}.btn-gray:hover{background:#e6ecef}.btn-danger{background:var(--red-bg);color:var(--red);border-color:#ffdddd}.btn-small{padding:7px 10px;font-size:11px;border-radius:8px}
-table{width:100%;border-collapse:separate;border-spacing:0}th,td{padding:14px 12px;border-bottom:1px solid #edf1f4;text-align:left;font-size:12px;vertical-align:middle}th{color:#8794a0;font-size:10px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;background:#f8fafb;white-space:nowrap}th:first-child{border-radius:9px 0 0 9px}th:last-child{border-radius:0 9px 9px 0}td{color:#415462}tbody tr:hover td{background:#fbfdfe}tbody tr:last-child td{border-bottom:0}td strong{font-weight:800;color:#233b4b}.badge{display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border-radius:30px;font-size:10px;font-weight:800;background:var(--green-bg);color:var(--green);white-space:nowrap}.badge.off{background:#eef1f3;color:#7b8993}.status-pending{background:var(--amber-bg);color:var(--amber)}.status-processing{background:var(--blue-bg);color:var(--blue)}.status-ready{background:var(--purple-bg);color:var(--purple)}.status-delivered{background:var(--green-bg);color:var(--green)}.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.mini-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 4px 14px rgba(24,47,63,.025)}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.field{display:flex;flex-direction:column;gap:7px;min-width:0}.field.full{grid-column:1/-1}.field label{font-size:11px;font-weight:800;color:#5e707d}.field input,.field select,.field textarea,.value-table input{width:100%;padding:12px 13px;border:1px solid #dce5ea;border-radius:10px;outline:none;background:#fbfcfd;color:var(--ink);transition:border .15s,box-shadow .15s}.field input:focus,.field select:focus,.field textarea:focus,.value-table input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px #16c5d81c;background:#fff}.field textarea{min-height:95px;resize:vertical}.actions{display:flex;gap:8px;flex-wrap:wrap}.empty{text-align:center;color:#93a0aa;padding:30px!important}.modal{display:none;position:fixed;inset:0;background:rgba(12,31,44,.56);backdrop-filter:blur(5px);z-index:9999;align-items:center;justify-content:center;padding:20px}.modal.open{display:flex}.modal-box{background:#fff;width:100%;max-width:700px;max-height:90vh;overflow:auto;border-radius:20px;padding:26px;box-shadow:0 25px 90px #081d2d45}.modal-box.large{max-width:950px}.modal-header{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:22px}.modal-header h3{font:800 19px Manrope,sans-serif;color:var(--navy)}.close{border:0;background:#f0f4f6;width:34px;height:34px;border-radius:9px;font-size:22px;color:#71818d}.close:hover{background:#e4ecef}.option-list{display:flex;flex-direction:column;gap:9px}.option-row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#f7fafb;border:1px solid #e9eff2;border-radius:12px;padding:14px}.option-row strong{font-size:13px;color:#263e4d}.option-row small{display:block;color:#85939d;margin-top:3px}.value-table{margin-top:12px}.value-table input{padding:8px;border-radius:8px}.color-dot{display:inline-block;width:18px;height:18px;border-radius:50%;border:1px solid #ccc;vertical-align:middle;margin-right:6px}.mobile-menu{display:none;border:0;background:#edf9fa;color:#167a88;width:39px;height:39px;border-radius:10px;font-size:20px}.delivery-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.delivery-card{background:#f8fafb;border:1px solid #e7edf0;border-radius:14px;padding:18px}.delivery-card h5{font:800 13px Manrope,sans-serif;color:var(--navy);margin-bottom:10px}.help{font-size:11px;color:#788894;line-height:1.7}.switch{display:flex;align-items:center;gap:8px;font-size:12px}.order-actions{display:flex;gap:8px;flex-wrap:wrap}.status-flow{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.status-flow span{padding:7px 10px;border-radius:20px;background:#edf1f4;color:#687b88;font-size:10px;font-weight:700}.status-flow span.current{background:var(--cyan);color:#103346}.checklist{display:grid;gap:8px;margin-top:12px}.check-row{display:flex;align-items:center;gap:8px;padding:11px;background:#f7fafb;border:1px solid #e9eff2;border-radius:10px;font-size:12px}.order-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.order-summary .mini-card{padding:15px}
-/* wide data tables remain scrollable instead of breaking the layout */
-.panel table{min-width:650px}.panel:has(#paymentReceiptsTable) table{min-width:1050px}.panel:has(#customerFilesTable) table{min-width:720px}.panel:has(table){overflow:hidden}.panel table{display:table}.panel:has(table){overflow-x:auto}.help:empty{display:none}
-@media(max-width:1120px){.sidebar{width:230px}.main{margin-left:230px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.delivery-grid,.order-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.content{padding:22px}}
-@media(max-width:820px){.sidebar{transform:translateX(-105%);transition:transform .25s ease;z-index:2000;width:265px}.sidebar.open{transform:translateX(0);box-shadow:20px 0 50px #0b1d2b44}.main{margin-left:0}.mobile-menu{display:block}.topbar{height:68px;padding:0 18px}.topbar h2{font-size:18px}.content{padding:20px 16px}.page-title h3{font-size:23px}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:560px){.content{padding:17px 12px}.stats,.form-grid,.cards,.delivery-grid,.order-summary{grid-template-columns:1fr}.stat-card{min-height:108px;padding:18px}.stat-card strong{font-size:29px}.panel{padding:16px;border-radius:15px}.panel-header{align-items:flex-start;flex-direction:column}.panel-header .btn{align-self:flex-start}.page-title{margin-bottom:18px}.page-title h3{font-size:21px}.admin-user{font-size:0;gap:0}.admin-user:before{font-size:12px}.field.full{grid-column:auto}.modal{padding:10px}.modal-box{padding:19px;border-radius:16px}.actions .btn{flex:1}.topbar{padding:0 12px}.panel:has(table){padding-bottom:12px}th,td{padding:12px 10px}}
-@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
+:root{--ink:#151a26;--ink2:#222a3b;--paper:#f3f6fa;--card:#fff;--line:#dde3ec;--tx:#1b2230;--mut:#667085;--c:#0a9fd0;--m:#d6336c;--y:#f2b705;--g:#1f9d63;--b:#3b4cca}
+*{box-sizing:border-box}body{margin:0;font:15px/1.5 'DM Sans',system-ui,sans-serif;color:var(--tx);background:var(--paper)}
+h1,h2,h3{font-family:Sora,'DM Sans',sans-serif;margin:0}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:0;border-radius:8px;padding:9px 14px;background:var(--c);color:#fff;font-weight:700}
+button.ghost{background:#fff;color:var(--tx);border:1px solid var(--line)}button.bad{background:var(--m)}button.ok{background:var(--g)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid var(--y);outline-offset:1px}
+input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:#fff}
+input[type=checkbox]{width:auto}textarea{min-height:70px}
+label{display:block;font-size:13px;color:var(--mut);margin:0 0 10px}label input,label select,label textarea{margin-top:3px;color:var(--tx)}
+#app{display:none;min-height:100vh}
+nav{position:fixed;inset:0 auto 0 0;width:220px;background:var(--ink);color:#cfd6e4;padding:18px 12px;display:flex;flex-direction:column;gap:2px}
+.logo{font:700 17px Sora;color:#fff;padding:4px 10px 16px;display:flex;gap:8px;align-items:center}
+.reg{display:grid;grid-template-columns:8px 8px;gap:2px}.reg i{width:8px;height:8px;border-radius:50%}
+nav a{color:inherit;text-decoration:none;padding:10px;border-radius:8px;display:flex;justify-content:space-between}
+nav a.on{background:var(--ink2);color:#fff;box-shadow:inset 3px 0 var(--c)}
+nav a:hover{background:var(--ink2)}
+.badge{background:var(--m);color:#fff;border-radius:99px;font-size:12px;padding:0 8px;font-weight:700}
+nav .sp{flex:1}
+main{margin-left:220px;padding:24px;max-width:1200px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;border-top:4px solid var(--c)}
+.kpi b{display:block;font:700 26px Sora}.kpi span{color:var(--mut);font-size:13px}
+.press{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--line);margin:10px 0}
+.press i{display:block}.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--mut)}
+.legend s{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;text-decoration:none}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;color:var(--mut);font-weight:500;font-size:13px;border-bottom:1px solid var(--line);padding:8px}
+td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}tr[data-act]{cursor:pointer}tr[data-act]:hover td{background:#f7fafd}
+.chip{display:inline-block;border-radius:99px;padding:1px 10px;font-size:12px;font-weight:700;color:#fff;background:var(--mut)}
+.filters{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}.filters>*{width:auto;min-width:160px}
+.m{color:var(--mut);font-size:13px}.empty{text-align:center;color:var(--mut);padding:30px}
+.dr{position:fixed;inset:0 0 0 auto;width:min(560px,100%);background:#fff;box-shadow:-8px 0 30px #0003;padding:18px;overflow:auto;display:none;z-index:20}
+.dr.open{display:block}.dr section{border-top:1px solid var(--line);padding:12px 0}.dr h3{font-size:14px;margin-bottom:6px}
+.dh{display:flex;justify-content:space-between;gap:10px}.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{width:auto;flex:1}
+.item{background:var(--paper);border-radius:8px;padding:8px 10px;margin-bottom:6px}
+.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}.tabs button{background:#fff;color:var(--tx);border:1px solid var(--line)}.tabs button.on{background:var(--ink);color:#fff}
+#toasts{position:fixed;right:14px;bottom:14px;display:grid;gap:8px;z-index:50}
+.t{background:var(--ink);color:#fff;padding:10px 14px;border-radius:10px;max-width:340px;border-left:5px solid var(--c)}.t.ok{border-color:var(--g)}.t.err{border-color:var(--m)}.t.new{border-color:var(--y)}
+#login{max-width:360px;margin:12vh auto;padding:0 16px}
+@media(max-width:820px){nav{position:static;width:auto;flex-direction:row;overflow-x:auto;padding:8px}.logo,nav .sp{display:none}nav a{white-space:nowrap;gap:8px}main{margin:0;padding:14px}}
+@media(prefers-reduced-motion:no-preference){.t{animation:in .25s}@keyframes in{from{transform:translateY(8px);opacity:0}}}
+</style></head><body>
+<div id="login" class="card" style="display:none">
+  <div class="logo" style="color:var(--tx)"><span class="reg"><i style="background:var(--c)"></i><i style="background:var(--m)"></i><i style="background:var(--y)"></i><i style="background:var(--ink)"></i></span>Janu Print | FAB</div>
+  <h2>Admin sign in</h2><p class="m">Use the admin email and password you created in Supabase.</p>
+  <label>Email<input id="em" type="email" autocomplete="username"></label>
+  <label>Password<input id="pw" type="password" autocomplete="current-password"></label>
+  <button data-act="login" style="width:100%">Sign in</button>
+</div>
+<div id="app">
+  <nav id="nav"></nav>
+  <main id="main"></main>
+</div>
+<aside class="dr" id="dr" aria-label="Order details"></aside>
+<div id="toasts" aria-live="polite"></div>
 
-.workflow-panel{margin-top:16px;border:1px solid var(--line);background:linear-gradient(180deg,#fff,#fbfdfe)}
-.workflow-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.workflow-step{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;padding:16px;border:1px solid var(--line);border-radius:14px;background:#fff}
-.workflow-step>div:nth-child(2){flex:1;min-width:160px}
-.workflow-step strong{display:block;font-size:13px}
-.workflow-step p{font-size:12px;color:var(--muted);margin-top:4px}
-.workflow-number{display:grid;place-items:center;flex:0 0 30px;height:30px;border-radius:10px;background:var(--cyan-soft);color:var(--navy);font-weight:800}
-.delivery-step{grid-column:1/-1;display:block}
-.delivery-step .workflow-number{margin-bottom:10px}
-.delivery-step .form-grid{margin-top:12px}
-@media(max-width:760px){.workflow-grid{grid-template-columns:1fr}.delivery-step{grid-column:auto}.workflow-step{align-items:center}}
-
-/* Responsive admin application refinements */
-.sidebar-backdrop{display:none}
-:focus-visible{outline:3px solid #16c5d8;outline-offset:2px}
-button,input,select,textarea{touch-action:manipulation}
-input,select,textarea{min-width:0;max-width:100%}
-.main,.content,.page,.panel{min-width:0}
-.topbar{position:sticky;top:0;z-index:900;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
-.page{width:100%;min-width:0}
-.panel table{max-width:100%}
-.panel:has(table){overscroll-behavior-x:contain}
-.workflow-step .form-grid{width:100%}
-.workflow-step .field{min-width:0}
-@media(max-width:820px){
-  body.sidebar-open{overflow:hidden}
-  .sidebar{height:100dvh;max-height:100dvh;overflow-y:auto;overscroll-behavior:contain;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
-  .sidebar-backdrop.visible{display:block;position:fixed;inset:0;background:rgba(7,22,32,.52);backdrop-filter:blur(2px);z-index:1900}
-  .sidebar{z-index:2000}
-  .main{width:100%;min-width:0}
-  .topbar{height:64px;padding:0 14px;gap:10px}
-  .topbar>div{min-width:0}
-  .topbar h2{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .mobile-menu{flex:0 0 42px;width:42px;height:42px;min-height:42px;font-size:22px;box-shadow:0 2px 8px rgba(24,47,63,.06)}
-  .content{width:100%;max-width:100%;padding:20px 14px calc(28px + env(safe-area-inset-bottom))}
-  .page-title{display:flex;flex-direction:column;gap:4px}
-  .page-title p{line-height:1.55}
-  .panel{width:100%;max-width:100%;margin-bottom:16px}
-  .panel-header{flex-wrap:wrap}
-  .panel-header>div{min-width:0;max-width:100%}
-  .panel:has(table){overflow-x:auto;-webkit-overflow-scrolling:touch}
-  .panel table{min-width:650px}
-  .panel:has(#paymentReceiptsTable) table{min-width:950px}
-  .panel:has(#customerFilesTable) table{min-width:700px}
-  .modal{align-items:flex-end;padding:0}
-  .modal-box,.modal-box.large{width:100%;max-width:none;max-height:92dvh;border-radius:22px 22px 0 0;padding:22px 16px calc(20px + env(safe-area-inset-bottom));overflow-y:auto}
-  .modal-header{position:sticky;top:-22px;background:#fff;padding:8px 0 14px;margin-bottom:16px;z-index:2}
-}
-@media(max-width:560px){
-  html{font-size:14px}
-  .content{padding:16px 10px calc(24px + env(safe-area-inset-bottom))}
-  .topbar{padding:0 10px;height:60px}
-  .topbar h2{font-size:16px}
-  .admin-user{display:none}
-  .page-title h3{font-size:21px;line-height:1.25}
-  .page-title p{font-size:12px}
-  .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-  .stat-card{min-width:0;min-height:96px;padding:14px;border-radius:14px}
-  .stat-card span{font-size:11px}
-  .stat-card strong{font-size:25px;overflow-wrap:anywhere}
-  .cards{grid-template-columns:1fr}
-  .mini-card{padding:14px}
-  .panel{padding:14px 12px;border-radius:14px}
-  .panel-header{gap:10px;margin-bottom:14px}
-  .panel-header h4{font-size:14px}
-  .panel-header .btn{width:100%;white-space:normal}
-  .form-grid,.delivery-grid,.order-summary{grid-template-columns:minmax(0,1fr);gap:12px}
-  .field.full{grid-column:auto}
-  .field input,.field select,.field textarea,.value-table input{font-size:16px;min-height:44px;padding:11px 12px}
-  .btn{min-height:42px;padding:10px 12px;white-space:normal}
-  .btn-small{min-height:38px}
-  .actions{width:100%}
-  .actions .btn{flex:1 1 auto}
-  .option-row{align-items:flex-start;flex-wrap:wrap}
-  .status-flow{gap:6px}
-  .status-flow span{font-size:11px}
-  .check-row{min-height:44px;align-items:center}
-  .check-row input{width:18px;height:18px;flex:0 0 auto}
-  .workflow-grid{grid-template-columns:minmax(0,1fr)}
-  .workflow-step{min-width:0;padding:12px}
-  .workflow-step .btn{width:100%}
-  .delivery-step{grid-column:auto}
-  .delivery-step .form-grid{grid-template-columns:minmax(0,1fr)}
-  .modal-box,.modal-box.large{padding:18px 12px calc(18px + env(safe-area-inset-bottom))}
-  .modal-header h3{font-size:17px;overflow-wrap:anywhere}
-  .panel:has(table){padding-right:10px;padding-left:10px}
-  th,td{padding:11px 9px;font-size:12px}
-}
-@media(max-width:360px){
-  .stats{grid-template-columns:1fr}
-  .topbar h2{font-size:15px}
-  .content{padding-left:8px;padding-right:8px}
-}
-
-</style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="../config/supabase-config.js"></script>
-</head>
-
-<body>
-<aside class="sidebar" id="sidebar">
-  <div class="brand"><h1>Janu Print | FAB</h1><span>Admin workspace</span></div>
-  <nav class="menu">
-    <button class="active" onclick="showPage('dashboard',this)">Overview</button>
-    <button onclick="showPage('categories',this)">Categories & Options</button>
-    <button onclick="showPage('pricing',this)">Pricing</button>
-    <button onclick="showPage('delivery',this)">Production & Delivery</button>
-    <button onclick="showPage('orders',this)">Orders</button>
-    <button onclick="showPage('payments',this)">Payment Receipts</button>
-    <button onclick="showPage('settings',this)">Settings</button>
-  </nav>
-  <div class="logout"><button onclick="logout()" style="width:100%;border:0;background:transparent;color:#fff;text-align:left;padding:11px 13px">Logout</button></div>
-</aside>
-<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()" aria-hidden="true"></div>
-
-<main class="main">
-<header class="topbar">
-  <div style="display:flex;align-items:center;gap:15px">
-    <button class="mobile-menu" type="button" onclick="toggleSidebar()" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false">☰</button>
-    <h2 id="pageTitle">Dashboard</h2>
-  </div>
-  <div class="admin-user">Super Admin</div>
-</header>
-
-<section class="content">
-
-<!-- DASHBOARD -->
-<div class="page active" id="page-dashboard">
-  <div class="page-title"><h3>Dashboard</h3><p>Janu Print | FAB overview</p></div>
-  <div class="stats">
-    <div class="stat-card"><span>Total Orders</span><strong id="statTotal">0</strong></div>
-    <div class="stat-card"><span>Pending</span><strong id="statPending">0</strong></div>
-    <div class="stat-card"><span>Processing</span><strong id="statProcessing">0</strong></div>
-    <div class="stat-card"><span>Delivered</span><strong id="statDelivered">0</strong></div>
-  </div>
-  <div class="panel">
-    <div class="panel-header"><h4>Recent Orders</h4><button class="btn btn-blue" onclick="showPageByName('orders')">View Orders</button></div>
-    <table><thead><tr><th>Order</th><th>Customer</th><th>Category</th><th>Total</th><th>Status</th></tr></thead>
-    <tbody id="recentOrders"></tbody></table>
-  </div>
-</div>
-
-<!-- CATEGORIES -->
-<div class="page" id="page-categories">
-  <div class="page-title"><h3>Categories</h3><p>Manage main categories and customer options</p></div>
-  <div class="panel">
-    <div class="panel-header">
-      <div><h4>Main Categories</h4><p style="font-size:12px;color:#777;margin-top:3px">Create categories without changing code.</p></div>
-      <button class="btn btn-primary" onclick="openCategoryModal()">+ Add Category</button>
-    </div>
-    <table><thead><tr><th>Category</th><th>Options</th><th>Status</th><th>Action</th></tr></thead><tbody id="categoryTable"></tbody></table>
-  </div>
-</div>
-
-<!-- PRICING -->
-<div class="page" id="page-pricing">
-  <div class="page-title"><h3>Pricing</h3><p>Manage option and combination prices</p></div>
-  <div class="panel">
-    <div class="panel-header"><h4>Pricing Rules</h4><button class="btn btn-primary" onclick="openPriceModal()">+ Add Price</button></div>
-    <div id="pricingList"></div>
-  </div>
-</div>
-
-<!-- DELIVERY -->
-<div class="page" id="page-delivery">
-  <div class="page-title"><h3>Delivery & Production</h3><p>Set normal production days, urgent delivery and delivery charges per category.</p></div>
-  <div class="panel">
-    <div class="panel-header">
-      <div><h4>Category Delivery Settings</h4><p style="font-size:12px;color:#777;margin-top:3px">Each category can have its own production time and urgent fee.</p></div>
-    </div>
-    <div id="deliveryCategoryList"></div>
-  </div>
-  <div class="panel">
-    <div class="panel-header"><h4>How Delivery Works</h4></div>
-    <div class="help" style="font-size:12px">
-      <b>Normal:</b> Order date + category production days = earliest normal date.<br>
-      <b>Urgent:</b> If enabled, customer can request tomorrow delivery and the category urgent fee is added.<br>
-      <b>Multiple items:</b> final production date should use the longest production time in the order.<br>
-      <b>Admin:</b> manually verify artwork, payment, production and delivery before moving the order through its statuses.
-    </div>
-  </div>
-  <div class="panel">
-    <div class="panel-header"><h4>Delivery Time Slots</h4><button class="btn btn-primary" onclick="openDeliverySlotModal()">+ Add Time Slot</button></div>
-    <table><thead><tr><th>Time Slot</th><th>Fee</th><th>Status</th><th>Action</th></tr></thead><tbody id="deliverySlotTable"></tbody></table>
-  </div>
-</div>
-
-<!-- ORDERS -->
-<div class="page" id="page-orders">
-  <div class="page-title"><h3>Orders</h3><p>Manage customer orders and status</p></div>
-  <div class="panel">
-    <div class="panel-header"><h4>All Orders</h4><button class="btn btn-blue" onclick="showPageByName('orders')">View All Orders</button></div>
-    <table><thead><tr><th>Order</th><th>Customer</th><th>Category</th><th>Total</th><th>Status</th><th>Action</th></tr></thead><tbody id="ordersTable"></tbody></table>
-  </div>
-</div>
-  <div class="panel" style="margin-top:15px">
-    <div class="panel-header">
-      <div><h4>Customer Files</h4><p style="font-size:12px;color:#777;margin-top:3px">Download the artwork/design files uploaded with real customer orders.</p></div>
-      <button class="btn btn-blue" onclick="loadCustomerFiles()">Refresh</button>
-    </div>
-    <div id="customerFilesMessage" class="help" style="margin-bottom:10px"></div>
-    <table><thead><tr><th>Order</th><th>Customer</th><th>Product</th><th>Design File</th><th>Order Date</th></tr></thead>
-    <tbody id="customerFilesTable"><tr><td colspan="5" class="empty">Loading customer files…</td></tr></tbody></table>
-  </div>
-</div>
-
-<!-- PAYMENTS -->
-<div class="page" id="page-payments">
-  <div class="page-title"><h3>Payment Receipts</h3><p>Review customer bank-transfer receipts and download the original file.</p></div>
-  <div class="panel">
-    <div class="panel-header">
-      <div><h4>Customer Payment Receipts</h4><p style="font-size:12px;color:#777;margin-top:3px">Receipts stay in the private <b>payment-slips</b> bucket. Downloads use a temporary signed link.</p></div>
-      <button class="btn btn-blue" onclick="loadPaymentReceipts()">Refresh</button>
-    </div>
-    <div id="paymentReceiptsMessage" class="help" style="margin-bottom:10px"></div>
-    <table><thead><tr><th>Order</th><th>Customer</th><th>Amount</th><th>Reference</th><th>Status</th><th>Submitted</th><th>Design</th><th>Receipt</th></tr></thead>
-    <tbody id="paymentReceiptsTable"><tr><td colspan="8" class="empty">Loading receipts…</td></tr></tbody></table>
-  </div>
-</div>
-
-<!-- SETTINGS -->
-<div class="page" id="page-settings">
-  <div class="page-title"><h3>Settings</h3><p>Business and ordering settings</p></div>
-  <div class="panel">
-    <div class="form-grid">
-      <div class="field"><label>Business Name</label><input value="Janu Print | FAB" readonly aria-readonly="true"><small class="help">Fixed branding for this dashboard.</small></div>
-      <div class="field"><label>WhatsApp Number</label><input id="setWhatsapp"></div>
-      <div class="field"><label>Phone</label><input id="setPhone"></div>
-      <div class="field"><label>Currency</label><input id="setCurrency"></div>
-      <div class="field"><label>WhatsApp Ordering</label><select id="setWhatsAppEnabled"><option value="true">Enabled</option><option value="false">Disabled</option></select></div>
-      <div class="field"><label>File Upload</label><select id="setUploadEnabled"><option value="true">Enabled</option><option value="false">Disabled</option></select></div>
-    </div>
-    <div style="margin-top:15px"><button class="btn btn-primary" onclick="saveSettings()">Save Settings</button></div>
-  </div>
-</div>
-
-</section>
-</main>
-
-<!-- CATEGORY MODAL -->
-<div class="modal" id="categoryModal">
-<div class="modal-box">
-  <div class="modal-header"><h3 id="categoryModalTitle">Add Category</h3><button class="close" onclick="closeModal('categoryModal')">×</button></div>
-  <div class="form-grid">
-    <div class="field"><label>Category Name</label><input id="catName" placeholder="Example: DTF Custom Print"></div>
-    <div class="field"><label>Status</label><select id="catStatus"><option value="true">Active</option><option value="false">Hidden</option></select></div>
-    <div class="field full"><label>Description</label><textarea id="catDescription" placeholder="Short description"></textarea></div>
-  </div>
-  <div class="actions" style="justify-content:flex-end;margin-top:15px">
-    <button class="btn btn-gray" onclick="closeModal('categoryModal')">Cancel</button>
-    <button class="btn btn-primary" onclick="saveCategory()">Save Category</button>
-  </div>
-</div>
-</div>
-
-<!-- OPTIONS MODAL -->
-<div class="modal" id="optionsModal">
-<div class="modal-box large">
-  <div class="modal-header"><div><h3 id="optionsTitle">Category Options</h3><p id="optionsSubtitle" style="font-size:12px;color:#777;margin-top:3px"></p></div><button class="close" onclick="closeModal('optionsModal')">×</button></div>
-  <div class="actions" style="margin-bottom:15px">
-    <button class="btn btn-blue" onclick="addOption('Size')">+ Size</button>
-    <button class="btn btn-blue" onclick="addOption('Colour')">+ Colour</button>
-    <button class="btn btn-blue" onclick="addOption('Material')">+ Material</button>
-    <button class="btn btn-blue" onclick="addOption('GSM')">+ GSM</button>
-    <button class="btn btn-blue" onclick="addOption('Style')">+ Style</button>
-    <button class="btn btn-blue" onclick="addOption('Sleeve')">+ Sleeve</button>
-    <button class="btn btn-blue" onclick="addOption('Capacity')">+ Capacity</button>
-    <button class="btn btn-blue" onclick="addOption('Custom Size')">+ Custom Size</button>
-  </div>
-  <div class="option-list" id="optionsList"></div>
-</div>
-</div>
-
-<!-- VALUES MODAL -->
-<div class="modal" id="valuesModal">
-<div class="modal-box large">
-  <div class="modal-header"><div><h3 id="valuesTitle">Option Values</h3><p style="font-size:12px;color:#777">Add values and prices.</p></div><button class="close" onclick="closeModal('valuesModal')">×</button></div>
-  <div class="panel" style="padding:15px;margin-bottom:15px">
-    <div class="form-grid">
-      <div class="field"><label>Value Name</label><input id="valueName" placeholder="A4 / XL / Black"></div>
-      <div class="field"><label>Price</label><input id="valuePrice" type="number" step="0.01" placeholder="0"></div>
-    </div>
-    <div style="margin-top:10px"><button class="btn btn-primary" onclick="saveValue()">+ Add Value</button></div>
-  </div>
-  <table><thead><tr><th>Value</th><th>Price</th><th>Status</th><th>Action</th></tr></thead><tbody id="valuesTable"></tbody></table>
-</div>
-</div>
-
-<!-- PRICE MODAL -->
-<div class="modal" id="priceModal">
-<div class="modal-box">
-  <div class="modal-header"><h3>Add Pricing Rule</h3><button class="close" onclick="closeModal('priceModal')">×</button></div>
-  <div class="form-grid">
-    <div class="field"><label>Category</label><select id="priceCategory"></select></div>
-    <div class="field"><label>Rule / Combination</label><input id="priceRule" placeholder="A4 or L + Black + 180 GSM"></div>
-    <div class="field"><label>Price</label><input id="priceAmount" type="number" step="0.01"></div>
-    <div class="field"><label>Pricing Method</label><select id="priceMethod"><option>Fixed</option><option>Per SQM</option><option>Base + Extra</option></select></div>
-  </div>
-  <div class="actions" style="justify-content:flex-end;margin-top:15px"><button class="btn btn-gray" onclick="closeModal('priceModal')">Cancel</button><button class="btn btn-primary" onclick="savePrice()">Save Price</button></div>
-</div>
-</div>
-
-<!-- DELIVERY SETTINGS MODAL -->
-<div class="modal" id="deliverySettingsModal">
-<div class="modal-box">
-  <div class="modal-header"><h3 id="deliverySettingsTitle">Delivery Settings</h3><button class="close" onclick="closeModal('deliverySettingsModal')">×</button></div>
-  <div class="form-grid">
-    <div class="field"><label>Normal Production Days</label><input id="prodDays" type="number" min="0" step="1" placeholder="Example: 2"></div>
-    <div class="field"><label>Normal Delivery Fee</label><input id="normalDeliveryFee" type="number" min="0" step="0.01"></div>
-    <div class="field"><label>Urgent Order</label><select id="urgentEnabled"><option value="true">Available</option><option value="false">Not Available</option></select></div>
-    <div class="field"><label>Urgent Delivery</label><select id="urgentMode"><option value="tomorrow">Get Tomorrow</option></select></div>
-    <div class="field"><label>Urgent Extra Fee</label><input id="urgentFee" type="number" min="0" step="0.01" placeholder="Example: 800"></div>
-  </div>
-  <div class="help" style="margin-top:12px">Normal date is calculated from the order date + production days. Urgent orders are available only when enabled and add the urgent fee.</div>
-  <div class="actions" style="justify-content:flex-end;margin-top:15px"><button class="btn btn-gray" onclick="closeModal('deliverySettingsModal')">Cancel</button><button class="btn btn-primary" onclick="saveDeliverySettings()">Save Settings</button></div>
-</div>
-</div>
-
-<!-- DELIVERY SLOT MODAL -->
-<div class="modal" id="deliverySlotModal">
-<div class="modal-box">
-  <div class="modal-header"><h3>Add Delivery Time Slot</h3><button class="close" onclick="closeModal('deliverySlotModal')">×</button></div>
-  <div class="form-grid">
-    <div class="field full"><label>Time Slot</label><input id="slotTime" placeholder="10:00 AM - 12:00 PM"></div>
-    <div class="field"><label>Delivery Fee</label><input id="slotFee" type="number" min="0" step="0.01"></div>
-    <div class="field"><label>Status</label><select id="slotActive"><option value="true">Active</option><option value="false">Hidden</option></select></div>
-  </div>
-  <div class="actions" style="justify-content:flex-end;margin-top:15px"><button class="btn btn-gray" onclick="closeModal('deliverySlotModal')">Cancel</button><button class="btn btn-primary" onclick="saveDeliverySlot()">Save Slot</button></div>
-</div>
-</div>
-
-<!-- ORDER MODAL -->
-<div class="modal" id="orderModal">
-<div class="modal-box large">
-  <div class="modal-header"><h3 id="orderTitle">Order</h3><button class="close" onclick="closeModal('orderModal')">×</button></div>
-  <div id="orderDetails"></div>
-  <div class="panel workflow-panel">
-    <div class="panel-header"><h4>Order Workflow</h4><span class="help">Save each milestone after completing it.</span></div>
-    <div class="workflow-grid">
-      <div class="workflow-step"><span class="workflow-number">01</span><div><strong>Payment verification</strong><p>Review the receipt before confirming.</p></div><button class="btn btn-blue btn-small" onclick="workflowAction('payment_confirmed')">Confirm Payment</button></div>
-      <div class="workflow-step"><span class="workflow-number">02</span><div><strong>Artwork downloaded</strong><p>Record after a successful artwork download.</p></div><button class="btn btn-blue btn-small" onclick="workflowAction('artwork_downloaded')">Mark Downloaded</button></div>
-      <div class="workflow-step"><span class="workflow-number">03</span><div><strong>Production completed</strong><p>Confirm only after production and quality check.</p></div><button class="btn btn-blue btn-small" onclick="workflowAction('production_completed')">Production Done</button></div>
-      <div class="workflow-step delivery-step"><span class="workflow-number">04</span><div><strong>Handover to delivery</strong><p>Enter tracking details and estimated delivery.</p></div>
-        <div class="form-grid">
-          <div class="field"><label>Delivery provider</label><input id="fulfillmentProvider" placeholder="Courier / delivery company"></div>
-          <div class="field"><label>Tracking number</label><input id="fulfillmentTracking" placeholder="Tracking number"></div>
-          <div class="field"><label>Estimated delivery date & time</label><input id="fulfillmentEta" type="datetime-local"></div>
-          <div class="field"><label>Delivery notes (optional)</label><input id="fulfillmentNotes" placeholder="Optional notes"></div>
-        </div>
-        <button class="btn btn-primary" style="margin-top:12px" onclick="workflowAction('handed_over')">Save Delivery & Mark Shipped</button>
-      </div>
-    </div>
-    <p id="workflowMessage" class="help" style="margin-top:12px">Workflow controls require the matching Supabase fulfillment integration and policies before they can update customer tracking.</p>
-  </div>
-  <div class="actions" style="margin-top:15px">
-    <button class="btn btn-gray" onclick="closeModal('orderModal')">Close</button>
-  </div>
-</div>
-</div>
-
 <script>
-const KEY="janu_print_demo_v2";
-let state={
- categories:[
-  {id:"cat1",name:"DTF Custom Print",description:"Custom DTF printing",active:true,delivery:{days:1,fee:500,urgent:true,urgentMode:"tomorrow",urgentFee:500},options:[
-   {id:"o1",name:"Size",values:[["A5",15],["A4",25],["A3",40],["Custom",0]]},
-   {id:"o2",name:"Design Upload",values:[["Upload",0],["WhatsApp",0]]},
-   {id:"o3",name:"Custom Size",values:[]}
-  ]},
-  {id:"cat2",name:"Plain T-Shirt",description:"Plain printed T-shirts",active:true,delivery:{days:2,fee:500,urgent:true,urgentMode:"tomorrow",urgentFee:800},options:[
-   {id:"o4",name:"Size",values:[["S",20],["M",20],["L",22],["XL",24],["XXL",26]]},
-   {id:"o5",name:"Colour",values:[["Black",0],["White",0],["Red",2],["Green",2]]},
-   {id:"o6",name:"GSM",values:[["160 GSM",0],["180 GSM",3],["200 GSM",5]]},
-   {id:"o7",name:"Style",values:[["Round Neck",0],["Polo",8],["V-Neck",4]]},
-   {id:"o8",name:"Sleeve",values:[["Short",0],["Long",5]]}
-  ]},
-  {id:"cat3",name:"Bag Printing",description:"Printed bags",active:true,delivery:{days:2,fee:500,urgent:true,urgentMode:"tomorrow",urgentFee:700},options:[
-   {id:"o9",name:"Material",values:[["Non Woven",10],["Canvas",20],["Cotton",18]]},
-   {id:"o10",name:"Size",values:[["Small",10],["Medium",15],["Large",20]]}
-  ]},
-  {id:"cat4",name:"Mug Printing",description:"Printed mugs",active:true,delivery:{days:2,fee:500,urgent:true,urgentMode:"tomorrow",urgentFee:700},options:[
-   {id:"o11",name:"Material",values:[["Ceramic",15],["Magic Mug",25],["Metal",30]]},
-   {id:"o12",name:"Capacity",values:[["250ml",15],["330ml",18],["450ml",22]]}
-  ]}
- ],
- prices:[],
- deliveries:[],
- orders:[
-  {id:"ORD-1001",customer:"Demo Customer",category:"DTF Custom Print",total:25,status:"Pending",options:"A4, Upload",delivery:"Standard",checklist:{artwork:false,payment:false,production:false,delivery:false}},
-  {id:"ORD-1002",customer:"Test Customer",category:"Plain T-Shirt",total:32,status:"Processing",options:"L, Black, 180 GSM, Round Neck, Short",delivery:"Standard",checklist:{artwork:true,payment:true,production:false,delivery:false}}
- ],
- settings:{business:"Janu Print | FAB",whatsapp:"",phone:"",currency:"LKR",whatsappEnabled:true,uploadEnabled:true}
+/* ===== SETTINGS - change here only if your database uses different names ===== */
+const CFG={
+ SUPABASE_URL:'https://gilveahoqqbgqomerrov.supabase.co',
+ SUPABASE_KEY:'',                       // only needed if ../config/supabase-config.js is not found
+ STATUSES:['Pending','Accepted','Printing','Ready','Completed','Cancelled'],
+ PAY_OK:'paid',PAY_NO:'rejected',
+ ART_BUCKET:'artwork',SLIP_BUCKET:'payment-slips',
+ GROUPS:{
+  catalogue:{title:'Catalogue',tables:['categories','products','gallery']},
+  pricing:{title:'Pricing',tables:['printing_methods','print_locations','products']},
+  site:{title:'Site and delivery',tables:['homepage_settings','contact_details']}
+ },
+ IMG_BUCKET:{categories:'products',products:'products',gallery:'gallery',homepage_settings:'branding',contact_details:'branding'}
 };
-let editingCategoryId=null,currentCategoryId=null,currentOptionId=null,currentOrderId=null;
+const COLORS={pending:'#f2b705',accepted:'#0a9fd0',printing:'#3b4cca',ready:'#1f9d63',completed:'#4b5565',cancelled:'#d6336c'};
+const db=window.db||(window.supabase&&CFG.SUPABASE_KEY?supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_KEY):null);
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pick=(o,ks)=>{for(const k of ks)if(o&&o[k]!=null&&o[k]!=='')return o[k]};
+const txt=v=>v&&typeof v==='object'?Object.values(v).filter(Boolean).join(', '):(v??'');
+const ref=o=>pick(o,['order_number'])||'#'+String(o.id).slice(0,8).toUpperCase();
+const money=n=>n==null?'-':'Rs '+Number(n).toLocaleString('en-LK',{maximumFractionDigits:2});
+const fmt=d=>d?new Date(d).toLocaleString('en-GB',{dateStyle:'medium',timeStyle:'short'}):'-';
+const total=o=>pick(o,['total_price','total_amount','total','grand_total','payment_amount']);
+const cust=o=>{let c=o.customers;if(Array.isArray(c))c=c[0];c=c||{};return{name:pick(c,['name','full_name'])||pick(o,['customer_name']),phone:pick(c,['phone'])||pick(o,['customer_phone','phone']),email:pick(c,['email'])||pick(o,['customer_email','email'])}};
+const receipt=o=>pick(o,['payment_receipt_url','payment_slip_url']);
+const needsPay=o=>receipt(o)&&![CFG.PAY_OK,CFG.PAY_NO].includes(o.payment_status);
+const chip=(s,c)=>`<span class="chip" style="background:${c||COLORS[String(s).toLowerCase()]||'#667085'}">${esc(s||'-')}</span>`;
+const payChip=o=>chip(o.payment_status||'no payment',o.payment_status===CFG.PAY_OK?'#1f9d63':o.payment_status===CFG.PAY_NO?'#d6336c':needsPay(o)?'#f2b705':'#667085');
+function toast(m,t='ok'){const e=document.createElement('div');e.className='t '+t;e.textContent=m;$('#toasts').append(e);setTimeout(()=>e.remove(),t==='err'?7000:4000)}
+const S={orders:[],seen:null,fresh:0,rows:[],table:null};
 
-function loadState(){
- const raw=localStorage.getItem(KEY);
- if(raw){try{state=JSON.parse(raw)}catch(e){}}
+/* ===== sign in ===== */
+async function isAdmin(u){const{data,error}=await db.from('admin_profiles').select('*');return !error&&(data||[]).some(r=>Object.values(r).includes(u.id))}
+async function boot(){
+ if(!db){document.body.innerHTML='<p style="padding:24px">Supabase client not found. Put this file in the admin folder next to ../config/supabase-config.js, or add your public key in SUPABASE_KEY.</p>';return}
+ const{data:{session}}=await db.auth.getSession();
+ if(session&&await isAdmin(session.user))start();else $('#login').style.display='block';
 }
-function saveState(){localStorage.setItem(KEY,JSON.stringify(state));}
-function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-function money(v){return `${state.settings.currency||"LKR"} ${Number(v||0).toFixed(2)}`}
-function openModal(id){document.getElementById(id).classList.add("open")}
-function closeModal(id){document.getElementById(id).classList.remove("open")}
-
-function showPage(page,button){
- document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
- document.getElementById("page-"+page)?.classList.add("active");
- document.querySelectorAll(".menu button").forEach(x=>x.classList.remove("active"));
- if(button)button.classList.add("active");
- const titles={dashboard:"Dashboard",categories:"Categories",pricing:"Pricing",delivery:"Delivery",orders:"Orders",payments:"Payments",settings:"Settings"};
- document.getElementById("pageTitle").textContent=titles[page]||"Dashboard";
- closeSidebar();
- if(page==="dashboard")renderDashboard();
- if(page==="categories")renderCategories();
- if(page==="pricing")renderPricing();
- if(page==="delivery")renderDeliveries();
- if(page==="orders")renderOrders();
- if(page==="orders")loadCustomerFiles();
-  if(page==="payments")loadPaymentReceipts();
- if(page==="settings")renderSettings();
+async function login(){
+ const{data,error}=await db.auth.signInWithPassword({email:$('#em').value.trim(),password:$('#pw').value});
+ if(error)return toast(error.message,'err');
+ if(!await isAdmin(data.user)){await db.auth.signOut();return toast('This account is not in admin_profiles.','err')}
+ $('#login').style.display='none';start();
 }
-function showPageByName(page){const b=[...document.querySelectorAll(".menu button")].find(x=>x.getAttribute("onclick")?.includes("'"+page+"'"));showPage(page,b)}
-function toggleSidebar(){
- const sidebar=document.getElementById("sidebar");
- const isOpen=sidebar.classList.toggle("open");
- document.getElementById("sidebarBackdrop")?.classList.toggle("visible",isOpen);
- document.querySelector(".mobile-menu")?.setAttribute("aria-expanded",String(isOpen));
- document.body.classList.toggle("sidebar-open",isOpen);
-}
-function closeSidebar(){
- document.getElementById("sidebar")?.classList.remove("open");
- document.getElementById("sidebarBackdrop")?.classList.remove("visible");
- document.querySelector(".mobile-menu")?.setAttribute("aria-expanded","false");
- document.body.classList.remove("sidebar-open");
-}
-document.addEventListener("keydown",e=>{if(e.key==="Escape")closeSidebar()});
-async function logout(){
-  try {
-    if (window.db && window.db.auth) await window.db.auth.signOut();
-  } catch (e) {
-    console.warn('Logout warning:', e);
-  }
-  window.location.href = 'login.html';
+async function start(){
+ $('#app').style.display='block';
+ await loadOrders();S.seen=new Set(S.orders.map(o=>o.id));
+ db.channel('orders-live').on('postgres_changes',{event:'INSERT',schema:'public',table:'orders'},poll).subscribe();
+ setInterval(poll,5000);document.addEventListener('visibilitychange',()=>!document.hidden&&poll());
+ addEventListener('hashchange',render);render();
 }
 
-function renderDashboard(){
- const total=state.orders.length;
- const pending=state.orders.filter(x=>x.status==="Pending").length;
- const processing=state.orders.filter(x=>x.status==="Processing").length;
- const delivered=state.orders.filter(x=>x.status==="Delivered").length;
- document.getElementById("statTotal").textContent=total;
- document.getElementById("statPending").textContent=pending;
- document.getElementById("statProcessing").textContent=processing;
- document.getElementById("statDelivered").textContent=delivered;
- document.getElementById("recentOrders").innerHTML=state.orders.slice(-5).reverse().map(o=>`
- <tr><td>${esc(o.id)}</td><td>${esc(o.customer)}</td><td>${esc(o.category)}</td><td>${money(o.total)}</td><td><span class="badge status-${o.status.toLowerCase()}">${esc(o.status)}</span></td></tr>`).join("")||`<tr><td colspan="5" class="empty">No orders yet</td></tr>`;
+/* ===== data ===== */
+async function loadOrders(){
+ let r=await db.from('orders').select('*,customers(*),order_items(*)').order('created_at',{ascending:false}).limit(500);
+ if(r.error)r=await db.from('orders').select('*').order('created_at',{ascending:false}).limit(500);
+ if(r.error)toast('Could not load orders: '+r.error.message,'err');else S.orders=r.data||[];
+}
+let polling=false;
+async function poll(){
+ if(polling||!S.seen)return;polling=true;
+ try{
+  const r=await db.from('orders').select('id').order('created_at',{ascending:false}).limit(30);
+  if(r.error)return;
+  const ids=r.data.map(x=>x.id).filter(i=>!S.seen.has(i));if(!ids.length)return;
+  ids.forEach(i=>S.seen.add(i));await loadOrders();
+  ids.forEach(i=>{const o=S.orders.find(x=>x.id==i);if(!o)return;S.fresh++;
+   const m='New order '+ref(o)+(cust(o).name?' from '+cust(o).name:'')+' - '+money(total(o));
+   toast(m,'new');beep();if('Notification' in window&&Notification.permission==='granted')new Notification('Janu Print | FAB',{body:m})});
+  document.title='('+S.fresh+') Janu Print | FAB - Admin';render();
+ }finally{polling=false}
+}
+function beep(){try{const a=new AudioContext(),o=a.createOscillator();o.connect(a.destination);o.frequency.value=880;o.start();o.stop(a.currentTime+.18)}catch(e){}}
+
+/* ===== layout ===== */
+const NAV=[['dashboard','Dashboard'],['orders','Orders'],['payments','Payments'],['catalogue','Catalogue'],['pricing','Pricing'],['site','Site and delivery']];
+function render(){
+ const v=(location.hash||'#dashboard').slice(1);
+ if(v==='orders'&&S.fresh){S.fresh=0;document.title='Janu Print | FAB - Admin'}
+ $('#nav').innerHTML='<div class="logo"><span class="reg"><i style="background:var(--c)"></i><i style="background:var(--m)"></i><i style="background:var(--y)"></i><i style="background:#fff"></i></span>Janu Print | FAB</div>'+
+  NAV.map(([k,t])=>`<a href="#${k}" class="${v===k?'on':''}">${t}${k==='orders'&&S.fresh?`<span class="badge">${S.fresh}</span>`:''}</a>`).join('')+
+  '<div class="sp"></div><a href="#" data-act="alerts">Turn on alerts</a><a href="#" data-act="logout">Sign out</a>';
+ const m=$('#main');
+ if(v==='orders')m.innerHTML=viewOrders();
+ else if(v==='payments')m.innerHTML=viewPayments();
+ else if(CFG.GROUPS[v])viewContent(v);
+ else m.innerHTML=viewDash();
 }
 
-function renderCategories(){
- document.getElementById("categoryTable").innerHTML=state.categories.map(c=>`
- <tr>
-  <td><strong>${esc(c.name)}</strong><div style="font-size:10px;color:#888">${esc(c.description)}</div></td>
-  <td>${c.options.length} options</td>
-  <td><span class="badge ${c.active?"":"off"}">${c.active?"Active":"Hidden"}</span></td>
-  <td><div class="actions">
-   <button class="btn btn-blue btn-small" onclick="openOptions('${c.id}')">Options</button>
-   <button class="btn btn-gray btn-small" onclick="editCategory('${c.id}')">Edit</button>
-   <button class="btn btn-danger btn-small" onclick="deleteCategory('${c.id}')">Delete</button>
-  </div></td>
- </tr>`).join("");
-}
-function openCategoryModal(){
- editingCategoryId=null;
- document.getElementById("categoryModalTitle").textContent="Add Category";
- document.getElementById("catName").value="";
- document.getElementById("catDescription").value="";
- document.getElementById("catStatus").value="true";
- openModal("categoryModal");
-}
-function editCategory(id){
- const c=state.categories.find(x=>x.id===id);if(!c)return;
- editingCategoryId=id;
- document.getElementById("categoryModalTitle").textContent="Edit Category";
- document.getElementById("catName").value=c.name;
- document.getElementById("catDescription").value=c.description||"";
- document.getElementById("catStatus").value=String(c.active);
- openModal("categoryModal");
-}
-function saveCategory(){
- const name=document.getElementById("catName").value.trim();
- if(!name){alert("Enter category name.");return}
- if(editingCategoryId){
-  const c=state.categories.find(x=>x.id===editingCategoryId);c.name=name;c.description=document.getElementById("catDescription").value.trim();c.active=document.getElementById("catStatus").value==="true";
- }else{
-  state.categories.push({id:"cat"+Date.now(),name,description:document.getElementById("catDescription").value.trim(),active:true,delivery:{days:1,fee:0,urgent:false,urgentMode:"tomorrow",urgentFee:0},options:[]});
- }
- saveState();closeModal("categoryModal");renderCategories();
-}
-function deleteCategory(id){
- if(!confirm("Delete this category?"))return;
- state.categories=state.categories.filter(x=>x.id!==id);saveState();renderCategories();
+/* ===== dashboard ===== */
+function viewDash(){
+ const O=S.orders,day=new Date().toDateString();
+ const by=s=>O.filter(o=>String(o.status).toLowerCase()===s.toLowerCase()).length;
+ const paid=O.filter(o=>o.payment_status===CFG.PAY_OK).reduce((a,o)=>a+Number(total(o)||0),0);
+ const stages=CFG.STATUSES.map(s=>[s,by(s)]),sum=stages.reduce((a,x)=>a+x[1],0)||1;
+ const need=O.filter(needsPay);
+ return `<div class="top"><h1>Dashboard</h1><span class="m">Live from your database. New orders appear within 5 seconds.</span></div>
+ <div class="kpis">
+  <div class="kpi"><b>${O.length}</b><span>Orders loaded</span></div>
+  <div class="kpi" style="border-color:var(--y)"><b>${O.filter(o=>new Date(o.created_at).toDateString()===day).length}</b><span>Orders today</span></div>
+  <div class="kpi" style="border-color:var(--m)"><b>${need.length}</b><span>Receipts to review</span></div>
+  <div class="kpi" style="border-color:var(--g)"><b>${money(paid)}</b><span>Confirmed payments</span></div></div>
+ <div class="card"><h3>Orders on the press</h3>
+  <div class="press">${stages.map(([s,n])=>`<i style="width:${n/sum*100}%;background:${COLORS[s.toLowerCase()]||'#667085'}"></i>`).join('')}</div>
+  <div class="legend">${stages.map(([s,n])=>`<span><s style="background:${COLORS[s.toLowerCase()]||'#667085'}"></s>${esc(s)} ${n}</span>`).join('')}</div></div>
+ ${need.length?`<div class="card"><h3>Waiting for your payment decision</h3>${ordTable(need.slice(0,6))}</div>`:''}
+ <div class="card"><h3>Recent orders</h3>${ordTable(O.slice(0,8))}</div>`;
 }
 
-function openOptions(categoryId){
- currentCategoryId=categoryId;
- const c=state.categories.find(x=>x.id===categoryId);if(!c)return;
- document.getElementById("optionsTitle").textContent=c.name+" Options";
- document.getElementById("optionsSubtitle").textContent="Manage customer selections and values.";
- renderOptions();openModal("optionsModal");
+/* ===== orders ===== */
+function ordTable(list){
+ if(!list.length)return '<div class="empty">No orders here yet.</div>';
+ return `<div class="tw"><table><tr><th>Order</th><th>Date</th><th>Customer</th><th>Total</th><th>Status</th><th>Payment</th></tr>${list.map(o=>`<tr data-act="open" data-id="${esc(o.id)}"><td><b>${esc(ref(o))}</b></td><td>${fmt(o.created_at)}</td><td>${esc(cust(o).name||'-')}<br><span class="m">${esc(cust(o).phone||'')}</span></td><td>${money(total(o))}</td><td>${chip(o.status)}</td><td>${payChip(o)}</td></tr>`).join('')}</table></div>`;
 }
-function renderOptions(){
- const c=state.categories.find(x=>x.id===currentCategoryId);if(!c)return;
- document.getElementById("optionsList").innerHTML=c.options.map(o=>`
- <div class="option-row">
-  <div><strong>${esc(o.name)}</strong><small>${o.values.length} values</small></div>
-  <div class="actions">
-   <button class="btn btn-blue btn-small" onclick="openValues('${o.id}')">Values & Prices</button>
-   <button class="btn btn-danger btn-small" onclick="removeOption('${o.id}')">Remove</button>
-  </div>
- </div>`).join("")||`<div class="empty">No options added yet.</div>`;
+function viewOrders(){
+ const q=(S.q||'').toLowerCase(),st=S.st||'';
+ const list=S.orders.filter(o=>(!st||String(o.status).toLowerCase()===st.toLowerCase())&&(!q||(ref(o)+' '+cust(o).name+' '+cust(o).phone).toLowerCase().includes(q)));
+ return `<div class="top"><h1>Orders</h1><button class="ghost" data-act="reload">Refresh</button></div>
+ <div class="filters"><input id="q" placeholder="Search order, name or phone" value="${esc(S.q||'')}"><select id="st"><option value="">All statuses</option>${CFG.STATUSES.map(s=>`<option ${s===st?'selected':''}>${s}</option>`).join('')}</select></div>
+ <div class="card">${ordTable(list)}</div>`;
 }
-function addOption(name){
- const c=state.categories.find(x=>x.id===currentCategoryId);if(!c)return;
- if(c.options.some(x=>x.name.toLowerCase()===name.toLowerCase())){alert("This option already exists.");return}
- c.options.push({id:"o"+Date.now()+Math.random(),name,values:[]});saveState();renderOptions();
-}
-function removeOption(id){
- const c=state.categories.find(x=>x.id===currentCategoryId);if(!c)return;
- c.options=c.options.filter(x=>x.id!==id);saveState();renderOptions();
-}
-
-function openValues(optionId){
- currentOptionId=optionId;
- const c=state.categories.find(x=>x.id===currentCategoryId);const o=c?.options.find(x=>x.id===optionId);if(!o)return;
- document.getElementById("valuesTitle").textContent=o.name+" Values & Prices";
- document.getElementById("valueName").value="";
- document.getElementById("valuePrice").value="";
- renderValues();openModal("valuesModal");
-}
-function renderValues(){
- const c=state.categories.find(x=>x.id===currentCategoryId);const o=c?.options.find(x=>x.id===currentOptionId);if(!o)return;
- document.getElementById("valuesTable").innerHTML=o.values.map((v,i)=>`
- <tr><td>${esc(v[0])}</td><td>${money(v[1])}</td><td><span class="badge">Active</span></td>
- <td><button class="btn btn-danger btn-small" onclick="deleteValue(${i})">Delete</button></td></tr>`).join("")||`<tr><td colspan="4" class="empty">No values yet</td></tr>`;
-}
-function saveValue(){
- const name=document.getElementById("valueName").value.trim();const price=Number(document.getElementById("valuePrice").value||0);
- if(!name){alert("Enter value name.");return}
- const c=state.categories.find(x=>x.id===currentCategoryId);const o=c.options.find(x=>x.id===currentOptionId);
- o.values.push([name,price]);saveState();document.getElementById("valueName").value="";document.getElementById("valuePrice").value="";renderValues();renderOptions();
-}
-function deleteValue(index){
- const c=state.categories.find(x=>x.id===currentCategoryId);const o=c.options.find(x=>x.id===currentOptionId);
- o.values.splice(index,1);saveState();renderValues();renderOptions();
-}
-
-function renderPricing(){
- const el=document.getElementById("pricingList");
- if(!state.prices.length){el.innerHTML=`<div class="empty">No pricing rules yet. Add one above.</div>`;return}
- el.innerHTML=`<table><thead><tr><th>Category</th><th>Rule</th><th>Method</th><th>Price</th><th>Action</th></tr></thead><tbody>`+
- state.prices.map((p,i)=>`<tr><td>${esc(p.category)}</td><td>${esc(p.rule)}</td><td>${esc(p.method)}</td><td>${money(p.amount)}</td><td><button class="btn btn-danger btn-small" onclick="deletePrice(${i})">Delete</button></td></tr>`).join("")+
- `</tbody></table>`;
-}
-function openPriceModal(){
- document.getElementById("priceCategory").innerHTML=state.categories.map(c=>`<option>${esc(c.name)}</option>`).join("");
- document.getElementById("priceRule").value="";document.getElementById("priceAmount").value="";document.getElementById("priceMethod").value="Fixed";openModal("priceModal");
-}
-function savePrice(){
- const category=document.getElementById("priceCategory").value,rule=document.getElementById("priceRule").value.trim(),amount=Number(document.getElementById("priceAmount").value||0),method=document.getElementById("priceMethod").value;
- if(!rule){alert("Enter a pricing rule.");return}
- state.prices.push({category,rule,amount,method});saveState();closeModal("priceModal");renderPricing();
-}
-function deletePrice(i){state.prices.splice(i,1);saveState();renderPricing()}
-
-function renderDeliveries(){
-  const list=document.getElementById("deliveryCategoryList");
-  list.innerHTML=state.categories.map(c=>{
-    const d=c.delivery||{days:1,fee:0,urgent:false,urgentMode:"tomorrow",urgentFee:0};
-    c.delivery=d;
-    return `<div class="delivery-card" style="margin-bottom:10px">
-      <div class="panel-header" style="margin-bottom:8px">
-        <div><h5>${esc(c.name)}</h5><div class="help">${esc(c.description||"")}</div></div>
-        <button class="btn btn-blue btn-small" onclick="openDeliverySettings('${c.id}')">Edit</button>
-      </div>
-      <div class="delivery-grid">
-        <div><small>Normal Production</small><strong style="display:block;margin-top:4px">${Number(d.days||0)} day(s)</strong></div>
-        <div><small>Normal Fee</small><strong style="display:block;margin-top:4px">${money(d.fee)}</strong></div>
-        <div><small>Urgent</small><strong style="display:block;margin-top:4px">${d.urgent?"Tomorrow + "+money(d.urgentFee):"Not available"}</strong></div>
-      </div>
-    </div>`;
-  }).join("")||`<div class="empty">No categories yet.</div>`;
-
-  document.getElementById("deliverySlotTable").innerHTML=state.deliveries.map((d,i)=>`
-    <tr><td>${esc(d.time)}</td><td>${money(d.fee)}</td><td><span class="badge ${d.active?"":"off"}">${d.active?"Active":"Hidden"}</span></td>
-    <td><div class="actions"><button class="btn btn-gray btn-small" onclick="toggleDeliverySlot(${i})">Toggle</button><button class="btn btn-danger btn-small" onclick="deleteDeliverySlot(${i})">Delete</button></div></td></tr>`
-  ).join("")||`<tr><td colspan="4" class="empty">No delivery time slots yet.</td></tr>`;
-}
-function openDeliverySettings(id){
-  currentCategoryId=id;
-  const c=state.categories.find(x=>x.id===id); if(!c)return;
-  const d=c.delivery||{days:1,fee:0,urgent:false,urgentMode:"tomorrow",urgentFee:0};
-  document.getElementById("deliverySettingsTitle").textContent=c.name+" Delivery Settings";
-  document.getElementById("prodDays").value=d.days;
-  document.getElementById("normalDeliveryFee").value=d.fee;
-  document.getElementById("urgentEnabled").value=String(d.urgent);
-  document.getElementById("urgentMode").value=d.urgentMode||"tomorrow";
-  document.getElementById("urgentFee").value=d.urgentFee;
-  openModal("deliverySettingsModal");
-}
-function saveDeliverySettings(){
-  const c=state.categories.find(x=>x.id===currentCategoryId); if(!c)return;
-  c.delivery={
-    days:Math.max(0,Number(document.getElementById("prodDays").value||0)),
-    fee:Math.max(0,Number(document.getElementById("normalDeliveryFee").value||0)),
-    urgent:document.getElementById("urgentEnabled").value==="true",
-    urgentMode:document.getElementById("urgentMode").value,
-    urgentFee:Math.max(0,Number(document.getElementById("urgentFee").value||0))
-  };
-  saveState();closeModal("deliverySettingsModal");renderDeliveries();
-}
-function openDeliverySlotModal(){
-  document.getElementById("slotTime").value="";
-  document.getElementById("slotFee").value="";
-  document.getElementById("slotActive").value="true";
-  openModal("deliverySlotModal");
-}
-function saveDeliverySlot(){
-  const time=document.getElementById("slotTime").value.trim();
-  const fee=Math.max(0,Number(document.getElementById("slotFee").value||0));
-  const active=document.getElementById("slotActive").value==="true";
-  if(!time){alert("Enter time slot.");return}
-  state.deliveries.push({time,fee,active});
-  saveState();closeModal("deliverySlotModal");renderDeliveries();
-}
-function toggleDeliverySlot(i){state.deliveries[i].active=!state.deliveries[i].active;saveState();renderDeliveries()}
-function deleteDeliverySlot(i){if(!confirm("Delete this time slot?"))return;state.deliveries.splice(i,1);saveState();renderDeliveries()}
-
-function renderOrders(){
- document.getElementById("ordersTable").innerHTML=state.orders.map(o=>`
- <tr><td>${esc(o.id)}</td><td>${esc(o.customer)}</td><td>${esc(o.category)}</td><td>${money(o.total)}</td>
- <td><span class="badge status-${o.status.toLowerCase()}">${esc(o.status)}</span></td>
- <td><button class="btn btn-blue btn-small" onclick="openOrder('${o.id}')">View</button></td></tr>`).join("")||`<tr><td colspan="6" class="empty">No orders yet.</td></tr>`;
-}
-function addDemoOrder(){
- const c=state.categories[0];
- state.orders.push({id:"ORD-"+(1000+state.orders.length+1),customer:"New Demo Customer",category:c?.name||"DTF Custom Print",total:35,status:"Pending",options:"A4, Upload",delivery:"Standard",checklist:{artwork:false,payment:false,production:false,delivery:false}});
- saveState();renderOrders();renderDashboard();
-}
-function ensureChecklist(o){
- if(!o.checklist)o.checklist={artwork:false,payment:false,production:false,delivery:false};
- return o.checklist;
-}
-function toggleChecklistItem(orderId,key){
- const o=state.orders.find(x=>x.id===orderId);if(!o)return;
- const cl=ensureChecklist(o);
- cl[key]=!cl[key];
- saveState();openOrder(orderId);
+function viewPayments(){
+ const L=S.orders.filter(o=>receipt(o)||o.payment_submitted_at||o.payment_reference);
+ return `<div class="top"><h1>Payments</h1><span class="m">History of submitted receipts. Approve or reject inside the order.</span></div><div class="card">${L.length?`<div class="tw"><table><tr><th>Order</th><th>Submitted</th><th>Method</th><th>Amount</th><th>Reference</th><th>Status</th><th></th></tr>${L.map(o=>`<tr><td><b>${esc(ref(o))}</b></td><td>${fmt(o.payment_submitted_at||o.created_at)}</td><td>${esc(o.payment_method||'-')}</td><td>${money(pick(o,['payment_amount'])??total(o))}</td><td>${esc(o.payment_reference||'-')}</td><td>${payChip(o)}</td><td>${receipt(o)?`<button class="ghost" data-act="file" data-bucket="${CFG.SLIP_BUCKET}" data-path="${esc(receipt(o))}">Receipt</button> `:''}<button class="ghost" data-act="open" data-id="${esc(o.id)}">Open order</button></td></tr>`).join('')}</table></div>`:'<div class="empty">No payment receipts yet.</div>'}</div>`;
 }
 function openOrder(id){
- currentOrderId=id;const o=state.orders.find(x=>x.id===id);if(!o)return;
- const cl=ensureChecklist(o);
- const statuses=["Pending","Processing","Ready","Delivered"];
- const checkItems=[["artwork","Artwork confirmed"],["payment","Payment received"],["production","Production done"],["delivery","Ready / handed to delivery"]];
- document.getElementById("orderTitle").textContent=o.id;
- document.getElementById("orderDetails").innerHTML=`
- <div class="cards">
-  <div class="mini-card"><small>Customer</small><strong>${esc(o.customer)}</strong></div>
-  <div class="mini-card"><small>Category</small><strong>${esc(o.category)}</strong></div>
-  <div class="mini-card"><small>Total</small><strong>${money(o.total)}</strong></div>
- </div>
- <div class="panel" style="margin-top:15px"><strong>Selected Options</strong><p style="margin-top:8px;font-size:13px">${esc(o.options)}</p></div>
- <div class="panel"><strong>Delivery</strong><p style="margin-top:8px;font-size:13px">${esc(o.delivery)}</p></div>
- <div class="panel"><div class="panel-header"><strong>Customer Artwork</strong><span class="badge">Private file access</span></div><p style="margin-top:8px;font-size:13px;color:#777">Artwork must be loaded from this order's artwork_urls and downloaded through an authorized signed URL. Use the Customer Files section until order-specific artwork integration is connected.</p><button class="btn btn-blue btn-small" onclick="showPageByName('orders');closeModal('orderModal')">Open Orders / Customer Files</button></div>
- <div class="panel">
-  <strong>Order Status</strong>
-  <div class="status-flow">${statuses.map(s=>`<span class="${s===o.status?"current":""}">${esc(s)}</span>`).join("")}</div>
- </div>
- <div class="panel">
-  <strong>Manual Verification Checklist</strong>
-  <div class="checklist">${checkItems.map(([key,label])=>`
-   <label class="check-row"><input type="checkbox" ${cl[key]?"checked":""} onchange="toggleChecklistItem('${o.id}','${key}')"> ${esc(label)}</label>`).join("")}</div>
- </div>`;
- openModal("orderModal");
+ const o=S.orders.find(x=>x.id==id);if(!o)return;const c=cust(o),items=o.order_items||[];
+ const sts=CFG.STATUSES.includes(o.status)||!o.status?CFG.STATUSES:[o.status,...CFG.STATUSES];
+ const iso=o.estimated_delivery?new Date(new Date(o.estimated_delivery)-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,16):'';
+ $('#dr').innerHTML=`<div class="dh"><div><h2>${esc(ref(o))}</h2><span class="m">${fmt(o.created_at)}</span></div><button class="ghost" data-act="close">Close</button></div>
+ <section><h3>Customer</h3><p>${esc(c.name||'-')}<br>${c.phone?`<a href="tel:${esc(c.phone)}">${esc(c.phone)}</a> `:''}${esc(c.email||'')}</p><p class="m">${esc(txt(pick(o,['delivery_address','address','shipping_address']))||'No address saved')}</p></section>
+ <section><h3>Items - ${money(total(o))}</h3>${items.length?items.map(it=>{
+   const op=pick(it,['options','selected_options','details']),files=[];
+   Object.entries(it).forEach(([k,v])=>{if(/art|file|design/i.test(k))(Array.isArray(v)?v:[v]).forEach(x=>typeof x==='string'&&x&&files.push(x))});
+   return `<div class="item"><b>${esc(pick(it,['product_name','name','title'])||'Item')}</b> x ${esc(pick(it,['quantity','qty'])||1)} <span class="m">${money(pick(it,['line_total','total_price','total','price']))}</span>
+   ${op&&typeof op==='object'?`<div class="m">${Object.entries(op).map(([k,v])=>esc(k)+': '+esc(txt(v))).join(' | ')}</div>`:''}
+   ${files.map((f,i)=>`<button class="ghost" style="margin-top:6px" data-act="file" data-bucket="${CFG.ART_BUCKET}" data-path="${esc(f)}">Artwork ${i+1}</button> `).join('')}</div>`}).join(''):'<p class="m">No items found for this order.</p>'}</section>
+ <section><h3>Order status</h3><div class="row"><select id="nst">${sts.map(s=>`<option ${s===o.status?'selected':''}>${esc(s)}</option>`).join('')}</select><button data-act="status" data-id="${esc(o.id)}">Save status</button></div></section>
+ <section><h3>Payment</h3><p>${payChip(o)} <span class="m">${esc(o.payment_method||'')} ${o.payment_reference?'| Ref '+esc(o.payment_reference):''} ${o.payment_amount?'| '+money(o.payment_amount):''}</span></p>${o.payment_notes?`<p class="m">${esc(o.payment_notes)}</p>`:''}
+  <div class="row">${receipt(o)?`<button class="ghost" data-act="file" data-bucket="${CFG.SLIP_BUCKET}" data-path="${esc(receipt(o))}">View receipt</button>`:'<span class="m">No receipt uploaded</span>'}
+  <button class="ok" data-act="pay" data-v="${CFG.PAY_OK}" data-id="${esc(o.id)}">Approve payment</button><button class="bad" data-act="pay" data-v="${CFG.PAY_NO}" data-id="${esc(o.id)}">Reject</button></div></section>
+ <section><h3>Delivery and tracking</h3><div class="row"><label>Courier<input id="dp" value="${esc(o.delivery_provider||'')}"></label><label>Tracking number<input id="tn" value="${esc(o.tracking_number||'')}"></label></div>
+  <label>Estimated delivery<input id="edt" type="datetime-local" value="${iso}"></label><button data-act="ship" data-id="${esc(o.id)}">Save tracking</button></section>`;
+ $('#dr').classList.add('open');
 }
-function setCurrentOrderStatus(status){
- const o=state.orders.find(x=>x.id===currentOrderId);if(!o)return;o.status=status;saveState();renderOrders();renderDashboard();openOrder(currentOrderId);
+async function patch(id,f,msg){
+ const{data,error}=await db.from('orders').update(f).eq('id',id).select().maybeSingle();
+ if(error||!data){toast(error?error.message:'Not saved. The database refused the change - the admin update policy on orders may be missing.','err');return false}
+ Object.assign(S.orders.find(o=>o.id==id),data);toast(msg,'ok');render();openOrder(id);return true;
 }
-
-
-window.__customerFileDownloads = Object.create(null);
-
-function artworkStoragePath(value){
-  const raw=String(value||'').trim();
-  if(!raw)return '';
-  if(!/^https?:\/\//i.test(raw)) return raw.replace(/^\/+/, '');
-  try{
-    const u=new URL(raw);
-    const marker='/artwork/';
-    const i=u.pathname.indexOf(marker);
-    if(i>=0)return decodeURIComponent(u.pathname.slice(i+marker.length));
-  }catch(e){}
-  return raw;
+async function openFile(bucket,raw){
+ try{let p=String(raw);const sp=p.split('/'+bucket+'/');if(sp.length>1)p=sp[1].split('?')[0];p=decodeURIComponent(p);
+  const{data,error}=await db.storage.from(bucket).createSignedUrl(p,300);if(error)throw error;
+  const a=document.createElement('a');a.href=data.signedUrl;a.target='_blank';a.rel='noopener';a.click();
+ }catch(e){toast('Could not open file: '+e.message,'err')}
 }
 
-function formatFileDate(value){
-  if(!value)return '—';
-  const d=new Date(value);
-  if(Number.isNaN(d.getTime()))return '—';
-  const pad=n=>String(n).padStart(2,'0');
-  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+/* ===== catalogue / pricing / site: one editor for every table ===== */
+async function viewContent(g){
+ const G=CFG.GROUPS[g];if(!S.table||!G.tables.includes(S.table))S.table=G.tables[0];
+ $('#main').innerHTML=`<div class="top"><h1>${G.title}</h1></div><div class="tabs">${G.tables.map(t=>`<button class="${t===S.table?'on':''}" data-act="tab" data-t="${t}">${t.replace(/_/g,' ')}</button>`).join('')}</div><div class="card" id="ed"><div class="empty">Loading...</div></div>`;
+ const t=S.table,r=await db.from(t).select('*').limit(300);
+ if(S.table!==t)return;
+ if(r.error){$('#ed').innerHTML=`<div class="empty">Could not read table "${esc(t)}": ${esc(r.error.message)}</div>`;return}
+ S.rows=r.data||[];
+ if(!S.rows.length){$('#ed').innerHTML=`<div class="empty">This table is empty, so its columns are unknown. Add the first row in Supabase, then manage it here.</div>`;return}
+ const cols=Object.keys(S.rows[0]).filter(k=>!['created_at','updated_at'].includes(k)&&typeof S.rows[0][k]!=='object').slice(0,6);
+ S.cols=cols;
+ $('#ed').innerHTML=`<div class="top"><span class="m">${S.rows.length} rows. Click a row to edit.</span><button data-act="new">Add new</button></div><div class="tw"><table><tr>${cols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr>${S.rows.map((x,i)=>`<tr data-act="edit" data-i="${i}">${cols.map(c=>`<td>${esc(String(x[c]??'').slice(0,60))}</td>`).join('')}</tr>`).join('')}</table></div>`;
 }
-
-function fileExtension(path, fallback='file'){
-  const clean=String(path||'').split('?')[0];
-  const ext=(clean.split('.').pop()||fallback).replace(/[^a-z0-9]/gi,'').toLowerCase();
-  return ext||fallback;
+const RO=['id','created_at','updated_at'];
+function editRow(i){
+ const isNew=i<0,row=isNew?Object.fromEntries(Object.keys(S.rows[0]).map(k=>[k,typeof S.rows[0][k]==='boolean'?false:null])):S.rows[i];
+ const f=Object.entries(row).filter(([k])=>!(isNew&&RO.includes(k))).map(([k,v])=>{
+  if(RO.includes(k))return `<label>${k}<input value="${esc(v)}" disabled></label>`;
+  if(typeof v==='boolean')return `<label><input type="checkbox" data-k="${k}" ${v?'checked':''}> ${k}</label>`;
+  if(typeof v==='number')return `<label>${k}<input type="number" step="any" data-k="${k}" value="${v}"></label>`;
+  if(v&&typeof v==='object')return `<label>${k} (JSON)<textarea data-k="${k}" data-json="1">${esc(JSON.stringify(v,null,1))}</textarea></label>`;
+  const img=/image|logo|photo|banner|icon|img/i.test(k);
+  return `<label>${k}<input data-k="${k}" value="${esc(v)}">${img?`${v?`<img src="${esc(v)}" alt="" style="height:60px;margin:6px 0;border-radius:6px"><br>`:''}<input type="file" accept="image/*" data-up="${k}">`:''}</label>`}).join('');
+ $('#dr').innerHTML=`<div class="dh"><h2>${isNew?'Add to':'Edit'} ${esc(S.table.replace(/_/g,' '))}</h2><button class="ghost" data-act="close">Close</button></div><div style="margin-top:12px">${f}</div>
+ <div class="row"><button data-act="saverow" data-i="${i}">Save changes</button>${isNew?'':`<button class="bad" data-act="delrow" data-i="${i}">Delete</button>`}</div>`;
+ $('#dr').classList.add('open');
 }
-
-async function downloadArtworkFile(token){
-  try{
-    const item=window.__customerFileDownloads[token];
-    if(!item?.url)throw new Error('No design file is attached to this order.');
-    const path=artworkStoragePath(item.url);
-    if(!path)throw new Error('Design file path is empty.');
-
-    const {data:signed,error}=await window.db.storage.from('artwork').createSignedUrl(path,3600);
-    if(error)throw error;
-    if(!signed?.signedUrl)throw new Error('Could not create a secure design download link.');
-
-    const response=await fetch(signed.signedUrl);
-    if(!response.ok)throw new Error('Design download failed.');
-    const blob=await response.blob();
-
-    const ext=fileExtension(path,'file');
-    const stamp=formatFileDate(item.created_at).replace(/[: ]/g,'-');
-    const filename=`${item.order_number||item.order_id}-design-${stamp}-${item.index+1}.${ext}`;
-
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
-    setTimeout(()=>URL.revokeObjectURL(url),1500);
-  }catch(e){
-    console.error('Design download failed:',e);
-    alert('Design download failed: '+(e.message||e));
-  }
-}
-
-async function loadCustomerFiles(){
-  const table=document.getElementById('customerFilesTable');
-  const msg=document.getElementById('customerFilesMessage');
-  if(!table)return;
-  table.innerHTML='<tr><td colspan="5" class="empty">Loading customer files…</td></tr>';
-  if(msg)msg.textContent='';
-  window.__customerFileDownloads=Object.create(null);
-
-  try{
-    if(!window.db)throw new Error('Supabase client is not available.');
-
-    const {data:orders,error:ordersError}=await window.db.from('orders')
-      .select('id,created_at,customer_id,customers(name,phone)')
-      .order('created_at',{ascending:false})
-      .limit(200);
-    if(ordersError)throw ordersError;
-
-    const orderRows=orders||[];
-    if(!orderRows.length){
-      table.innerHTML='<tr><td colspan="5" class="empty">No customer orders found.</td></tr>';
-      return;
-    }
-
-    const ids=orderRows.map(o=>o.id);
-    const {data:items,error:itemError}=await window.db.from('order_items')
-      .select('id,order_id,product_name,artwork_urls')
-      .in('order_id',ids);
-    if(itemError)throw itemError;
-
-    const orderMap=Object.fromEntries(orderRows.map(o=>[o.id,o]));
-    const rows=[];
-
-    (items||[]).forEach(item=>{
-      const order=orderMap[item.order_id];
-      if(!order)return;
-      let urls=item.artwork_urls;
-      if(typeof urls==='string'){
-        try{urls=JSON.parse(urls);}catch(e){urls=[urls];}
-      }
-      if(!Array.isArray(urls))urls=urls?[urls]:[];
-
-      urls.filter(Boolean).forEach((url,index)=>{
-        const token=`${item.id}-${index}`;
-        window.__customerFileDownloads[token]={
-          url,order_id:order.id,order_number:order.id,
-          created_at:order.created_at,index
-        };
-        const customer=order.customers?.name||order.customers?.phone||'—';
-        rows.push(`<tr>
-          <td><strong>${esc(order.id)}</strong></td>
-          <td>${esc(customer)}</td>
-          <td>${esc(item.product_name||'—')}</td>
-          <td><button class="btn btn-blue btn-small" onclick="downloadArtworkFile('${esc(token)}')">Download Design</button></td>
-          <td>${esc(formatFileDate(order.created_at))}</td>
-        </tr>`);
-      });
-    });
-
-    table.innerHTML=rows.join('')||'<tr><td colspan="5" class="empty">No customer design files uploaded yet.</td></tr>';
-  }catch(e){
-    console.error('Customer files load failed:',e);
-    table.innerHTML='<tr><td colspan="5" class="empty">Could not load customer design files.</td></tr>';
-    if(msg)msg.textContent='Error: '+(e.message||e);
-  }
-}
-
-function receiptStoragePath(value){
-  const raw=String(value||'').trim();
-  if(!raw)return '';
-  if(!/^https?:\/\//i.test(raw)) return raw.replace(/^\/+/, '');
-  try{
-    const u=new URL(raw);
-    const marker='/payment-slips/';
-    const i=u.pathname.indexOf(marker);
-    if(i>=0)return decodeURIComponent(u.pathname.slice(i+marker.length));
-  }catch(e){}
-  return raw;
-}
-
-function paymentStatusLabel(v){
-  const map={pending:'Pending Payment',receipt_submitted:'Receipt Submitted',under_review:'Under Review',paid:'Paid',failed:'Failed',rejected:'Rejected',refunded:'Refunded'};
-  return map[v]||String(v||'Pending Payment');
-}
-
-async function loadPaymentReceipts(){
-  const table=document.getElementById('paymentReceiptsTable');
-  const msg=document.getElementById('paymentReceiptsMessage');
-  if(!table)return;
-  table.innerHTML='<tr><td colspan="8" class="empty">Loading receipts…</td></tr>';
-  if(msg)msg.textContent='';
-  window.__customerFileDownloads=window.__customerFileDownloads||Object.create(null);
-
-  try{
-    if(!window.db)throw new Error('Supabase client is not available.');
-    const {data,error}=await window.db.from('orders')
-      .select('id,total_amount,payment_method,payment_reference,payment_status,payment_receipt_url,payment_submitted_at,created_at,customers(name,phone)')
-      .not('payment_receipt_url','is',null)
-      .order('payment_submitted_at',{ascending:false});
-    if(error)throw error;
-
-    const rows=data||[];
-    const ids=rows.map(o=>o.id);
-    let items=[];
-    if(ids.length){
-      const r=await window.db.from('order_items')
-        .select('id,order_id,product_name,artwork_urls')
-        .in('order_id',ids);
-      if(r.error)throw r.error;
-      items=r.data||[];
-    }
-
-    const itemsByOrder={};
-    items.forEach(item=>{(itemsByOrder[item.order_id] ||= []).push(item);});
-
-    table.innerHTML=rows.map(o=>{
-      const customer=o.customers?.name||o.customers?.phone||'—';
-      const status=o.payment_status||'pending';
-      const designButtons=[];
-      (itemsByOrder[o.id]||[]).forEach(item=>{
-        let urls=item.artwork_urls;
-        if(typeof urls==='string'){try{urls=JSON.parse(urls);}catch(e){urls=[urls];}}
-        if(!Array.isArray(urls))urls=urls?[urls]:[];
-        urls.filter(Boolean).forEach((url,index)=>{
-          const token=`${item.id}-${index}`;
-          window.__customerFileDownloads[token]={
-            url,order_id:o.id,order_number:o.id||o.id,
-            created_at:o.created_at,index
-          };
-          designButtons.push(`<button class="btn btn-blue btn-small" style="margin:2px" onclick="downloadArtworkFile('${esc(token)}')">Design ${index+1}</button>`);
-        });
-      });
-      return `<tr>
-        <td><strong>${esc(o.id||o.id)}</strong></td>
-        <td>${esc(customer)}</td>
-        <td>${money(o.total_amount)}</td>
-        <td>${esc(o.payment_reference||'—')}</td>
-        <td><span class="badge ${status==='paid'?'':'status-pending'}">${esc(paymentStatusLabel(status))}</span></td>
-        <td>${esc(o.payment_submitted_at?formatFileDate(o.payment_submitted_at):o.created_at?formatFileDate(o.created_at):'—')}</td>
-        <td>${designButtons.join('')||'<span class="empty">No design</span>'}</td>
-        <td><button class="btn btn-blue btn-small" onclick="downloadPaymentReceipt('${esc(o.id)}')">Download</button></td>
-      </tr>`;
-    }).join('')||'<tr><td colspan="8" class="empty">No customer receipts uploaded yet.</td></tr>';
-  }catch(e){
-    console.error('Payment receipt load failed:',e);
-    table.innerHTML='<tr><td colspan="8" class="empty">Could not load payment receipts.</td></tr>';
-    if(msg)msg.textContent='Error: '+(e.message||e);
-  }
-}
-
-
-async function downloadPaymentReceipt(orderId){
-  try{
-    const {data:o,error}=await window.db.from('orders').select('id,payment_receipt_url,payment_submitted_at,created_at').eq('id',orderId).maybeSingle();
-    if(error)throw error;
-    if(!o?.payment_receipt_url)throw new Error('No receipt is attached to this order.');
-    const path=receiptStoragePath(o.payment_receipt_url);
-    if(!path)throw new Error('Receipt path is empty.');
-    const {data:signed,error:signedError}=await window.db.storage.from('payment-slips').createSignedUrl(path,3600);
-    if(signedError)throw signedError;
-    if(!signed?.signedUrl)throw new Error('Could not create a secure download link.');
-    const response=await fetch(signed.signedUrl);
-    if(!response.ok)throw new Error('Receipt download failed.');
-    const blob=await response.blob();
-    const ext=(path.split('.').pop()||'file').split('?')[0];
-    const stamp=formatFileDate(o.payment_submitted_at||o.created_at).replace(/[: ]/g,'-');
-    const filename=`${stamp}_payment-receipt.${ext}`;
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
-    setTimeout(()=>URL.revokeObjectURL(url),1500);
-  }catch(e){
-    console.error('Receipt download failed:',e);
-    alert('Receipt download failed: '+(e.message||e));
-  }
-}
-
-function workflowAction(action){
- const message=document.getElementById("workflowMessage");
- if(action==="handed_over"){
-   const provider=document.getElementById("fulfillmentProvider")?.value.trim();
-   const tracking=document.getElementById("fulfillmentTracking")?.value.trim();
-   const eta=document.getElementById("fulfillmentEta")?.value;
-   if(!provider||!tracking||!eta){
-     if(message)message.textContent="Enter the delivery provider, tracking number, and estimated delivery date/time first.";
-     return;
-   }
+async function saveRow(i){
+ const o={};
+ for(const e of document.querySelectorAll('#dr [data-k]')){
+  const k=e.dataset.k;
+  if(e.type==='checkbox')o[k]=e.checked;
+  else if(e.dataset.json){try{o[k]=JSON.parse(e.value||'null')}catch(x){return toast('Invalid JSON in '+k,'err')}}
+  else if(e.type==='number')o[k]=e.value===''?null:Number(e.value);
+  else o[k]=e.value===''?null:e.value;
  }
- const labels={
-  payment_confirmed:"Payment confirmation needs to call the existing secure admin payment-review workflow.",
-  artwork_downloaded:"Marking artwork downloaded must happen after a successful secure file download.",
-  production_completed:"Production completion needs to be saved to Supabase before customer tracking changes.",
-  handed_over:"Delivery details must be saved to Supabase before the order is shown as shipped."
- };
- if(message)message.textContent=(labels[action]||"This action")+ " Supabase integration is not connected in this UI build; no customer status has been changed.";
+ const q=i<0?db.from(S.table).insert(o).select():db.from(S.table).update(o).eq('id',S.rows[i].id).select();
+ const{data,error}=await q;
+ if(error||!data||!data.length)return toast(error?error.message:'Not saved. The database refused the change - check the admin policy for this table.','err');
+ toast('Saved','ok');$('#dr').classList.remove('open');render();
+}
+async function delRow(i){
+ if(!confirm('Delete this row? This cannot be undone.'))return;
+ const{data,error}=await db.from(S.table).delete().eq('id',S.rows[i].id).select();
+ if(error||!data.length)return toast(error?error.message:'Not deleted. It may be in use, or the policy refused it.','err');
+ toast('Deleted','ok');$('#dr').classList.remove('open');render();
+}
+async function upload(inp){
+ const f=inp.files[0];if(!f)return;const k=inp.dataset.up,b=CFG.IMG_BUCKET[S.table]||'products';
+ const p=S.table+'/'+Date.now()+'-'+f.name.replace(/[^\w.-]/g,'_');
+ const{error}=await db.storage.from(b).upload(p,f);if(error)return toast('Upload failed: '+error.message,'err');
+ document.querySelector(`#dr [data-k="${k}"]`).value=db.storage.from(b).getPublicUrl(p).data.publicUrl;toast('Image uploaded. Now press Save changes.','ok');
 }
 
-function renderSettings(){
- const s=state.settings;
- 
- document.getElementById("setWhatsapp").value=s.whatsapp||"";
- document.getElementById("setPhone").value=s.phone||"";
- document.getElementById("setCurrency").value=s.currency||"LKR";
- document.getElementById("setWhatsAppEnabled").value=String(s.whatsappEnabled!==false);
- document.getElementById("setUploadEnabled").value=String(s.uploadEnabled!==false);
-}
-function saveSettings(){
- state.settings={business:"Janu Print | FAB",whatsapp:document.getElementById("setWhatsapp").value.trim(),phone:document.getElementById("setPhone").value.trim(),currency:document.getElementById("setCurrency").value.trim()||"LKR",whatsappEnabled:document.getElementById("setWhatsAppEnabled").value==="true",uploadEnabled:document.getElementById("setUploadEnabled").value==="true"};
- saveState();alert("Settings saved locally. Contact settings are still stored locally in this prototype, not in Supabase.");renderDashboard();
-}
-
-document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)m.classList.remove("open")}));
-
-loadState();
-renderDashboard();
-</script>
-<script>
-(async function() {
-  try {
-    if (!window.db || !window.db.auth) return;
-    const { data: { user }, error } = await window.db.auth.getUser();
-    if (error || !user) {
-      window.location.href = 'login.html';
-      return;
-    }
-    const { data: adminRow } = await window.db
-      .from('admin_profiles')
-      .select('id')
-      .eq('id', user.id)
-      .maybeSingle();
-    if (!adminRow) {
-      await window.db.auth.signOut();
-      window.location.href = 'login.html';
-      return;
-    }
-    const adminUser = document.querySelector('.admin-user');
-    if (adminUser) adminUser.textContent = user.email || 'Super Admin';
-  } catch (e) {
-    console.error('Admin session check failed', e);
-    window.location.href = 'login.html';
-  }
-})();
-</script>
-</body>
-</html>
+/* ===== clicks ===== */
+document.addEventListener('click',async e=>{
+ const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,d=b.dataset;
+ if(b.tagName==='A')e.preventDefault();
+ if(a==='login')login();
+ else if(a==='logout'){await db.auth.signOut();location.reload()}
+ else if(a==='alerts'){if('Notification' in window)toast(await Notification.requestPermission()==='granted'?'Desktop alerts are on':'Alerts blocked. In-app alerts still work.','ok')}
+ else if(a==='open')openOrder(d.id);
+ else if(a==='close')$('#dr').classList.remove('open');
+ else if(a==='reload'){await loadOrders();render();toast('Orders refreshed')}
+ else if(a==='file')openFile(d.bucket,d.path);
+ else if(a==='status'){const v=$('#nst').value;if(await patch(d.id,{status:v},'Status saved: '+v))db.from('order_timeline').insert({order_id:d.id,status:v}).then(()=>{},()=>{})}
+ else if(a==='pay')patch(d.id,{payment_status:d.v,payment_verified_at:new Date().toISOString()},d.v===CFG.PAY_OK?'Payment approved':'Payment rejected');
+ else if(a==='ship'){const ed=$('#edt').value;patch(d.id,{delivery_provider:$('#dp').value||null,tracking_number:$('#tn').value||null,estimated_delivery:ed?new Date(ed).toISOString():null,dispatched_at:new Date().toISOString()},'Tracking saved')}
+ else if(a==='tab'){S.table=d.t;render()}
+ else if(a==='edit')editRow(+d.i);
+ else if(a==='new')editRow(-1);
+ else if(a==='saverow')saveRow(+d.i);
+ else if(a==='delrow')delRow(+d.i);
+});
+document.addEventListener('input',e=>{if(e.target.id==='q'){S.q=e.target.value;const p=e.target.selectionStart;render();const q=$('#q');q.focus();q.setSelectionRange(p,p)}});
+document.addEventListener('change',e=>{if(e.target.id==='st'&&!e.target.closest('#dr')){S.st=e.target.value;render()}if(e.target.dataset.up)upload(e.target)});
+$('#pw').addEventListener('keydown',e=>e.key==='Enter'&&login());
+boot();
+</script></body></html>
