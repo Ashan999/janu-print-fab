@@ -280,27 +280,211 @@ async function upload(inp){
 }
 
 /* ===== clicks ===== */
-document.addEventListener('click',async e=>{
- const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,d=b.dataset;
- if(b.tagName==='A')e.preventDefault();
- if(a==='login')login();
- else if(a==='logout'){await db.auth.signOut();location.reload()}
- else if(a==='alerts'){if('Notification' in window)toast(await Notification.requestPermission()==='granted'?'Desktop alerts are on':'Alerts blocked. In-app alerts still work.','ok')}
- else if(a==='open')openOrder(d.id);
- else if(a==='close')$('#dr').classList.remove('open');
- else if(a==='reload'){await loadOrders();render();toast('Orders refreshed')}
- else if(a==='file')openFile(d.bucket,d.path);
- else if(a==='status'){const v=$('#nst').value;if(await patch(d.id,{status:v},'Status saved: '+v))db.from('order_timeline').insert({order_id:d.id,status:v}).then(()=>{},()=>{})}
- else if(a==='pay')patch(d.id,{payment_status:d.v,payment_verified_at:new Date().toISOString()},d.v===CFG.PAY_OK?'Payment approved':'Payment rejected');
- else if(a==='ship'){const ed=$('#edt').value;patch(d.id,{delivery_provider:$('#dp').value||null,tracking_number:$('#tn').value||null,estimated_delivery:ed?new Date(ed).toISOString():null,dispatched_at:new Date().toISOString()},'Tracking saved')}
- else if(a==='tab'){S.table=d.t;render()}
- else if(a==='edit')editRow(+d.i);
- else if(a==='new')editRow(-1);
- else if(a==='saverow')saveRow(+d.i);
- else if(a==='delrow')delRow(+d.i);
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-act]');
+  if (!b) return;
+
+  const a = b.dataset.act;
+  const d = b.dataset;
+
+  if (b.tagName === 'A') e.preventDefault();
+
+  if (a === 'login') {
+    login();
+  }
+
+  else if (a === 'logout') {
+    await db.auth.signOut();
+    location.reload();
+  }
+
+  else if (a === 'alerts') {
+    if ('Notification' in window) {
+      toast(
+        await Notification.requestPermission() === 'granted'
+          ? 'Desktop alerts are on'
+          : 'Alerts blocked. In-app alerts still work.',
+        'ok'
+      );
+    }
+  }
+
+  else if (a === 'open') {
+    openOrder(d.id);
+  }
+
+  else if (a === 'close') {
+    $('#dr').classList.remove('open');
+  }
+
+  else if (a === 'reload') {
+    await loadOrders();
+    render();
+    toast('Orders refreshed');
+  }
+
+  else if (a === 'file') {
+    openFile(d.bucket, d.path);
+  }
+
+  else if (a === 'status') {
+    const v = $('#nst').value;
+
+    if (await patch(d.id, { status: v }, 'Status saved: ' + v)) {
+      db.from('order_timeline')
+        .insert({
+          order_id: d.id,
+          status: v
+        })
+        .then(() => {}, () => {});
+    }
+  }
+
+  /* ===== PAYMENT REVIEW: USE SUPABASE RPC ===== */
+  else if (a === 'pay') {
+    const decision = d.v;
+    let note = null;
+
+    // Validate payment decision
+    if (!['paid', 'rejected', 'under_review'].includes(decision)) {
+      toast('Invalid payment decision.', 'err');
+      return;
+    }
+
+    // Ask for rejection reason
+    if (decision === 'rejected') {
+      note = prompt('Enter the reason for rejecting this payment:');
+
+      if (!note || !note.trim()) {
+        toast('A rejection reason is required.', 'err');
+        return;
+      }
+
+      note = note.trim();
+    }
+
+    // Confirm payment approval
+    if (decision === 'paid') {
+      const confirmed = confirm(
+        'Are you sure you want to approve this payment?'
+      );
+
+      if (!confirmed) return;
+    }
+
+    // Review payment through the existing database RPC
+    const { error } = await db.rpc('jpf_admin_review_payment', {
+      p_order_id: d.id,
+      p_decision: decision,
+      p_note: note
+    });
+
+    if (error) {
+      console.error('Payment review failed:', error);
+
+      toast(
+        'Payment review failed: ' + error.message,
+        'err'
+      );
+
+      return;
+    }
+
+    // Refresh order data
+    await loadOrders();
+
+    // Refresh the order drawer
+    $('#dr').classList.remove('open');
+
+    render();
+    openOrder(d.id);
+
+    toast(
+      decision === 'paid'
+        ? 'Payment approved successfully.'
+        : decision === 'rejected'
+          ? 'Payment rejected successfully.'
+          : 'Payment moved to under review.',
+      'ok'
+    );
+  }
+
+  /* ===== SHIPPING / TRACKING ===== */
+  else if (a === 'ship') {
+    const ed = $('#edt').value;
+
+    patch(
+      d.id,
+      {
+        delivery_provider: $('#dp').value || null,
+        tracking_number: $('#tn').value || null,
+        estimated_delivery: ed
+          ? new Date(ed).toISOString()
+          : null,
+        dispatched_at: new Date().toISOString()
+      },
+      'Tracking saved'
+    );
+  }
+
+  else if (a === 'tab') {
+    S.table = d.t;
+    render();
+  }
+
+  else if (a === 'edit') {
+    editRow(+d.i);
+  }
+
+  else if (a === 'new') {
+    editRow(-1);
+  }
+
+  else if (a === 'saverow') {
+    saveRow(+d.i);
+  }
+
+  else if (a === 'delrow') {
+    delRow(+d.i);
+  }
 });
-document.addEventListener('input',e=>{if(e.target.id==='q'){S.q=e.target.value;const p=e.target.selectionStart;render();const q=$('#q');q.focus();q.setSelectionRange(p,p)}});
-document.addEventListener('change',e=>{if(e.target.id==='st'&&!e.target.closest('#dr')){S.st=e.target.value;render()}if(e.target.dataset.up)upload(e.target)});
-$('#pw').addEventListener('keydown',e=>e.key==='Enter'&&login());
+
+/* ===== SEARCH INPUT ===== */
+document.addEventListener('input', e => {
+  if (e.target.id === 'q') {
+    S.q = e.target.value;
+
+    const p = e.target.selectionStart;
+
+    render();
+
+    const q = $('#q');
+
+    q.focus();
+    q.setSelectionRange(p, p);
+  }
+});
+
+/* ===== FILTERS & UPLOADS ===== */
+document.addEventListener('change', e => {
+  if (e.target.id === 'st' && !e.target.closest('#dr')) {
+    S.st = e.target.value;
+    render();
+  }
+
+  if (e.target.dataset.up) {
+    upload(e.target);
+  }
+});
+
+/* ===== LOGIN WITH ENTER ===== */
+$('#pw').addEventListener('keydown', e => {
+  if (e.key === 'Enter') login();
+});
+
+/* ===== START DASHBOARD ===== */
 boot();
-</script></body></html>
+
+</script>
+</body>
+</html>
