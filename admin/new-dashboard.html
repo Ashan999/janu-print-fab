@@ -785,7 +785,7 @@ async function loadCustomerFiles(){
     if(!window.db)throw new Error('Supabase client is not available.');
 
     const {data:orders,error:ordersError}=await window.db.from('orders')
-      .select('id,order_number,created_at,customer_id,customers(name,phone)')
+      .select('id,created_at,customer_id,customers(name,phone)')
       .order('created_at',{ascending:false})
       .limit(200);
     if(ordersError)throw ordersError;
@@ -817,12 +817,12 @@ async function loadCustomerFiles(){
       urls.filter(Boolean).forEach((url,index)=>{
         const token=`${item.id}-${index}`;
         window.__customerFileDownloads[token]={
-          url,order_id:order.id,order_number:order.order_number||order.id,
+          url,order_id:order.id,order_number:order.id,
           created_at:order.created_at,index
         };
         const customer=order.customers?.name||order.customers?.phone||'—';
         rows.push(`<tr>
-          <td><strong>${esc(order.order_number||order.id)}</strong></td>
+          <td><strong>${esc(order.id)}</strong></td>
           <td>${esc(customer)}</td>
           <td>${esc(item.product_name||'—')}</td>
           <td><button class="btn btn-blue btn-small" onclick="downloadArtworkFile('${esc(token)}')">Download Design</button></td>
@@ -925,7 +925,7 @@ async function loadPaymentReceipts(){
 
 async function downloadPaymentReceipt(orderId){
   try{
-    const {data:o,error}=await window.db.from('orders').select('order_number,payment_receipt_url,payment_submitted_at,created_at').eq('id',orderId).maybeSingle();
+    const {data:o,error}=await window.db.from('orders').select('id,payment_receipt_url,payment_submitted_at,created_at').eq('id',orderId).maybeSingle();
     if(error)throw error;
     if(!o?.payment_receipt_url)throw new Error('No receipt is attached to this order.');
     const path=receiptStoragePath(o.payment_receipt_url);
