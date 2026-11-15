@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Janu Print | FAB - Admin</title>
+<title>Janu Print | FAB - Admin | Version 01</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
 <style>
@@ -78,11 +78,6 @@ const CFG={
  STATUSES:['pending','accepted','printing','ready','completed','cancelled'],   // always lower-case, same as the database and the customer site
  PAY_OK:'paid',PAY_NO:'rejected',
  ART_BUCKET:'artwork',SLIP_BUCKET:'payment-slips',
- GROUPS:{
-  options:{title:'Sizes, colours and options',tables:['product_fields','product_field_options']},
-  pricing:{title:'Pricing',tables:['printing_methods','print_locations']},
-  site:{title:'Site, delivery and gallery',tables:['homepage_settings','contact_details','delivery_settings','delivery_slots','gallery']}
- },
  IMG_BUCKET:{categories:'products',products:'products',gallery:'gallery',homepage_settings:'branding',contact_details:'branding'}
 };
 const COLORS={pending:'#f2b705',accepted:'#0a9fd0',printing:'#3b4cca',ready:'#1f9d63',completed:'#4b5565',cancelled:'#d6336c'};
@@ -148,7 +143,7 @@ async function poll(){
 function beep(){try{const a=new AudioContext(),o=a.createOscillator();o.connect(a.destination);o.frequency.value=880;o.start();o.stop(a.currentTime+.18)}catch(e){}}
 
 /* ===== layout ===== */
-const NAV=[['dashboard','Dashboard'],['orders','Orders'],['payments','Payments'],['catalogue','Products'],['options','Sizes and options'],['pricing','Pricing'],['site','Site and delivery']];
+const NAV=[['dashboard','Dashboard'],['orders','Orders'],['payments','Payments'],['catalogue','Products']];
 function render(){
  const v=(location.hash||'#dashboard').slice(1);
  if(v==='orders'&&S.fresh){S.fresh=0;document.title='Janu Print | FAB - Admin'}
@@ -159,7 +154,6 @@ function render(){
  if(v==='orders')m.innerHTML=viewOrders();
  else if(v==='payments')m.innerHTML=viewPayments();
  else if(v==='catalogue')viewCat();
- else if(CFG.GROUPS[v])viewContent(v);
  else m.innerHTML=viewDash();
 }
 
@@ -247,119 +241,9 @@ async function openFile(bucket,raw){
   const a=document.createElement('a');a.href=data.signedUrl;a.target='_blank';a.rel='noopener';a.click();
  }catch(e){toast('Could not open file: '+e.message,'err')}
 }
-
-/* ===== catalogue / pricing / site: one editor for every table ===== */
-const AUTO=['id','created_at','updated_at'];
-const FK={product_id:'products',category_id:'categories',product_field_id:'product_fields'};
-const FIELD_TYPES=['select','radio','toggle','checkbox','number','dimension','file'];
-const NUM_TYPES=['integer','bigint','smallint','numeric','double precision','real'];
-const LIST_COLS={
- product_fields:['product_id','field_label','field_type','is_required','is_enabled','price_modifier','display_order'],
- product_field_options:['product_field_id','label','price_modifier','display_order','preset_width','preset_height','preset_unit'],
- delivery_settings:['category_id','normal_production_days','normal_delivery_fee','urgent_available','urgent_delivery_days','urgent_extra_fee'],
- delivery_slots:['slot_name','start_time','end_time','additional_fee','is_active','display_order']
-};
-const HINTS={
- product_fields:'A question the customer answers for ONE product, for example "Size" or "Colour". Choose the product, name the question, and use type "select" or "radio" for a list of choices. Add the choices in the "product field options" tab. The price modifier on a select field is not used - put the extra price on each option instead.',
- product_field_options:'One choice of a field, for example Small, Medium, Large. Pick the field first (Product - Field name). "Price modifier" is the extra amount added to the price for this choice (0 = no extra).',
- delivery_settings:'Production and delivery days and fees for one product group (category).',
- delivery_slots:'Delivery time slots the customer can choose (name, start/end time, extra fee).'
-};
-async function loadRefs(){
- const[p,c,f]=await Promise.all([db.from('products').select('id,name,category_id'),db.from('categories').select('id,name'),db.from('product_fields').select('id,product_id,field_label')]);
- const cat=Object.fromEntries((c.data||[]).map(x=>[x.id,x.name]));
- const prod=Object.fromEntries((p.data||[]).map(x=>[x.id,(cat[x.category_id]?cat[x.category_id]+' > ':'')+x.name]));
- const fld=Object.fromEntries((f.data||[]).map(x=>[x.id,(prod[x.product_id]||'?')+' - '+x.field_label]));
- S.ref={products:prod,categories:cat,product_fields:fld};
-}
-async function loadMeta(t,rows){
- const r=await db.rpc('jpf_admin_table_columns',{p_table:t});
- if(!r.error&&r.data&&r.data.length)return r.data;
- if(rows.length)return Object.keys(rows[0]).map(k=>({column_name:k,data_type:typeof rows[0][k]==='boolean'?'boolean':typeof rows[0][k]==='number'?'numeric':rows[0][k]&&typeof rows[0][k]==='object'?'jsonb':'text',is_nullable:true,column_default:AUTO.includes(k)?'auto':null}));
- return null;
-}
-function cell(t,m,v){
- const k=m.column_name;
- if(v===null||v===undefined)return '';
- if(FK[k]&&S.ref&&S.ref[FK[k]])return S.ref[FK[k]][v]||String(v).slice(0,8);
- if(m.data_type==='boolean')return v?'Yes':'No';
- if(typeof v==='object')return '{...}';
- return String(v).slice(0,60);
-}
-/* ===== catalogue / pricing / site: one editor for every table ===== */
-async function viewContent(g){
- const G=CFG.GROUPS[g];if(!S.table||!G.tables.includes(S.table))S.table=G.tables[0];
- $('#main').innerHTML=`<div class="top"><h1>${G.title}</h1></div><div class="tabs">${G.tables.map(t=>`<button class="${t===S.table?'on':''}" data-act="tab" data-t="${t}">${t.replace(/_/g,' ')}</button>`).join('')}</div><div class="card" id="ed"><div class="empty">Loading...</div></div>`;
- const t=S.table,[r]=await Promise.all([db.from(t).select('*').limit(300),loadRefs()]);
- if(S.table!==t)return;
- if(r.error){$('#ed').innerHTML=`<div class="empty">Could not read table "${esc(t)}": ${esc(r.error.message)}</div>`;return}
- S.rows=r.data||[];
- if(S.rows.length&&S.rows[0].display_order!==undefined)S.rows.sort((a,b)=>(a.display_order??0)-(b.display_order??0));
- S.meta=await loadMeta(t,S.rows);
- if(S.table!==t)return;
- if(!S.meta){$('#ed').innerHTML=`<div class="empty">This table is empty and the dashboard cannot read its columns yet. Run <b>database/migrations/20261117_admin_table_columns.sql</b> in the Supabase SQL Editor, then reload this page.</div>`;return}
- const names=S.meta.map(m=>m.column_name);
- const cols=(LIST_COLS[t]||[]).filter(c=>names.includes(c));
- S.cols=cols.length?cols:S.meta.filter(m=>!AUTO.includes(m.column_name)&&!/json|ARRAY/i.test(m.data_type)).slice(0,6).map(m=>m.column_name);
- const M=Object.fromEntries(S.meta.map(m=>[m.column_name,m]));
- $('#ed').innerHTML=`<div class="top"><span class="m">${S.rows.length?S.rows.length+' rows. Click a row to edit.':'No rows yet. Press "Add new" to create the first one.'}</span><button data-act="new">Add new</button></div>${HINTS[t]?`<p class="m">${esc(HINTS[t])}</p>`:''}${S.rows.length?`<div class="tw"><table><tr>${S.cols.map(c=>`<th>${esc(c.replace(/_/g,' '))}</th>`).join('')}</tr>${S.rows.map((x,i)=>`<tr data-act="edit" data-i="${i}">${S.cols.map(c=>`<td>${esc(cell(t,M[c],x[c]))}</td>`).join('')}</tr>`).join('')}</table></div>`:''}`;
-}
-const RO=AUTO;
-function editRow(i){
- const isNew=i<0,row=isNew?{}:S.rows[i];
- if(!S.meta)return toast('Columns are not loaded yet. Reload the page.','err');
- const f=S.meta.filter(m=>!(isNew&&(RO.includes(m.column_name)||m.column_default==='auto'))).map(m=>{
-  const k=m.column_name,dt=m.data_type,v=isNew?null:row[k];
-  if(RO.includes(k))return `<label>${k}<input value="${esc(v)}" disabled></label>`;
-  const req=!m.is_nullable&&!m.column_default;
-  const lbl=esc(k.replace(/_/g,' '))+(req?' *':'');
-  const ra=req?' data-req="1"':'';
-  if(dt==='boolean'){const on=isNew?/^true/i.test(m.column_default||''):!!v;return `<label><input type="checkbox" data-k="${k}" ${on?'checked':''}> ${lbl}</label>`}
-  if(FK[k]&&S.ref&&S.ref[FK[k]]){
-   const ents=Object.entries(S.ref[FK[k]]).sort((a,b)=>a[1].localeCompare(b[1]));
-   if(!ents.length)return `<label>${lbl}<input disabled value="Nothing to choose yet - add a ${FK[k].replace(/_/g,' ').replace(/s$/,'')} first"></label>`;
-   return `<label>${lbl}<select data-k="${k}"${ra}><option value="">- choose -</option>${ents.map(([id,n])=>`<option value="${esc(id)}" ${id==v?'selected':''}>${esc(n)}</option>`).join('')}</select></label>`}
-  if(k==='field_type'&&S.table==='product_fields'){const L=FIELD_TYPES.includes(v)||!v?FIELD_TYPES:[v,...FIELD_TYPES];return `<label>${lbl}<select data-k="${k}"${ra}>${L.map(x=>`<option ${x===(v||'select')?'selected':''}>${x}</option>`).join('')}</select></label>`}
-  if(NUM_TYPES.includes(dt))return `<label>${lbl}<input type="number" step="any" data-k="${k}"${ra} value="${v??''}"></label>`;
-  if(/^time/.test(dt)&&!/timestamp/.test(dt))return `<label>${lbl}<input type="time" data-k="${k}"${ra} value="${esc(v||'')}"></label>`;
-  if(/json|ARRAY/i.test(dt))return `<label>${lbl} (JSON)<textarea data-k="${k}" data-json="1">${esc(v==null?'':JSON.stringify(v,null,1))}</textarea></label>`;
-  const img=/image|logo|photo|banner|icon|img/i.test(k);
-  return `<label>${lbl}<input data-k="${k}"${ra} value="${esc(v)}">${img?`${v?`<img src="${esc(v)}" alt="" style="height:60px;margin:6px 0;border-radius:6px"><br>`:''}<input type="file" accept="image/*" data-up="${k}">`:''}</label>`}).join('');
- $('#dr').innerHTML=`<div class="dh"><h2>${isNew?'Add to':'Edit'} ${esc(S.table.replace(/_/g,' '))}</h2><button class="ghost" data-act="close">Close</button></div>${HINTS[S.table]?`<p class="m">${esc(HINTS[S.table])}</p>`:''}<div style="margin-top:12px">${f}</div>
- <div class="row"><button data-act="saverow" data-i="${i}">Save changes</button>${isNew?'':`<button class="bad" data-act="delrow" data-i="${i}">Delete</button>`}</div>`;
- $('#dr').classList.add('open');
-}
-async function saveRow(i){
- const o={};
- for(const e of document.querySelectorAll('#dr [data-k]')){
-  const k=e.dataset.k;
-  if(e.type==='checkbox')o[k]=e.checked;
-  else if(e.dataset.json){try{o[k]=e.value.trim()?JSON.parse(e.value):null}catch(x){return toast('Invalid JSON in '+k,'err')}}
-  else if(e.type==='number')o[k]=e.value===''?null:Number(e.value);
-  else o[k]=e.value===''?null:e.value;
-  if(e.dataset.req&&o[k]===null)return toast('Please fill in: '+k.replace(/_/g,' '),'err');
-  if(i<0&&o[k]===null)delete o[k]; // new row: let the database apply its own default
- }
- const q=i<0?db.from(S.table).insert(o).select():db.from(S.table).update(o).eq('id',S.rows[i].id).select();
- const{data,error}=await q;
- if(error||!data||!data.length)return toast(error?error.message:'Not saved. The database refused the change - check the admin policy for this table.','err');
- toast('Saved','ok');$('#dr').classList.remove('open');render();
-}
-async function delRow(i){
- if(!confirm('Delete this row? This cannot be undone.'))return;
- const{data,error}=await db.from(S.table).delete().eq('id',S.rows[i].id).select();
- if(error||!data.length)return toast(error?error.message:'Not deleted. It may be in use, or the policy refused it.','err');
- toast('Deleted','ok');$('#dr').classList.remove('open');render();
-}
-async function upload(inp){
- const f=inp.files[0];if(!f)return;const k=inp.dataset.up,b=CFG.IMG_BUCKET[S.table]||'products';
- const p=S.table+'/'+Date.now()+'-'+f.name.replace(/[^\w.-]/g,'_');
- const{error}=await db.storage.from(b).upload(p,f);if(error)return toast('Upload failed: '+error.message,'err');
- document.querySelector(`#dr [data-k="${k}"]`).value=db.storage.from(b).getPublicUrl(p).data.publicUrl;toast('Image uploaded. Now press Save changes.','ok');
-}
-
-
-/* ===== products manager: Product (category) > Sub product (item) ===== */
+/* ===== VERSION 01 PRODUCT MANAGER =====
+   Product > Sub product. The price_is_published flag is the customer-facing price switch.
+   Keep this contract when updating index.html: OFF => show Call for price + WhatsApp. ===== */
 const SL=s=>String(s).toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'item';
 const th=u=>u?`<img class="th" src="${esc(u)}" alt="">`:'<span class="th ph">No image</span>';
 async function viewCat(){
@@ -384,7 +268,7 @@ function openEd(kind,id,cat){
  ${C?'':`<label>Belongs to product<select data-f="category_id">${S.cats.map(c=>`<option value="${esc(c.id)}" ${c.id==(row.category_id??cat)?'selected':''}>${esc(c.name)}</option>`).join('')}</select></label>
  ${has('description')?`<label>Description<textarea data-f="description">${esc(row.description||'')}</textarea></label>`:''}
  <div class="row">${f('price','Price per unit (Rs)',row[pc]??row.price??row.price_per_unit,'number')}${has('min_quantity')?f('min_quantity','Minimum quantity',row.min_quantity,'number'):''}</div>
- ${has('price_is_published')?`<label><input type="checkbox" data-f="price_is_published" ${(isNew||row.price_is_published!==false)?'checked':''}> Show this price to customers</label>${(!isNew&&row.price_is_published===false)?'<p class="m" style="color:var(--m);margin:-6px 0 10px">Right now the price is hidden from customers. Tick the box and press Save to show it.</p>':''}`:''}`}
+ ${has('price_is_published')?`<div class="card" style="margin:8px 0;padding:12px;background:#f8fbfd"><label style="margin:0"><input type="checkbox" data-f="price_is_published" ${(isNew||row.price_is_published!==false)?'checked':''}> <b>Show this price to customers</b></label><p class="m" style="margin:6px 0 0">VERSION 01: If this is OFF, the customer shop must show <b>Call for price</b> and a WhatsApp button instead of the price. The product remains orderable.</p>${(!isNew&&row.price_is_published===false)?'<p class="m" style="color:var(--m);margin:6px 0 0">Current: price hidden from customers.</p>':''}</div>`:''}`}
  <div class="row">${has('display_order')?f('display_order','Display order',row.display_order??0,'number'):''}${has('is_visible')?`<label style="padding-top:22px"><input type="checkbox" data-f="is_visible" ${row.is_visible!==false?'checked':''}> Show to customers</label>`:''}</div>
  <h3>${C?'Image':'Images (first one is the main image)'}</h3><div class="imgs" id="imgs"></div>
  <input type="file" accept="image/*" ${C?'':'multiple'} data-cup="1"></div>
@@ -399,7 +283,7 @@ async function sved(){
  if(E.has('is_visible'))o.is_visible=v('is_visible');
  if(E.has('display_order'))o.display_order=n('display_order')??0;
  if(C)o.image_url=E.imgs[0]||null;
- else{o.category_id=v('category_id');if(E.has('description'))o.description=v('description')||null;const pr=n('price');o[E.pc]=pr;if(E.row&&E.row.id!=null||S.prods.length){const s0=S.prods[0]||{};if('price' in s0&&'price_per_unit' in s0){o.price=pr;o.price_per_unit=pr}}if(E.has('price_is_published'))o.price_is_published=!!(pr>0&&v('price_is_published'));if(E.has('min_quantity'))o.min_quantity=n('min_quantity');o.featured_image=E.imgs[0]||null;if(E.has('images'))o.images=E.imgs}
+ else{o.category_id=v('category_id');if(E.has('description'))o.description=v('description')||null;const pr=n('price');o[E.pc]=pr;if(E.row&&E.row.id!=null||S.prods.length){const s0=S.prods[0]||{};if('price' in s0&&'price_per_unit' in s0){o.price=pr;o.price_per_unit=pr}}if(E.has('price_is_published'))o.price_is_published=!!v('price_is_published');if(E.has('min_quantity'))o.min_quantity=n('min_quantity');o.featured_image=E.imgs[0]||null;if(E.has('images'))o.images=E.imgs}
  if(E.isNew&&E.has('slug'))o.slug=SL(name)+'-'+Date.now().toString(36);
  const{data,error}=await(E.isNew?db.from(t).insert(o).select():db.from(t).update(o).eq('id',E.row.id).select());
  if(error||!data||!data.length)return toast(error?error.message:'Not saved. The admin policy on this table may be missing.','err');
