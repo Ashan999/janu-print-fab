@@ -65,38 +65,64 @@ function shell(body, { flow = false, title = '', back = '' } = {}) {
   ${flow ? '' : footerHtml()}`;
   window.scrollTo(0, 0);
 }
-const prodCard = p => `<a class="pc" href="#/order/${encodeURIComponent(p.id)}"><div class="im" style="${img(p) ? `background-image:url('${esc(img(p))}')` : ''}">${img(p) ? '' : '🖨️'}</div><div class="pc-body"><small>${esc(categoryName(p) || 'Print product')}</small><b>${esc(p.name)}</b><span>${hasPublishedPrice(p) ? 'From ' + money(base(p)) : 'Contact us on WhatsApp'}</span><em>${hasPublishedPrice(p) ? 'Order →' : 'WhatsApp →'}</em></div></a>`;
+const prodCard = p => {
+  const published = hasPublishedPrice(p);
+  return `<div class="pc ${published ? '' : 'quote'}">
+    <a class="pc-main" href="#/order/${encodeURIComponent(p.id)}" aria-label="${esc(p.name)}">
+      <div class="im" style="${img(p) ? `background-image:url('${esc(img(p))}')` : ''}">${img(p) ? '' : '🖨️'}</div>
+      <div class="pc-body"><small>${esc(categoryName(p) || 'Print product')}</small><b>${esc(p.name)}</b>
+      <span>${published ? 'From ' + money(base(p)) : 'Price available on request'}</span>
+      <em>${published ? 'Order →' : 'View product →'}</em></div>
+    </a>
+    ${published ? '' : priceContact(p)}
+  </div>`;
+};
 const catCard = c => `<a class="cat" href="#/shop/${encodeURIComponent(c.id)}" style="text-decoration:none;color:inherit"><div class="im" style="${c.image_url ? `background-image:url('${esc(c.image_url)}')` : ''}">${c.image_url ? '' : '🖨️'}</div><b>${esc(c.name)}</b><small>Browse products →</small></a>`;
 const wa = txt => {
   const number = String(S.contact?.whatsapp || '').replace(/\D/g, '');
   return number ? `https://wa.me/${number}${txt ? '?text=' + encodeURIComponent(txt) : ''}` : '';
+};const callLink = () => {
+  const number = String(S.contact?.phone || '').trim().replace(/[^\d+]/g, '');
+  return number ? `tel:${number}` : '';
+};
+const priceContact = p => {
+  const w = wa(`Hi Janu Print | FAB, I would like to know the price for ${p?.name || 'this product'}.`);
+  const c = callLink();
+  return `<div class="price-contact" onclick="event.stopPropagation()">
+    ${c ? `<a class="price-btn call" href="${esc(c)}" aria-label="Call for price">📞 Call for price</a>` : ''}
+    ${w ? `<a class="price-btn whatsapp" href="${esc(w)}" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp for price">💬 WhatsApp</a>` : ''}
+  </div>`;
 };
 
 /* ---------- screens ---------- */
 function home() {
-  const c = S.contact || {};
-  const featured = homeProducts().slice(0, 8);
-  shell(`<section class="home-hero" aria-labelledby="homeTitle"><div><span class="eyebrow">Janu Print | FAB</span><h1 id="homeTitle">Print something great.</h1><p class="m">Choose a service, pick a product, and get your order started in minutes.</p><ol class="home-steps" aria-label="How ordering works"><li>Choose a service</li><li>Pick a product</li><li>Send your order or quote request</li></ol></div><a class="btn hero-btn" href="#/shop">Start an Order →</a></section>
-  <section aria-labelledby="homeServices"><h2 id="homeServices">What do you need?</h2><p class="section-note">Choose a printing service</p><div class="row category-row">${S.cats.map(catCard).join('') || '<div class="empty home-empty">Services will appear here soon. You can still <a href="#/shop">browse the shop</a>.</div>'}</div></section>
-  ${featured.length ? `<section aria-labelledby="homePopular"><div class="section-head"><div><h2 id="homePopular">Popular products</h2><p class="section-note">Products ready to order. If a product has no listed price, choose it to request a quote.</p></div><a href="#/shop">View all products →</a></div><div class="row product-row">${featured.map(prodCard).join('')}</div></section>` : ''}
-  <section aria-labelledby="homeActions"><h2 id="homeActions">Quick actions</h2><div class="acts"><a href="#/shop">🛒 Start Order</a><a href="#/orders">📦 View Orders</a>
-  ${wa() ? `<a href="${wa('Hello Janu Print | FAB')}" target="_blank" rel="noopener">💬 WhatsApp</a>` : ''}${c.phone ? `<a href="tel:${esc(c.phone)}">📞 Call us</a>` : ''}</div></section>`);
+  shell(`<section class="home-minimal" aria-labelledby="homeServices">
+    <div class="home-intro"><span class="eyebrow">Janu Print | FAB</span><h1 id="homeServices">What do you need?</h1><p class="section-note">Choose a printing service to explore its products.</p></div>
+    <div class="row category-row">${S.cats.map(catCard).join('') || '<div class="empty home-empty">Services will appear here soon.</div>'}</div>
+  </section>`);
 }
-
 function shop(catId) {
   if (catId) S.cat = catId;
-  shell(`<input id="q" type="search" placeholder="Search products" value="${esc(S.q)}">
-  <div class="chips"><button class="chip ${S.cat === 'all' ? 'on' : ''}" data-a="cat" data-id="all">All</button>${S.cats.map(c => `<button class="chip ${S.cat === c.id ? 'on' : ''}" data-a="cat" data-id="${c.id}">${esc(c.name)}</button>`).join('')}</div>
-  <div class="grid" id="pg"></div>`);
-  $('#q').oninput = e => { S.q = e.target.value; grid(); };
+  const selected = S.cat !== 'all' ? S.cats.find(c => c.id === S.cat) : null;
+  shell(`<section class="shop-page">
+    <div class="shop-head"><div>${selected ? `<button class="back-link" data-a="cat" data-id="all">← All services</button>` : ''}<h1>${selected ? esc(selected.name) : 'Shop'}</h1><p class="section-note">${selected ? 'Choose a product to continue.' : 'Choose a main product category.'}</p></div></div>
+    ${selected ? `<input id="q" type="search" placeholder="Search in ${esc(selected.name)}" value="${esc(S.q)}">` : ''}
+    <div class="grid" id="pg"></div>
+  </section>`);
+  if ($('#q')) $('#q').oninput = e => { S.q = e.target.value; grid(); };
   grid();
 }
 function grid() {
   const q = S.q.trim().toLowerCase();
-  const l = S.prods.filter(p => (S.cat === 'all' || p.category_id === S.cat) && (!q || (p.name + ' ' + (p.description || '')).toLowerCase().includes(q)));
-  $('#pg').innerHTML = l.map(prodCard).join('') || '<div class="empty" style="grid-column:1/-1">No products found.</div>';
+  const box = $('#pg');
+  if (!box) return;
+  if (S.cat === 'all') {
+    box.innerHTML = S.cats.map(catCard).join('') || '<div class="empty" style="grid-column:1/-1">No services found.</div>';
+    return;
+  }
+  const l = S.prods.filter(p => p.category_id === S.cat && (!q || (p.name + ' ' + (p.description || '')).toLowerCase().includes(q)));
+  box.innerHTML = l.map(prodCard).join('') || '<div class="empty" style="grid-column:1/-1">No products found.</div>';
 }
-
 /* ---------- secure payment capability ---------- */
 const PAYMENT_TOKEN_PREFIX = 'jpf_payment_token_';
 function paymentTokenKey(orderId) { return PAYMENT_TOKEN_PREFIX + String(orderId); }
@@ -146,8 +172,8 @@ function startFlow(id) {
   // Route customers to WhatsApp instead of creating a zero-value inquiry/order.
   if (!hasPublishedPrice(p)) {
     const message = `Hi Janu Print | FAB, I would like to discuss ${p.name}. Please help me with the available options and pricing.`;
-    const contactLink = wa(message);
-    shell(`<div class="card"><h1>${esc(p.name)}</h1>${img(p) ? `<img class="order-product-image" src="${esc(img(p))}" alt="${esc(p.name)}">` : ''}<p class="m">Online ordering is not available for this product yet. Contact us on WhatsApp to discuss the product and confirm pricing.</p>${contactLink ? `<a class="btn full" href="${esc(contactLink)}" target="_blank" rel="noopener">Contact us on WhatsApp</a>` : `<p class="m">WhatsApp contact is not configured yet. Please use the contact details on our website.</p>`}<a class="btn alt full" href="#/shop">Back to Shop</a></div>`, { title: p.name, back: '#/shop' });
+    const contactLink = wa(message), phoneLink = callLink();
+    shell(`<div class="card quote-contact-card"><h1>${esc(p.name)}</h1>${img(p) ? `<img class="order-product-image" src="${esc(img(p))}" alt="${esc(p.name)}">` : ''}<p class="m">Price is available on request. Contact us and we will confirm the current price and available options.</p><div class="contact-actions">${phoneLink ? `<a class="btn full" href="${esc(phoneLink)}">📞 Call for price</a>` : ''}${contactLink ? `<a class="btn alt full" href="${esc(contactLink)}" target="_blank" rel="noopener">💬 WhatsApp for price</a>` : ''}</div>${!phoneLink && !contactLink ? `<p class="m">Contact details are not configured yet.</p>` : ''}<a class="btn alt full" href="#/shop">Back to Shop</a></div>`, { title: p.name, back: '#/shop' });
     return;
   }
   if (F && F.p.id !== id) discardFlowFiles(F);
@@ -423,9 +449,18 @@ async function orders() {
   if (!S.profile) return loginPrompt('Log in to see your orders.');
   shell('<div class="sk"></div><div class="sk"></div>');
   if (!S.orders) try { S.orders = await window.JPFCustomerAuth.loadOrderHistory(); } catch (e) { return shell(`<div class="err">${esc(e.message)}</div>`); }
-  const dn = o => ['completed', 'cancelled', 'delivered'].includes(stat(o)), l = S.orders.filter(o => (S.tab === 'active') === !dn(o));
-  shell(`<h1>Orders</h1><div class="chips"><button class="chip ${S.tab === 'active' ? 'on' : ''}" data-a="tab" data-id="active">Active</button><button class="chip ${S.tab === 'past' ? 'on' : ''}" data-a="tab" data-id="past">Past</button></div>
-  ${l.map(o => `<a class="card" style="display:block;text-decoration:none;color:inherit" href="#/orders/${o.id}"><div class="ln"><b>${esc(ref(o))}</b><span class="badge ${esc(stat(o))}">${esc(stat(o))}</span></div><div>${esc(mainName(o))}</div><div class="ln"><span>${fdate(o.created_at)}</span><b>${money(o.total_amount)}</b></div></a>`).join('') || '<div class="empty">No orders here.</div>'}`);
+  const dn = o => ['completed', 'cancelled', 'delivered'].includes(stat(o));
+  const active = S.orders.filter(o => !dn(o)), past = S.orders.filter(o => dn(o));
+  const orderCard = (o, old = false) => `<a class="order-card ${old ? 'order-card-old' : 'order-card-active'}" href="#/orders/${o.id}">
+    <div class="ln"><b>${esc(ref(o))}</b><span class="badge ${esc(stat(o))}">${esc(stat(o))}</span></div>
+    <div class="order-main">${esc(mainName(o))}</div>
+    <div class="ln"><span>${fdate(o.created_at)}</span><b>${money(o.total_amount)}</b></div>
+  </a>`;
+  shell(`<section class="orders-page"><h1>Orders</h1>
+    ${active.length ? `<div class="order-list">${active.map(o => orderCard(o)).join('')}</div>` : ''}
+    ${past.length ? `<div class="order-list past-orders">${past.map(o => orderCard(o, true)).join('')}</div>` : ''}
+    ${!active.length && !past.length ? '<div class="empty">No orders yet.</div>' : ''}
+  </section>`);
 }
 async function orderDetail(id, o) {
   o = o || (S.orders || []).find(x => x.id === id);
@@ -435,7 +470,11 @@ async function orderDetail(id, o) {
   const idx = STATUSES.indexOf(stat(o)), sel = i => i.selected_options || {}, dl = { ...(sel((o.order_items || [])[0] || {}).delivery || {}) }, sl = S.slots.find(x => x.id === o.delivery_slot_id); if (sl) dl.slot = sl.slot_name;
   shell(`<div class="ln"><h1>${esc(ref(o))}</h1><span class="badge ${esc(stat(o))}">${esc(stat(o))}</span></div><p class="m">${fdate(o.created_at)}</p>
   ${stat(o) === 'cancelled' ? '' : `<h2>Status</h2><div class="card"><ul class="tl">${STATUSES.map((s, i) => `<li class="${i <= idx ? 'd' : ''}">${s[0].toUpperCase() + s.slice(1)}</li>`).join('')}</ul></div>`}
-  <h2>Items</h2>${(o.order_items || []).map(i => `<div class="card"><div class="ln"><b>${esc(i.product_name)}</b><b>${money(i.line_total)}</b></div><p class="m">Qty ${i.quantity} × ${money(i.unit_price)}</p>${(sel(i).selections || []).map(s => `<div class="ln"><span>${esc(s.label)}</span><span>${esc(s.value)}</span></div>`).join('')}${(i.artwork_urls || []).map((u, n) => `<button type="button" class="btn small" data-a="art-view" data-p="${esc(u)}">Artwork ${n + 1}</button> `).join('')}${i.artwork_notes ? `<p class="m">${esc(i.artwork_notes)}</p>` : ''}</div>`).join('')}
+  <h2>Items</h2>${(o.order_items || []).map(i => {
+    const quote = Number(i.line_total || 0) <= 0 && !!(sel(i).quote_required);
+    const msg = `Hi Janu Print | FAB, about order ${ref(o)} for ${i.product_name}.`;
+    return `<div class="card"><div class="ln"><b>${esc(i.product_name)}</b><b>${quote ? 'Price on request' : money(i.line_total)}</b></div><p class="m">${quote ? 'Price will be confirmed by our team.' : `Qty ${i.quantity} × ${money(i.unit_price)}`}</p>${quote ? `<div class="contact-actions compact">${callLink() ? `<a class="price-btn call" href="${esc(callLink())}">📞 Call for price</a>` : ''}${wa(msg) ? `<a class="price-btn whatsapp" href="${esc(wa(msg))}" target="_blank" rel="noopener">💬 WhatsApp</a>` : ''}</div>` : ''}${(sel(i).selections || []).map(s => `<div class="ln"><span>${esc(s.label)}</span><span>${esc(s.value)}</span></div>`).join('')}${(i.artwork_urls || []).map((u, n) => `<button type="button" class="btn small" data-a="art-view" data-p="${esc(u)}">Artwork ${n + 1}</button> `).join('')}${i.artwork_notes ? `<p class="m">${esc(i.artwork_notes)}</p>` : ''}</div>`;
+  }).join('')}
   <h2>Delivery & payment</h2><div class="card"><div class="ln"><span>${o.delivery_option === 'delivery' ? 'Delivery' : 'Pickup'}</span><span>${fdate(o.delivery_date)}${dl.slot ? ' · ' + esc(dl.slot) : ''}</span></div>${o.estimated_ready_date ? `<div class="ln"><span>Estimated ready</span><span>${fdate(o.estimated_ready_date)}</span></div>` : ''}${o.delivery_address ? `<div class="ln"><span>Address</span><span>${esc(o.delivery_address)}</span></div>` : ''}<div class="ln"><span>Payment</span><span>${esc(o.payment_status || o.payment_method || '—')}</span></div><div class="ln t"><span>Total</span><span>${money(o.total_amount)}</span></div></div>
   ${(o.delivery_provider || o.tracking_number || o.estimated_delivery) ? `<h2>Tracking</h2><div class="card">${o.delivery_provider ? `<div class="ln"><span>Courier</span><span>${esc(o.delivery_provider)}</span></div>` : ''}${o.tracking_number ? `<div class="ln"><span>Tracking number</span><span>${esc(o.tracking_number)}</span></div>` : ''}${o.estimated_delivery ? `<div class="ln"><span>Estimated delivery</span><span>${fdate(o.estimated_delivery)}</span></div>` : ''}</div>` : ''}
   ${paymentWidget(o)}
@@ -469,7 +508,7 @@ function done() {
   const d = o.order_items[0].selected_options.delivery;
   const quoteMode = !!o.price_quote_required;
   shell(`<div class="ok"><div class="tick">✓</div><h1>${quoteMode ? 'Inquiry Received' : 'Order Received'}</h1><p class="m">${esc(ref(o))}</p></div><div class="card">
-  ${quoteMode ? '<p class="m">Your request has been received. We will confirm the price before asking you to pay.</p>' : ''}<div class="ln"><span>Status</span><span class="badge pending">pending</span></div>${!quoteMode && window.JPFPayment ? `<div class="ln"><span>Payment</span><span class="badge ${window.JPFPayment.badgeClass(o.payment_status || 'pending')}">${esc(window.JPFPayment.labelStatus(o.payment_status || 'pending'))}</span></div>` : ''}<div class="ln"><span>Estimated ready</span><span>${fdate(o.estimated_ready_date)}</span></div><div class="ln"><span>${o.delivery_option === 'delivery' ? 'Delivery' : 'Pickup'}</span><span>${fdate(o.delivery_date)}${d.slot ? ' · ' + esc(d.slot) : ''}</span></div>${quoteMode ? '<div class="ln t"><span>Price</span><span>Get a quote</span></div>' : `<div class="ln t"><span>Total</span><span>${money(o.total_amount)}</span></div>`}</div>
+  ${quoteMode ? `<p class="m">Your request has been received. We will confirm the price before asking you to pay.</p><div class="contact-actions">${callLink() ? `<a class="price-btn call" href="${esc(callLink())}">📞 Call for price</a>` : ''}${wa(`Hi Janu Print | FAB, about order ${ref(o)}.`) ? `<a class="price-btn whatsapp" href="${esc(wa(`Hi Janu Print | FAB, about order ${ref(o)}.`))}" target="_blank" rel="noopener">💬 WhatsApp</a>` : ''}</div>` : ''}<div class="ln"><span>Status</span><span class="badge pending">pending</span></div>${!quoteMode && window.JPFPayment ? `<div class="ln"><span>Payment</span><span class="badge ${window.JPFPayment.badgeClass(o.payment_status || 'pending')}">${esc(window.JPFPayment.labelStatus(o.payment_status || 'pending'))}</span></div>` : ''}<div class="ln"><span>Estimated ready</span><span>${fdate(o.estimated_ready_date)}</span></div><div class="ln"><span>${o.delivery_option === 'delivery' ? 'Delivery' : 'Pickup'}</span><span>${fdate(o.delivery_date)}${d.slot ? ' · ' + esc(d.slot) : ''}</span></div>${quoteMode ? '<div class="ln t"><span>Price</span><span>Get a quote</span></div>' : `<div class="ln t"><span>Total</span><span>${money(o.total_amount)}</span></div>`}</div>
   ${!quoteMode && PAY_OPEN.includes(o.payment_status || 'pending') ? `<a class="btn full" href="#/pay/${o.id}">Complete Payment</a>` : ''}<button class="btn alt full" data-a="inv" data-id="done">Download Invoice</button>${S.profile ? `<a class="btn alt full" href="#/orders/${o.id}">View Order</a>` : ''}
   ${wa() ? `<a class="btn alt full" target="_blank" rel="noopener" href="${wa(`New order ${ref(o)}: ${o.order_items[0].product_name} ×${o.order_items[0].quantity}, total ${money(o.total_amount)}`)}">WhatsApp Order</a>` : ''}<a class="btn alt full" href="#/home">Back Home</a>`, { back: '#/home', title: quoteMode ? 'Inquiry' : 'Order' });
 }
