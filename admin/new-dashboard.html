@@ -227,9 +227,18 @@ async function loadHistory(id){
  if(!$('#hist')||r.error){if($('#hist'))$('#hist').textContent='History is not available: '+(r.error?r.error.message:'');return}
  $('#hist').innerHTML=(r.data||[]).length?r.data.map(x=>`<div class="item">${chip(x.status)} <span class="m">${fmt(x.created_at)}${x.note?' | '+esc(x.note):''}</span></div>`).join(''):'No history yet.';
 }
+async function whyNotSaved(id){
+ // The update touched 0 rows. Find out which of the usual causes it is.
+ const a=await db.rpc('jpf_is_admin');
+ if(a.error)return 'Not saved: the database function jpf_is_admin is missing ('+a.error.message+'). Run 20261115_fix_admin_check.sql.';
+ if(a.data!==true)return 'Not saved: the database does not recognise this login as an admin. Run 20261115_fix_admin_check.sql and check select * from admin_profiles.';
+ const r=await db.from('orders').select('id').eq('id',id).maybeSingle();
+ if(!r.data)return 'Not saved: this order cannot be read by the admin account (select policy on orders).';
+ return 'Not saved: you are an admin and can read the order, but the update was blocked. A policy or trigger on orders is cancelling updates (check pg_policies / pg_trigger for orders).';
+}
 async function patch(id,f,msg){
  const{data,error}=await db.from('orders').update(f).eq('id',id).select().maybeSingle();
- if(error||!data){toast(error?(/column .* does not exist|schema cache/i.test(error.message)?error.message+' - run database/migrations/20261114_standardize_status_payments_storage.sql in Supabase.':error.message):'Not saved. The database refused the change - the admin update policy on orders may be missing.','err');return false}
+ if(error||!data){toast(error?(/column .* does not exist|schema cache/i.test(error.message)?error.message+' - run database/migrations/20261114_standardize_status_payments_storage.sql in Supabase.':error.message):await whyNotSaved(id),'err');return false}
  Object.assign(S.orders.find(o=>o.id==id),data);toast(msg,'ok');render();openOrder(id);return true;
 }
 async function openFile(bucket,raw){
@@ -240,29 +249,83 @@ async function openFile(bucket,raw){
 }
 
 /* ===== catalogue / pricing / site: one editor for every table ===== */
+const AUTO=['id','created_at','updated_at'];
+const FK={product_id:'products',category_id:'categories',product_field_id:'product_fields'};
+const FIELD_TYPES=['select','radio','toggle','checkbox','number','dimension','file'];
+const NUM_TYPES=['integer','bigint','smallint','numeric','double precision','real'];
+const LIST_COLS={
+ product_fields:['product_id','field_label','field_type','is_required','is_enabled','price_modifier','display_order'],
+ product_field_options:['product_field_id','label','price_modifier','display_order','preset_width','preset_height','preset_unit'],
+ delivery_settings:['category_id','normal_production_days','normal_delivery_fee','urgent_available','urgent_delivery_days','urgent_extra_fee'],
+ delivery_slots:['slot_name','start_time','end_time','additional_fee','is_active','display_order']
+};
+const HINTS={
+ product_fields:'A question the customer answers for ONE product, for example "Size" or "Colour". Choose the product, name the question, and use type "select" or "radio" for a list of choices. Add the choices in the "product field options" tab. The price modifier on a select field is not used - put the extra price on each option instead.',
+ product_field_options:'One choice of a field, for example Small, Medium, Large. Pick the field first (Product - Field name). "Price modifier" is the extra amount added to the price for this choice (0 = no extra).',
+ delivery_settings:'Production and delivery days and fees for one product group (category).',
+ delivery_slots:'Delivery time slots the customer can choose (name, start/end time, extra fee).'
+};
+async function loadRefs(){
+ const[p,c,f]=await Promise.all([db.from('products').select('id,name,category_id'),db.from('categories').select('id,name'),db.from('product_fields').select('id,product_id,field_label')]);
+ const cat=Object.fromEntries((c.data||[]).map(x=>[x.id,x.name]));
+ const prod=Object.fromEntries((p.data||[]).map(x=>[x.id,(cat[x.category_id]?cat[x.category_id]+' > ':'')+x.name]));
+ const fld=Object.fromEntries((f.data||[]).map(x=>[x.id,(prod[x.product_id]||'?')+' - '+x.field_label]));
+ S.ref={products:prod,categories:cat,product_fields:fld};
+}
+async function loadMeta(t,rows){
+ const r=await db.rpc('jpf_admin_table_columns',{p_table:t});
+ if(!r.error&&r.data&&r.data.length)return r.data;
+ if(rows.length)return Object.keys(rows[0]).map(k=>({column_name:k,data_type:typeof rows[0][k]==='boolean'?'boolean':typeof rows[0][k]==='number'?'numeric':rows[0][k]&&typeof rows[0][k]==='object'?'jsonb':'text',is_nullable:true,column_default:AUTO.includes(k)?'auto':null}));
+ return null;
+}
+function cell(t,m,v){
+ const k=m.column_name;
+ if(v===null||v===undefined)return '';
+ if(FK[k]&&S.ref&&S.ref[FK[k]])return S.ref[FK[k]][v]||String(v).slice(0,8);
+ if(m.data_type==='boolean')return v?'Yes':'No';
+ if(typeof v==='object')return '{...}';
+ return String(v).slice(0,60);
+}
+/* ===== catalogue / pricing / site: one editor for every table ===== */
 async function viewContent(g){
  const G=CFG.GROUPS[g];if(!S.table||!G.tables.includes(S.table))S.table=G.tables[0];
  $('#main').innerHTML=`<div class="top"><h1>${G.title}</h1></div><div class="tabs">${G.tables.map(t=>`<button class="${t===S.table?'on':''}" data-act="tab" data-t="${t}">${t.replace(/_/g,' ')}</button>`).join('')}</div><div class="card" id="ed"><div class="empty">Loading...</div></div>`;
- const t=S.table,r=await db.from(t).select('*').limit(300);
+ const t=S.table,[r]=await Promise.all([db.from(t).select('*').limit(300),loadRefs()]);
  if(S.table!==t)return;
  if(r.error){$('#ed').innerHTML=`<div class="empty">Could not read table "${esc(t)}": ${esc(r.error.message)}</div>`;return}
  S.rows=r.data||[];
- if(!S.rows.length){$('#ed').innerHTML=`<div class="empty">This table is empty, so its columns are unknown. Add the first row in Supabase, then manage it here.</div>`;return}
- const cols=Object.keys(S.rows[0]).filter(k=>!['created_at','updated_at'].includes(k)&&typeof S.rows[0][k]!=='object').slice(0,6);
- S.cols=cols;
- $('#ed').innerHTML=`<div class="top"><span class="m">${S.rows.length} rows. Click a row to edit.</span><button data-act="new">Add new</button></div><div class="tw"><table><tr>${cols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr>${S.rows.map((x,i)=>`<tr data-act="edit" data-i="${i}">${cols.map(c=>`<td>${esc(String(x[c]??'').slice(0,60))}</td>`).join('')}</tr>`).join('')}</table></div>`;
+ if(S.rows.length&&S.rows[0].display_order!==undefined)S.rows.sort((a,b)=>(a.display_order??0)-(b.display_order??0));
+ S.meta=await loadMeta(t,S.rows);
+ if(S.table!==t)return;
+ if(!S.meta){$('#ed').innerHTML=`<div class="empty">This table is empty and the dashboard cannot read its columns yet. Run <b>database/migrations/20261117_admin_table_columns.sql</b> in the Supabase SQL Editor, then reload this page.</div>`;return}
+ const names=S.meta.map(m=>m.column_name);
+ const cols=(LIST_COLS[t]||[]).filter(c=>names.includes(c));
+ S.cols=cols.length?cols:S.meta.filter(m=>!AUTO.includes(m.column_name)&&!/json|ARRAY/i.test(m.data_type)).slice(0,6).map(m=>m.column_name);
+ const M=Object.fromEntries(S.meta.map(m=>[m.column_name,m]));
+ $('#ed').innerHTML=`<div class="top"><span class="m">${S.rows.length?S.rows.length+' rows. Click a row to edit.':'No rows yet. Press "Add new" to create the first one.'}</span><button data-act="new">Add new</button></div>${HINTS[t]?`<p class="m">${esc(HINTS[t])}</p>`:''}${S.rows.length?`<div class="tw"><table><tr>${S.cols.map(c=>`<th>${esc(c.replace(/_/g,' '))}</th>`).join('')}</tr>${S.rows.map((x,i)=>`<tr data-act="edit" data-i="${i}">${S.cols.map(c=>`<td>${esc(cell(t,M[c],x[c]))}</td>`).join('')}</tr>`).join('')}</table></div>`:''}`;
 }
-const RO=['id','created_at','updated_at'];
+const RO=AUTO;
 function editRow(i){
- const isNew=i<0,row=isNew?Object.fromEntries(Object.keys(S.rows[0]).map(k=>[k,typeof S.rows[0][k]==='boolean'?false:null])):S.rows[i];
- const f=Object.entries(row).filter(([k])=>!(isNew&&RO.includes(k))).map(([k,v])=>{
+ const isNew=i<0,row=isNew?{}:S.rows[i];
+ if(!S.meta)return toast('Columns are not loaded yet. Reload the page.','err');
+ const f=S.meta.filter(m=>!(isNew&&(RO.includes(m.column_name)||m.column_default==='auto'))).map(m=>{
+  const k=m.column_name,dt=m.data_type,v=isNew?null:row[k];
   if(RO.includes(k))return `<label>${k}<input value="${esc(v)}" disabled></label>`;
-  if(typeof v==='boolean')return `<label><input type="checkbox" data-k="${k}" ${v?'checked':''}> ${k}</label>`;
-  if(typeof v==='number')return `<label>${k}<input type="number" step="any" data-k="${k}" value="${v}"></label>`;
-  if(v&&typeof v==='object')return `<label>${k} (JSON)<textarea data-k="${k}" data-json="1">${esc(JSON.stringify(v,null,1))}</textarea></label>`;
+  const req=!m.is_nullable&&!m.column_default;
+  const lbl=esc(k.replace(/_/g,' '))+(req?' *':'');
+  const ra=req?' data-req="1"':'';
+  if(dt==='boolean'){const on=isNew?/^true/i.test(m.column_default||''):!!v;return `<label><input type="checkbox" data-k="${k}" ${on?'checked':''}> ${lbl}</label>`}
+  if(FK[k]&&S.ref&&S.ref[FK[k]]){
+   const ents=Object.entries(S.ref[FK[k]]).sort((a,b)=>a[1].localeCompare(b[1]));
+   if(!ents.length)return `<label>${lbl}<input disabled value="Nothing to choose yet - add a ${FK[k].replace(/_/g,' ').replace(/s$/,'')} first"></label>`;
+   return `<label>${lbl}<select data-k="${k}"${ra}><option value="">- choose -</option>${ents.map(([id,n])=>`<option value="${esc(id)}" ${id==v?'selected':''}>${esc(n)}</option>`).join('')}</select></label>`}
+  if(k==='field_type'&&S.table==='product_fields'){const L=FIELD_TYPES.includes(v)||!v?FIELD_TYPES:[v,...FIELD_TYPES];return `<label>${lbl}<select data-k="${k}"${ra}>${L.map(x=>`<option ${x===(v||'select')?'selected':''}>${x}</option>`).join('')}</select></label>`}
+  if(NUM_TYPES.includes(dt))return `<label>${lbl}<input type="number" step="any" data-k="${k}"${ra} value="${v??''}"></label>`;
+  if(/^time/.test(dt)&&!/timestamp/.test(dt))return `<label>${lbl}<input type="time" data-k="${k}"${ra} value="${esc(v||'')}"></label>`;
+  if(/json|ARRAY/i.test(dt))return `<label>${lbl} (JSON)<textarea data-k="${k}" data-json="1">${esc(v==null?'':JSON.stringify(v,null,1))}</textarea></label>`;
   const img=/image|logo|photo|banner|icon|img/i.test(k);
-  return `<label>${k}<input data-k="${k}" value="${esc(v)}">${img?`${v?`<img src="${esc(v)}" alt="" style="height:60px;margin:6px 0;border-radius:6px"><br>`:''}<input type="file" accept="image/*" data-up="${k}">`:''}</label>`}).join('');
- $('#dr').innerHTML=`<div class="dh"><h2>${isNew?'Add to':'Edit'} ${esc(S.table.replace(/_/g,' '))}</h2><button class="ghost" data-act="close">Close</button></div><div style="margin-top:12px">${f}</div>
+  return `<label>${lbl}<input data-k="${k}"${ra} value="${esc(v)}">${img?`${v?`<img src="${esc(v)}" alt="" style="height:60px;margin:6px 0;border-radius:6px"><br>`:''}<input type="file" accept="image/*" data-up="${k}">`:''}</label>`}).join('');
+ $('#dr').innerHTML=`<div class="dh"><h2>${isNew?'Add to':'Edit'} ${esc(S.table.replace(/_/g,' '))}</h2><button class="ghost" data-act="close">Close</button></div>${HINTS[S.table]?`<p class="m">${esc(HINTS[S.table])}</p>`:''}<div style="margin-top:12px">${f}</div>
  <div class="row"><button data-act="saverow" data-i="${i}">Save changes</button>${isNew?'':`<button class="bad" data-act="delrow" data-i="${i}">Delete</button>`}</div>`;
  $('#dr').classList.add('open');
 }
@@ -271,9 +334,11 @@ async function saveRow(i){
  for(const e of document.querySelectorAll('#dr [data-k]')){
   const k=e.dataset.k;
   if(e.type==='checkbox')o[k]=e.checked;
-  else if(e.dataset.json){try{o[k]=JSON.parse(e.value||'null')}catch(x){return toast('Invalid JSON in '+k,'err')}}
+  else if(e.dataset.json){try{o[k]=e.value.trim()?JSON.parse(e.value):null}catch(x){return toast('Invalid JSON in '+k,'err')}}
   else if(e.type==='number')o[k]=e.value===''?null:Number(e.value);
   else o[k]=e.value===''?null:e.value;
+  if(e.dataset.req&&o[k]===null)return toast('Please fill in: '+k.replace(/_/g,' '),'err');
+  if(i<0&&o[k]===null)delete o[k]; // new row: let the database apply its own default
  }
  const q=i<0?db.from(S.table).insert(o).select():db.from(S.table).update(o).eq('id',S.rows[i].id).select();
  const{data,error}=await q;
