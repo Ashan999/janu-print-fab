@@ -4,9 +4,50 @@
 const JPFCustomerAuth = (() => {
     const SESSION_KEY = 'jpf_customer_profile';
 
+    /**
+     * One canonical phone format (E.164, e.g. +94771234567) so the same person always gets the same
+     * login whether they type 0771234567, 077 123 4567 or +94 77 123 4567.
+     *  +... / 00...   -> kept as typed (country code included)
+     *  05xxxxxxxx      -> UAE  (+971)       9-digit 5xxxxxxxx -> UAE
+     *  0xxxxxxxxx      -> Sri Lanka (+94)   9-digit 7xxxxxxxx -> Sri Lanka
+     */
+    function normalizePhone(value) {
+        const s = String(value || '').trim().replace(/[\s().-]/g, '');
+        if (!s) return '';
+        if (s.startsWith('+')) return '+' + s.slice(1).replace(/\D/g, '');
+        if (s.startsWith('00')) return '+' + s.slice(2).replace(/\D/g, '');
+        const d = s.replace(/\D/g, '');
+        if (/^0[1-9]\d{8}$/.test(d)) return (d[1] === '5' ? '+971' : '+94') + d.slice(1);
+        if (/^5\d{8}$/.test(d)) return '+971' + d;
+        if (/^[1-9]\d{8}$/.test(d)) return '+94' + d;
+        return '+' + d;
+    }
+
+    function isValidPhone(value) {
+        const n = normalizePhone(value);
+        return /^\+[1-9]\d{9,14}$/.test(n);
+    }
+
     function phoneEmail(phone) {
-        const digits = String(phone || '').replace(/\D/g, '');
+        const digits = normalizePhone(phone).replace(/\D/g, '');
         return `c_${digits}@januprintfab.customer`;
+    }
+
+    /* Accounts created before normalisation used whatever digits the customer typed. */
+    function phoneEmailCandidates(phone) {
+        const list = [phoneEmail(phone)];
+        const typed = `c_${String(phone || '').replace(/\D/g, '')}@januprintfab.customer`;
+        if (!list.includes(typed)) list.push(typed);
+        return list;
+    }
+
+    function friendlyAuthError(err) {
+        const m = String((err && err.message) || err || '');
+        if (/invalid login credentials/i.test(m)) return 'Phone number or password is incorrect.';
+        if (/already registered|already been registered|user already exists/i.test(m)) return 'This phone number already has an account. Please log in instead.';
+        if (/email not confirmed/i.test(m)) return 'Your account needs confirmation before you can log in. Please contact us.';
+        if (/rate limit|too many/i.test(m)) return 'Too many attempts. Please wait a minute and try again.';
+        return m || 'Something went wrong. Please try again.';
     }
 
     function escapeHtml(str) {
@@ -74,8 +115,9 @@ const JPFCustomerAuth = (() => {
     async function getProfile() {
         const session = await getSession();
         if (!session) {
-            const cached = localStorage.getItem(SESSION_KEY);
-            return cached ? JSON.parse(cached) : null;
+            // No active session means not logged in - never trust the cached copy.
+            localStorage.removeItem(SESSION_KEY);
+            return null;
         }
         if (await isAdminUser(session.user.id)) return null;
         return syncCustomerRecord(session.user);
@@ -91,7 +133,9 @@ const JPFCustomerAuth = (() => {
     }
 
     async function registerWithPhone({ name, phone, nic, password }) {
-        const email = phoneEmail(phone);
+        const normalized = normalizePhone(phone);
+        if (!isValidPhone(normalized)) throw new Error('Enter a valid phone number with the country code.');
+        const email = phoneEmail(normalized);
         const { data, error } = await window.db.auth.signUp({
             email,
             password,
@@ -99,25 +143,45 @@ const JPFCustomerAuth = (() => {
                 data: {
                     name,
                     full_name: name,
-                    phone,
+                    phone: normalized,
                     nic,
                     account_type: 'customer',
                     contact_email: null
                 }
             }
         });
-        if (error) throw error;
+        if (error) throw new Error(friendlyAuthError(error));
 
-        if (data.user) {
-            await syncCustomerRecord(data.user);
+        // With "Confirm email" enabled Supabase hides duplicates by returning a user without identities.
+        if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+            throw new Error('This phone number already has an account. Please log in instead.');
         }
+
+        // No session after sign-up = e-mail confirmation is switched on. Phone accounts use a placeholder
+        // address that can never receive mail, so try to sign in; if Supabase still refuses, explain why.
+        let session = data.session;
+        if (!session) {
+            const login = await window.db.auth.signInWithPassword({ email, password });
+            if (login.error) {
+                throw new Error('Your account was created, but it cannot be used yet because e-mail confirmation is enabled. Ask the site owner to turn off "Confirm email" in Supabase (Authentication > Providers > Email).');
+            }
+            session = login.data.session;
+        }
+
+        const user = (session && session.user) || data.user;
+        if (user) await syncCustomerRecord(user);
         return data;
     }
 
     async function loginWithPhone({ phone, password }) {
-        const email = phoneEmail(phone);
-        const { data, error } = await window.db.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        let data = null, lastError = null;
+        for (const email of phoneEmailCandidates(phone)) {
+            const res = await window.db.auth.signInWithPassword({ email, password });
+            if (!res.error) { data = res.data; lastError = null; break; }
+            lastError = res.error;
+            if (!/invalid login credentials/i.test(res.error.message || '')) break;
+        }
+        if (lastError || !data) throw new Error(friendlyAuthError(lastError));
 
         if (await isAdminUser(data.user.id)) {
             await window.db.auth.signOut();
@@ -157,6 +221,9 @@ const JPFCustomerAuth = (() => {
     }
 
     return {
+        normalizePhone,
+        isValidPhone,
+        friendlyAuthError,
         phoneEmail,
         escapeHtml,
         getSession,

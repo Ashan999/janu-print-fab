@@ -1,6 +1,6 @@
 /* Janu Print | FAB — customer app. All data from Supabase (window.db). */
 const CUR = 'LKR';
-const LOGO = 'https://i.ibb.co/h1TnrT8Y/LOGO.png';
+let LOGO = (window.JPFBranding && window.JPFBranding.cached()) || ''; // logo comes from Supabase (branding)
 const STATUSES = ['pending', 'accepted', 'printing', 'ready', 'completed'];
 const $ = s => document.querySelector(s);
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -8,20 +8,22 @@ const money = v => `${CUR} ${Number(v || 0).toLocaleString('en-US', { maximumFra
 const fdate = d => d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
 const addDays = n => { const d = new Date(); d.setDate(d.getDate() + Number(n || 0)); return d.toISOString().slice(0, 10); };
 const ref = o => o.order_number || ('JP-' + String(o.id).slice(0, 8).toUpperCase());
-const S = { cats: [], prods: [], fields: {}, opts: {}, dset: {}, slots: [], contact: null, profile: null, orders: null, q: '', cat: 'all', tab: 'active', done: null, editingProfile: false, profileBusy: false, profileDraft: null, profileMessage: '', ready: false };
+const S = { cats: [], prods: [], fields: {}, opts: {}, dset: {}, slots: [], contact: null, settings: null, profile: null, orders: null, q: '', cat: 'all', tab: 'active', done: null, editingProfile: false, profileBusy: false, profileDraft: null, profileMessage: '', ready: false };
 let F = null;
 
 const grp = (a, k) => a.reduce((g, x) => ((g[x[k]] = g[x[k]] || []).push(x), g), {});
 const img = p => p.featured_image || (Array.isArray(p.images) && p.images[0]) || p.categories?.image_url || '';
 const categoryName = p => p.categories?.name || '';
 const homeProducts = () => S.prods.filter(p => { const n = String(p.name || '').trim().toLowerCase(); const c = String(categoryName(p) || '').trim().toLowerCase(); return n && (!c || n !== c); });
-const hasPublishedPrice = p => p?.price_is_published === true && Number(p.price ?? p.price_per_unit ?? 0) > 0;
-const base = p => hasPublishedPrice(p) ? Number(p.price ?? p.price_per_unit) : 0;
+const priceOf = p => { const a = Number(p?.price_per_unit), b = Number(p?.price); return a > 0 ? a : (b > 0 ? b : 0); };
+const hasPublishedPrice = p => p?.price_is_published === true && priceOf(p) > 0;
+const base = p => hasPublishedPrice(p) ? priceOf(p) : 0;
+const stat = o => String((o && o.status) || 'pending').toLowerCase();
 
 async function load() {
   const db = window.db;
   const activeSession = await window.JPFCustomerAuth?.getSession?.();
-  const [c, p, f, o, d, s, ct, pr] = await Promise.all([
+  const [c, p, f, o, d, s, ct, pr, hs] = await Promise.all([
     db.from('categories').select('*').eq('is_visible', true).order('display_order'),
     db.from('products').select('*, categories(id, name, image_url)').eq('is_visible', true).order('display_order'),
     db.from('product_fields').select('*').eq('is_enabled', true).order('display_order'),
@@ -29,15 +31,17 @@ async function load() {
     db.from('delivery_settings').select('*'),
     db.from('delivery_slots').select('*').eq('is_active', true).order('display_order'),
     db.from('contact_details').select('*').eq('id', 'main').maybeSingle(),
-    activeSession ? window.JPFCustomerAuth.getProfile() : null
+    activeSession ? window.JPFCustomerAuth.getProfile() : null,
+    db.from('homepage_settings').select('*').limit(1).maybeSingle().then(r => r, () => ({ data: null }))
   ]);
   const bad = c.error || p.error || f.error || o.error;
   if (bad) throw bad;
   S.cats = c.data || []; S.prods = p.data || [];
   S.fields = grp(f.data || [], 'product_id'); S.opts = grp(o.data || [], 'product_field_id');
   S.dset = Object.fromEntries((d.data || []).map(x => [x.category_id, x]));
-  S.slots = s.data || []; S.contact = ct.data || null; S.profile = pr || null;
+  S.slots = s.data || []; S.contact = ct.data || null; S.profile = pr || null; S.settings = (hs && hs.data) || null;
   if (window.JPFPayment && S.contact) window.JPFPayment.syncPayHereConfig(S.contact);
+  try { if (window.JPFBranding) LOGO = (await window.JPFBranding.resolve(db, S.contact, S.settings)) || LOGO; } catch (_) {}
   S.ready = true;
 }
 
@@ -53,8 +57,8 @@ function footerHtml() {
 }
 function shell(body, { flow = false, title = '', back = '' } = {}) {
   const on = h => (location.hash || '').startsWith('#/' + h) ? 'on' : '';
-  $('#app').innerHTML = `<header class="top">${flow || back ? `<button class="ib" data-a="back" aria-label="Back">←</button><b>${esc(title)}</b>` :
-    `<img src="${LOGO}" alt=""><b>Janu Print <span>| FAB</span></b>`}<span class="sp"></span>${flow ? '' : `<a class="ib" href="#/account" aria-label="Account">👤</a>`}</header>
+  $('#app').innerHTML = `<header class="top">${flow || back ? `<button class="ib" data-a="back"${typeof back === 'string' && back ? ` data-to="${esc(back)}"` : ''} aria-label="Back">←</button><b>${esc(title)}</b>` :
+    `${LOGO ? `<img src="${esc(LOGO)}" alt="">` : ''}<b>Janu Print <span>| FAB</span></b>`}<span class="sp"></span>${flow ? '' : `<a class="ib" href="#/account" aria-label="Account">👤</a>`}</header>
   <main class="${flow ? 'flow' : ''}">${body}</main>
   ${flow ? '' : `<nav class="nav"><a href="#/home" class="${on('home')}"><i>🏠</i>Home</a><a href="#/shop" class="${on('shop')}"><i>🛍️</i>Shop</a><a href="#/orders" class="${on('orders')}"><i>📦</i>Orders</a><a href="#/account" class="${on('account')}"><i>👤</i>Account</a></nav>`}
   ${!flow && wa() ? `<a class="whatsapp-fab" href="${wa('Hello Janu Print | FAB')}" target="_blank" rel="noopener noreferrer" aria-label="Chat with us on WhatsApp"><span aria-hidden="true">💬</span><span>WhatsApp</span></a>` : ''}
@@ -113,6 +117,26 @@ function setPaymentToken(orderId, token) {
   try { sessionStorage.setItem(paymentTokenKey(orderId), token); } catch (_) {}
 }
 
+/* ---------- private artwork: signed URLs + clean-up ---------- */
+const artPath = v => { let p = String(v || ''); const m = p.split('/artwork/'); if (m.length > 1) p = m[m.length - 1].split('?')[0]; try { p = decodeURIComponent(p); } catch (_) {} return p.replace(/^\/+/, ''); };
+async function openArtwork(v) {
+  const w = window.open('', '_blank');
+  try {
+    const { data, error } = await window.db.storage.from('artwork').createSignedUrl(artPath(v), 600);
+    if (error || !data?.signedUrl) throw error || new Error('No link');
+    if (w) w.location.href = data.signedUrl; else location.href = data.signedUrl;
+  } catch (err) { if (w) w.close(); alert('The artwork could not be opened: ' + errMsg(err)); }
+}
+/* Files uploaded for an order that is never placed are deleted again (database policy only allows
+   this while no order with that id exists). */
+function discardFlowFiles(flow) {
+  const paths = ((flow && flow.files) || []).filter(f => f.path).map(f => f.path);
+  if (!paths.length) return;
+  flow.files = [];
+  try { window.db.storage.from('artwork').remove(paths).then(() => {}, () => {}); } catch (_) {}
+}
+window.addEventListener('pagehide', e => { if (!e.persisted && F && !F.placing) discardFlowFiles(F); });
+
 /* ---------- order flow ---------- */
 const STEP = ['Options', 'Artwork', 'Delivery', 'Details', 'Review', 'Payment'];
 function startFlow(id) {
@@ -126,10 +150,11 @@ function startFlow(id) {
     shell(`<div class="card"><h1>${esc(p.name)}</h1>${img(p) ? `<img class="order-product-image" src="${esc(img(p))}" alt="${esc(p.name)}">` : ''}<p class="m">Online ordering is not available for this product yet. Contact us on WhatsApp to discuss the product and confirm pricing.</p>${contactLink ? `<a class="btn full" href="${esc(contactLink)}" target="_blank" rel="noopener">Contact us on WhatsApp</a>` : `<p class="m">WhatsApp contact is not configured yet. Please use the contact details on our website.</p>`}<a class="btn alt full" href="#/shop">Back to Shop</a></div>`, { title: p.name, back: '#/shop' });
     return;
   }
+  if (F && F.p.id !== id) discardFlowFiles(F);
   const pf = S.profile || {};
   const orderId = crypto.randomUUID();
   setPaymentToken(orderId, randomPaymentToken());
-  F = { p, id: orderId, step: 0, qty: Math.max(Number(p.min_quantity || 1), 1), sel: {}, files: [], mode: 'upload', notes: '', dlv: 'pickup', urgent: false, slot: '', date: '', err: '', placing: false, busy: 0, pm: '',
+  F = { p, id: orderId, itemId: crypto.randomUUID(), step: 0, qty: Math.max(Number(p.min_quantity || 1), 1), sel: {}, files: [], mode: 'upload', notes: '', dlv: 'pickup', urgent: false, slot: '', date: '', err: '', placing: false, busy: 0, pm: '',
     cust: { name: pf.name || '', phone: pf.phone || '', whatsapp: '', email: pf.email || '', address: '' } };
   flow();
 }
@@ -206,14 +231,6 @@ function stDetails() {
   ${i('name', 'Name', 'text', ' *')}${i('phone', 'Phone', 'tel', ' *')}${i('whatsapp', 'WhatsApp (if different)', 'tel')}${i('email', 'Email', 'email')}
   <label class="l">Address${F.dlv === 'delivery' ? ' *' : ''}</label><textarea data-c="address">${esc(c.address)}</textarea></div>`;
 }
-function stPayment(c) {
-  if (!hasPublishedPrice(F.p)) return `<div class="card"><h1>Price confirmation</h1><p class="m">This product does not have a published price yet. You can submit your inquiry; Janu Print will confirm the final price before payment. Do not make a payment until the price is confirmed.</p></div>`;
-  return `<div class="card"><h1>Payment</h1><p class="m">No payment methods are configured for this website.</p>
-  <div class="ln"><span>Payment method</span><span>Arrange with the business</span></div>
-  <div class="ln"><span>Payment status</span><span class="badge pending">Pending</span></div>
-  <p class="m">Online payment is unavailable. Do not send payment details here. The business will confirm an available method after receiving your order.</p>
-  </div><div class="card"><b>Order total</b><div class="ln"><span>Items</span><span>${money(c.items)}</span></div>${c.fee ? `<div class="ln"><span>Delivery</span><span>${money(c.fee)}</span></div>` : ''}${c.urg ? `<div class="ln"><span>Urgent charge</span><span>${money(c.urg)}</span></div>` : ''}${c.slotFee ? `<div class="ln"><span>Time slot</span><span>${money(c.slotFee)}</span></div>` : ''}<div class="ln t"><span>Total due</span><span>${money(c.total)}</span></div></div>`;
-}
 function stReview(c) {
   const p = F.p, quoteMode = !hasPublishedPrice(F.p), ok = '<span style="color:var(--ok)">✓</span>';
   return `<div class="card"><b>${esc(p.name)}</b>${c.sel.map(s => `<div class="ln"><span>${esc(s.label)}</span><span>${esc(s.value)}</span></div>`).join('')}<div class="ln"><span>Quantity</span><span>${F.qty}</span></div></div>
@@ -230,7 +247,7 @@ const errMsg = e => (e && (e.message || e.error_description)) || String(e || 'Un
 const payErr = m => { const el = $('#payerr'); if (el) { el.textContent = m; el.hidden = false; } else alert(m); };
 const afterPay = id => (S.done && S.done.id === id ? '#/done' : '#/orders/' + id);
 async function payStatus(id) {
-  try { const { data, error } = await window.db.rpc('jpf_get_payment_status', { p_order_id: id }); if (error) return null; return Array.isArray(data) ? data[0] : data; } catch (_) { return null; }
+  try { const { data, error } = await window.db.rpc('jpf_get_payment_status', { p_order_id: id, p_payment_token: getPaymentToken(id) || '' }); if (error) return null; return Array.isArray(data) ? data[0] : data; } catch (_) { return null; }
 }
 function stPayment(c) {
   const ph = payhereReady();
@@ -242,12 +259,12 @@ function stPayment(c) {
   <p class="m">Your order is created when you tap Place Order. You complete payment on the next screen.</p></div>`;
 }
 function bankForm(o) {
-  return `<div class="bank-payment-layout">${window.JPFPayment.bankDetailsHtml(S.contact, esc)}
+  return `<div class="bank-payment-layout">${window.JPFPayment.bankDetailsHtml(S.contact, esc, S.settings)}
     <section class="bank-payment-form" aria-label="Submit bank transfer details">
       <div class="payment-transfer-amount"><span>Amount to transfer</span><strong>${money(o.total_amount)}</strong></div>
       <div class="payment-fields">
-        <div class="payment-field"><label class="l" for="payment-reference">Transaction / reference number</label><input type="text" id="payment-reference" value="${esc((o.payment_reference || '').trim())}" autocomplete="off"></div>
-        <div class="payment-field"><label class="l" for="payment-receipt">Receipt <span>(JPG, PNG, WebP or PDF · max 8 MB)</span></label><input type="file" id="payment-receipt" accept=".png,.jpg,.jpeg,.webp,.pdf"><small id="payment-receipt-name" class="payment-file-name" aria-live="polite">No receipt selected</small></div>
+        <div class="payment-field"><label class="l" for="payment-reference">Transaction / reference number <span>(optional)</span></label><input type="text" id="payment-reference" value="${esc((o.payment_reference || '').trim())}" autocomplete="off"></div>
+        <div class="payment-field"><label class="l" for="payment-receipt">Receipt <span>(required · JPG, PNG, WebP or PDF · max 8 MB)</span></label><input type="file" id="payment-receipt" accept=".png,.jpg,.jpeg,.webp,.pdf"><small id="payment-receipt-name" class="payment-file-name" aria-live="polite">No receipt selected</small></div>
         <div class="payment-field payment-note-field"><label class="l" for="payment-note">Note for our team <span>(optional)</span></label><textarea id="payment-note"></textarea></div>
       </div>
       <div class="err" id="payerr" hidden role="alert"></div>
@@ -263,19 +280,21 @@ async function submitBankPayment(orderId) {
   const P = window.JPFPayment; if (!P) return 'Payment helper is not available.';
   const refVal = ($('#payment-reference')?.value || '').trim(), note = ($('#payment-note')?.value || '').trim();
   const file = $('#payment-receipt')?.files?.[0] || null;
-  if (!refVal && !file) return 'Add a reference number or upload a receipt.';
-  if (file) { const fe = P.validateReceiptFile(file); if (fe) return fe; }
-  let path = null;
-  if (file) { try { path = (await P.uploadReceipt(window.db, orderId, file)).path; } catch (e) { return 'Receipt upload failed: ' + errMsg(e); } }
+  // The database only accepts a bank payment that has a receipt, so ask for it here.
+  if (!file) return 'Please upload your transfer receipt (photo or PDF).';
+  const fe = P.validateReceiptFile(file); if (fe) return fe;
   const paymentToken = getPaymentToken(orderId);
   if (!paymentToken) return 'Secure payment session is missing. Please reopen this order in the same browser.';
+  let path = null;
+  try { path = (await P.uploadReceipt(window.db, orderId, file)).path; } catch (e) { return 'Receipt upload failed: ' + errMsg(e); }
   const { error } = await window.db.rpc('jpf_submit_bank_payment', { p_order_id: orderId, p_payment_token: paymentToken, p_reference: refVal || null, p_receipt_path: path, p_notes: note || null });
-  return error ? 'Payment details could not be saved: ' + errMsg(error) : '';
+  if (error) { await P.removeReceipt(window.db, path); return 'Payment details could not be saved: ' + errMsg(error); }
+  return '';
 }
 async function startPayHere(orderId) {
   if (!payhereReady()) throw new Error('Card payment is not available yet. Please choose bank transfer.');
   let res;
-  try { res = await window.db.functions.invoke('payhere-checkout', { body: { order_id: orderId } }); } catch (e) { throw new Error('Could not reach the payment service. ' + errMsg(e)); }
+  try { res = await window.db.functions.invoke('payhere-checkout', { body: { order_id: orderId, payment_token: getPaymentToken(orderId) || '' } }); } catch (e) { throw new Error('Could not reach the payment service. ' + errMsg(e)); }
   let d = res.data;
   if (res.error && res.error.context && res.error.context.json) { try { d = await res.error.context.json(); } catch (_) {} }
   if (!d || d.error || !d.fields || !/^https:\/\/(sandbox|www)\.payhere\.lk\//.test(d.checkout_url || '')) throw new Error((d && d.error) || 'Could not start PayHere checkout. Please try again or use bank transfer.');
@@ -301,7 +320,7 @@ async function payView(id) {
   const bankTransferOpen = open && (m !== 'payhere' || S.bankFor === id);
   shell(`<h1>Payment</h1><p class="m">${esc(ref(o))}</p>${msg ? `<div class="err">${esc(msg)}</div>` : ''}
   <div class="card payment-status-card"><div class="ln"><span>Method</span><span>${esc(P.labelMethod(m))}</span></div><div class="ln"><span>Status</span><span class="badge ${P.badgeClass(s)}">${esc(P.labelStatus(s))}</span></div>${bankTransferOpen ? '' : `<div class="ln t"><span>Total</span><span>${money(o.total_amount)}</span></div>`}${act}</div>
-  <a class="btn alt full" href="${afterPay(id)}">${open ? 'Pay later' : 'Continue to order confirmation'}</a>`);
+  <a class="btn alt full" href="${afterPay(id)}">${open ? 'Pay later' : 'Continue to order confirmation'}</a>`, { back: afterPay(id), title: 'Payment' });
 }
 async function payReturn(id) {
   shell('<div class="ok"><div class="tick">…</div><h1>Confirming your payment</h1><p class="m">Waiting for PayHere to confirm. Please do not close this page.</p></div>');
@@ -313,9 +332,9 @@ async function payReturn(id) {
     if (!location.hash.includes(id)) return;
   }
   const s = st && st.payment_status, link = `<a class="btn full" href="${afterPay(id)}">Continue</a>`;
-  if (s === 'paid') { if (S.done && S.done.id === id) S.done.payment_status = 'paid'; shell(`<div class="ok"><div class="tick">✓</div><h1>Payment received</h1></div>${link}`); }
-  else if (s === 'failed' || s === 'rejected') shell(`<div class="err">PayHere reported that the payment did not go through. No payment was taken.</div><a class="btn full" href="#/pay/${esc(id)}">Try again</a>`);
-  else shell(`<div class="card"><b>Waiting for confirmation</b><p class="m">We have not received PayHere's confirmation yet. This can take a few minutes. Your order is saved and its payment status will update once PayHere confirms it.</p></div>${link}`);
+  if (s === 'paid') { if (S.done && S.done.id === id) S.done.payment_status = 'paid'; shell(`<div class="ok"><div class="tick">✓</div><h1>Payment received</h1></div>${link}`, { back: afterPay(id), title: 'Payment' }); }
+  else if (s === 'failed' || s === 'rejected') shell(`<div class="err">PayHere reported that the payment did not go through. No payment was taken.</div><a class="btn full" href="#/pay/${esc(id)}">Try again</a>`, { back: afterPay(id), title: 'Payment' });
+  else shell(`<div class="card"><b>Waiting for confirmation</b><p class="m">We have not received PayHere's confirmation yet. This can take a few minutes. Your order is saved and its payment status will update once PayHere confirms it.</p></div>${link}`, { back: afterPay(id), title: 'Payment' });
 }
 
 function validate() {
@@ -338,7 +357,7 @@ async function upload(files) {
     const path = `${F.id}/${Date.now()}-${file.name.replace(/[^\w.-]/g, '_')}`;
     const { error } = await window.db.storage.from('artwork').upload(path, file);
     if (error) { e.status = 'err'; F.err = 'Upload failed: ' + error.message; }
-    else { e.url = window.db.storage.from('artwork').getPublicUrl(path).data.publicUrl; e.path = path; e.status = 'ok'; }
+    else { e.path = path; e.status = 'ok'; }
     F.busy--; if (F && F.step === 1) flow();
   }
 }
@@ -372,7 +391,7 @@ async function place() {
     }
     const deliv = { method: F.dlv, urgent: F.urgent, date: F.date, slot: c.slot ? c.slot.slot_name : null, slot_time: c.slot ? `${c.slot.start_time || ''}-${c.slot.end_time || ''}` : null, delivery_fee: c.fee, urgent_fee: c.urg, slot_fee: c.slotFee };
     const r3 = await window.db.from('order_items').insert({ id: itemId, order_id: oid, product_id: p.id, category_id: p.category_id || null, product_name: p.name, quantity: F.qty, unit_price: hasPublishedPrice(p) ? base(p) : 0, line_total: hasPublishedPrice(p) ? c.items : 0, production_days: days() || null,
-      artwork_urls: F.files.filter(f => f.status === 'ok').map(f => f.url), artwork_notes: (F.mode === 'whatsapp' ? 'Artwork will be sent via WhatsApp. ' : '') + note || null,
+      artwork_urls: F.files.filter(f => f.status === 'ok').map(f => f.path), artwork_notes: (F.mode === 'whatsapp' ? 'Artwork will be sent via WhatsApp. ' : '') + note || null,
       selected_options: { product_category: p.categories?.name || null, selections: c.sel, delivery: deliv, artwork_method: F.mode, quote_required: !hasPublishedPrice(p) } });
     if (r3.error) {
       if (r3.error.code !== '23505') throw r3.error;
@@ -382,8 +401,8 @@ async function place() {
     /* Initial 'pending' history row is created by the database trigger (see database/order-initial-status.sql). */
     let row = null; try { row = (await window.db.from('orders').select('*').eq('id', oid).maybeSingle()).data; } catch (_) {}
     S.done = { price_quote_required: !hasPublishedPrice(p), id: oid, order_number: row?.order_number || null, created_at: row?.created_at || new Date().toISOString(), total_amount: hasPublishedPrice(p) ? c.total : 0, status: 'pending', delivery_option: F.dlv, delivery_date: F.date, payment_method: F.pm, payment_status: 'pending', delivery_fee: c.fee, estimated_ready_date: F.date || addDays(days() || 0), delivery_address: cust.address, customer_phone: cust.phone,
-      customer: cust, order_items: [{ product_name: p.name, quantity: F.qty, unit_price: hasPublishedPrice(p) ? base(p) : 0, line_total: hasPublishedPrice(p) ? c.items : 0, production_days: days(), artwork_urls: F.files.map(f => f.url), selected_options: { selections: c.sel, delivery: deliv } }] };
-    S.orders = null; F = null; location.hash = hasPublishedPrice(p) ? '#/pay/' + oid : '#/done';
+      customer: cust, order_items: [{ product_name: p.name, quantity: F.qty, unit_price: hasPublishedPrice(p) ? base(p) : 0, line_total: hasPublishedPrice(p) ? c.items : 0, production_days: days(), artwork_urls: F.files.filter(f => f.status === 'ok').map(f => f.path), selected_options: { selections: c.sel, delivery: deliv } }] };
+    S.orders = null; F = null; location.replace(location.href.split('#')[0] + (hasPublishedPrice(p) ? '#/pay/' + oid : '#/done'));
   } catch (e) { F.placing = false; F.err = /orders_payment_method_check/.test(e.message || '') ? `The payment method "${F.pm}" is not allowed by the database. Run the payment_method diagnostic in database/payment-flow-hardening.sql and align the constraint.` : 'Order could not be placed: ' + (e.message || e); flow(); window.scrollTo(0, 0); }
 }
 
@@ -404,22 +423,23 @@ async function orders() {
   if (!S.profile) return loginPrompt('Log in to see your orders.');
   shell('<div class="sk"></div><div class="sk"></div>');
   if (!S.orders) try { S.orders = await window.JPFCustomerAuth.loadOrderHistory(); } catch (e) { return shell(`<div class="err">${esc(e.message)}</div>`); }
-  const dn = o => ['completed', 'cancelled', 'delivered'].includes(o.status), l = S.orders.filter(o => (S.tab === 'active') === !dn(o));
+  const dn = o => ['completed', 'cancelled', 'delivered'].includes(stat(o)), l = S.orders.filter(o => (S.tab === 'active') === !dn(o));
   shell(`<h1>Orders</h1><div class="chips"><button class="chip ${S.tab === 'active' ? 'on' : ''}" data-a="tab" data-id="active">Active</button><button class="chip ${S.tab === 'past' ? 'on' : ''}" data-a="tab" data-id="past">Past</button></div>
-  ${l.map(o => `<a class="card" style="display:block;text-decoration:none;color:inherit" href="#/orders/${o.id}"><div class="ln"><b>${esc(ref(o))}</b><span class="badge ${esc(o.status)}">${esc(o.status)}</span></div><div>${esc(mainName(o))}</div><div class="ln"><span>${fdate(o.created_at)}</span><b>${money(o.total_amount)}</b></div></a>`).join('') || '<div class="empty">No orders here.</div>'}`);
+  ${l.map(o => `<a class="card" style="display:block;text-decoration:none;color:inherit" href="#/orders/${o.id}"><div class="ln"><b>${esc(ref(o))}</b><span class="badge ${esc(stat(o))}">${esc(stat(o))}</span></div><div>${esc(mainName(o))}</div><div class="ln"><span>${fdate(o.created_at)}</span><b>${money(o.total_amount)}</b></div></a>`).join('') || '<div class="empty">No orders here.</div>'}`);
 }
 async function orderDetail(id, o) {
   o = o || (S.orders || []).find(x => x.id === id);
   if (!o && S.profile) { S.orders = await window.JPFCustomerAuth.loadOrderHistory(); o = S.orders.find(x => x.id === id); }
   if (!o) return shell('<div class="empty">Order not found.</div>', { back: 1, title: 'Order' });
-  const h = await window.db.from('order_status_history').select('*').eq('order_id', o.id).then(r => r.data || [], () => []);
-  const idx = STATUSES.indexOf(o.status), sel = i => i.selected_options || {}, dl = { ...(sel((o.order_items || [])[0] || {}).delivery || {}) }, sl = S.slots.find(x => x.id === o.delivery_slot_id); if (sl) dl.slot = sl.slot_name;
-  shell(`<div class="ln"><h1>${esc(ref(o))}</h1><span class="badge ${esc(o.status)}">${esc(o.status)}</span></div><p class="m">${fdate(o.created_at)}</p>
-  ${o.status === 'cancelled' ? '' : `<h2>Status</h2><div class="card"><ul class="tl">${STATUSES.map((s, i) => `<li class="${i <= idx ? 'd' : ''}">${s[0].toUpperCase() + s.slice(1)}</li>`).join('')}</ul></div>`}
-  <h2>Items</h2>${(o.order_items || []).map(i => `<div class="card"><div class="ln"><b>${esc(i.product_name)}</b><b>${money(i.line_total)}</b></div><p class="m">Qty ${i.quantity} × ${money(i.unit_price)}</p>${(sel(i).selections || []).map(s => `<div class="ln"><span>${esc(s.label)}</span><span>${esc(s.value)}</span></div>`).join('')}${(i.artwork_urls || []).map((u, n) => `<a href="${esc(u)}" target="_blank" rel="noopener">Artwork ${n + 1}</a> `).join('')}${i.artwork_notes ? `<p class="m">${esc(i.artwork_notes)}</p>` : ''}</div>`).join('')}
+  const h = await window.db.from('order_status_history').select('*').eq('order_id', o.id).order('created_at', { ascending: true }).then(r => r.data || [], () => []);
+  const idx = STATUSES.indexOf(stat(o)), sel = i => i.selected_options || {}, dl = { ...(sel((o.order_items || [])[0] || {}).delivery || {}) }, sl = S.slots.find(x => x.id === o.delivery_slot_id); if (sl) dl.slot = sl.slot_name;
+  shell(`<div class="ln"><h1>${esc(ref(o))}</h1><span class="badge ${esc(stat(o))}">${esc(stat(o))}</span></div><p class="m">${fdate(o.created_at)}</p>
+  ${stat(o) === 'cancelled' ? '' : `<h2>Status</h2><div class="card"><ul class="tl">${STATUSES.map((s, i) => `<li class="${i <= idx ? 'd' : ''}">${s[0].toUpperCase() + s.slice(1)}</li>`).join('')}</ul></div>`}
+  <h2>Items</h2>${(o.order_items || []).map(i => `<div class="card"><div class="ln"><b>${esc(i.product_name)}</b><b>${money(i.line_total)}</b></div><p class="m">Qty ${i.quantity} × ${money(i.unit_price)}</p>${(sel(i).selections || []).map(s => `<div class="ln"><span>${esc(s.label)}</span><span>${esc(s.value)}</span></div>`).join('')}${(i.artwork_urls || []).map((u, n) => `<button type="button" class="btn small" data-a="art-view" data-p="${esc(u)}">Artwork ${n + 1}</button> `).join('')}${i.artwork_notes ? `<p class="m">${esc(i.artwork_notes)}</p>` : ''}</div>`).join('')}
   <h2>Delivery & payment</h2><div class="card"><div class="ln"><span>${o.delivery_option === 'delivery' ? 'Delivery' : 'Pickup'}</span><span>${fdate(o.delivery_date)}${dl.slot ? ' · ' + esc(dl.slot) : ''}</span></div>${o.estimated_ready_date ? `<div class="ln"><span>Estimated ready</span><span>${fdate(o.estimated_ready_date)}</span></div>` : ''}${o.delivery_address ? `<div class="ln"><span>Address</span><span>${esc(o.delivery_address)}</span></div>` : ''}<div class="ln"><span>Payment</span><span>${esc(o.payment_status || o.payment_method || '—')}</span></div><div class="ln t"><span>Total</span><span>${money(o.total_amount)}</span></div></div>
+  ${(o.delivery_provider || o.tracking_number || o.estimated_delivery) ? `<h2>Tracking</h2><div class="card">${o.delivery_provider ? `<div class="ln"><span>Courier</span><span>${esc(o.delivery_provider)}</span></div>` : ''}${o.tracking_number ? `<div class="ln"><span>Tracking number</span><span>${esc(o.tracking_number)}</span></div>` : ''}${o.estimated_delivery ? `<div class="ln"><span>Estimated delivery</span><span>${fdate(o.estimated_delivery)}</span></div>` : ''}</div>` : ''}
   ${paymentWidget(o)}
-  ${h.length ? `<h2>History</h2><div class="card">${h.map(x => `<div class="ln"><span>${esc(x.status)}</span><span>${fdate(x.created_at)}</span></div>`).join('')}</div>` : ''}
+  ${h.length ? `<h2>History</h2><div class="card">${h.map(x => `<div class="ln"><span>${esc(String(x.status || '').toLowerCase())}</span><span>${fdate(x.created_at)}</span></div>`).join('')}</div>` : ''}
   <button class="btn full" data-a="inv" data-id="${o.id}">Download Invoice</button>${wa() ? `<a class="btn alt full" target="_blank" rel="noopener" href="${wa('Hi, about order ' + ref(o))}">WhatsApp</a>` : ''}`, { back: 1, title: 'Order' });
   S.cur = o;
 }
@@ -451,7 +471,7 @@ function done() {
   shell(`<div class="ok"><div class="tick">✓</div><h1>${quoteMode ? 'Inquiry Received' : 'Order Received'}</h1><p class="m">${esc(ref(o))}</p></div><div class="card">
   ${quoteMode ? '<p class="m">Your request has been received. We will confirm the price before asking you to pay.</p>' : ''}<div class="ln"><span>Status</span><span class="badge pending">pending</span></div>${!quoteMode && window.JPFPayment ? `<div class="ln"><span>Payment</span><span class="badge ${window.JPFPayment.badgeClass(o.payment_status || 'pending')}">${esc(window.JPFPayment.labelStatus(o.payment_status || 'pending'))}</span></div>` : ''}<div class="ln"><span>Estimated ready</span><span>${fdate(o.estimated_ready_date)}</span></div><div class="ln"><span>${o.delivery_option === 'delivery' ? 'Delivery' : 'Pickup'}</span><span>${fdate(o.delivery_date)}${d.slot ? ' · ' + esc(d.slot) : ''}</span></div>${quoteMode ? '<div class="ln t"><span>Price</span><span>Get a quote</span></div>' : `<div class="ln t"><span>Total</span><span>${money(o.total_amount)}</span></div>`}</div>
   ${!quoteMode && PAY_OPEN.includes(o.payment_status || 'pending') ? `<a class="btn full" href="#/pay/${o.id}">Complete Payment</a>` : ''}<button class="btn alt full" data-a="inv" data-id="done">Download Invoice</button>${S.profile ? `<a class="btn alt full" href="#/orders/${o.id}">View Order</a>` : ''}
-  ${wa() ? `<a class="btn alt full" target="_blank" rel="noopener" href="${wa(`New order ${ref(o)}: ${o.order_items[0].product_name} ×${o.order_items[0].quantity}, total ${money(o.total_amount)}`)}">WhatsApp Order</a>` : ''}<a class="btn alt full" href="#/home">Back Home</a>`);
+  ${wa() ? `<a class="btn alt full" target="_blank" rel="noopener" href="${wa(`New order ${ref(o)}: ${o.order_items[0].product_name} ×${o.order_items[0].quantity}, total ${money(o.total_amount)}`)}">WhatsApp Order</a>` : ''}<a class="btn alt full" href="#/home">Back Home</a>`, { back: '#/home', title: quoteMode ? 'Inquiry' : 'Order' });
 }
 function invoice(o) {
   const c = S.contact || {}, cu = o.customer || {}, it = o.order_items || [], dl = { ...((it[0]?.selected_options || {}).delivery || {}) }, sub = it.reduce((s, i) => s + Number(i.line_total || 0), 0);
@@ -490,7 +510,11 @@ document.addEventListener('submit', async e => {
 
 document.addEventListener('click', async e => {
   const b = e.target.closest('[data-a]'); if (!b) return; const a = b.dataset.a, id = b.dataset.id;
-  if (a === 'back') return history.length > 1 ? history.back() : (location.hash = '#/home');
+  if (a === 'back') {
+    if (F && !F.placing && (location.hash || '').startsWith('#/order/') && F.step > 0) { F.step--; F.err = ''; flow(); window.scrollTo(0, 0); return; }
+    if (b.dataset.to) { location.hash = b.dataset.to; return; }
+    return history.length > 1 ? history.back() : (location.hash = '#/home');
+  }
   if (a === 'cat') { S.cat = id; return shop(); }
   if (a === 'tab') { S.tab = id; return orders(); }
   if (a === 'profile-edit') { S.editingProfile = true; S.profileMessage = ''; return account(); }
@@ -520,6 +544,7 @@ document.addEventListener('click', async e => {
     }
     return;
   }
+  if (a === 'art-view') return openArtwork(b.dataset.p);
   if (a === 'inv') return invoice(id === 'done' ? S.done : S.cur);
   if (!F) return;
   const [fid, oid] = (id || '').split('|');

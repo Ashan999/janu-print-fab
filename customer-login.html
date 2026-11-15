@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Customer Sign In | Janu Print FAB</title>
+<meta name="robots" content="noindex,nofollow">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="assets/theme.css">
@@ -63,7 +64,7 @@
             <div class="divider">or login with phone</div>
             <form id="loginForm">
                 <label for="loginPhone">Phone Number</label>
-                <input type="tel" id="loginPhone" required placeholder="+947... or +971...">
+                <input type="tel" id="loginPhone" required placeholder="077 123 4567 or +94 77 123 4567">
                 <label for="loginPassword">Password</label>
                 <div class="field-wrap">
                     <input type="password" id="loginPassword" required placeholder="Your password">
@@ -82,7 +83,7 @@
                 <label for="regName">Full Name</label>
                 <input type="text" id="regName" required placeholder="Your full name">
                 <label for="regPhone">Phone Number</label>
-                <input type="tel" id="regPhone" required placeholder="+947... or +971...">
+                <input type="tel" id="regPhone" required placeholder="077 123 4567 or +94 77 123 4567">
                 <label for="regNic">NIC Number</label>
                 <input type="text" id="regNic" required placeholder="National Identity Card number">
                 <label for="regPassword">Password</label>
@@ -107,14 +108,10 @@
     <script src="assets/customer-auth.js"></script>
     <script>
         const statusMsg = document.getElementById('statusMsg');
-        const normalizePhone = (value) => {
-            const cleaned = String(value || '').replace(/\s+/g, '');
-            const digits = cleaned.replace(/\D/g, '');
-            if (!digits) return '';
-            return cleaned.startsWith('+') ? `+${digits}` : `+${digits}`;
-        };
+        // One phone format everywhere (+94771234567). Local numbers like 0771234567 are converted.
+        const normalizePhone = (value) => JPFCustomerAuth.normalizePhone(value);
         const validateFullName = (value) => value.trim().length >= 2;
-        const validatePhone = (value) => normalizePhone(value).length >= 10 && normalizePhone(value).length <= 16;
+        const validatePhone = (value) => JPFCustomerAuth.isValidPhone(value);
         const validateNic = (value) => /^[A-Za-z0-9]{8,20}$/.test(String(value || '').trim());
         const validatePassword = (value) => String(value || '').length >= 6 && !/\s/.test(value);
 
@@ -166,10 +163,11 @@
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const phone = normalizePhone(document.getElementById('loginPhone').value);
+            const typedPhone = document.getElementById('loginPhone').value;
+            const phone = normalizePhone(typedPhone);
             const password = document.getElementById('loginPassword').value;
             if (!validatePhone(phone)) {
-                showStatus('Enter a valid phone number with the country code.', 'error');
+                showStatus('Enter a valid phone number, for example 0771234567 or +94771234567.', 'error');
                 return;
             }
             if (!password || !validatePassword(password)) {
@@ -182,7 +180,7 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
             try {
                 await JPFCustomerAuth.loginWithPhone({
-                    phone,
+                    phone: typedPhone, // raw value lets older accounts (created before normalising) still log in
                     password
                 });
                 window.location.href = 'account.html';
@@ -207,7 +205,7 @@
                 return;
             }
             if (!validatePhone(phone)) {
-                showStatus('Please enter a valid phone number with the country code.', 'error');
+                showStatus('Please enter a valid phone number, for example 0771234567 or +94771234567.', 'error');
                 return;
             }
             if (!validateNic(nic)) {

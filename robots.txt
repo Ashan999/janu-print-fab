@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /account.html
+Disallow: /customer-login.html
+Disallow: /cart.html
+
+Sitemap: https://januprint.lk/sitemap.xml

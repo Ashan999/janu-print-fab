@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
 <title>Admin Login | Janu Print FAB</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -155,7 +156,7 @@
 
     <aside class="brand">
         <div class="logo">
-            <img src="https://i.ibb.co/h1TnrT8Y/LOGO.png" alt="" onerror="this.remove()">
+            <img id="brandLogo" alt="" hidden onerror="this.remove()">
             <b>Janu Print <span>| FAB</span></b>
         </div>
 
@@ -225,7 +226,20 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../config/supabase-config.js"></script>
+    <script src="../assets/branding.js"></script>
     <script>
+        // Logo is stored in Supabase (branding bucket / contact_details) - nothing hard-coded here
+        (async () => {
+            const img = document.getElementById('brandLogo');
+            const cached = JPFBranding.cached();
+            if (cached) { img.src = cached; img.hidden = false; }
+            try {
+                const c = await window.db.from('contact_details').select('*').eq('id', 'main').maybeSingle();
+                const url = await JPFBranding.resolve(window.db, c.data || null);
+                if (url) { img.src = url; img.hidden = false; }
+            } catch (_) {}
+        })();
+
         const form = document.getElementById('loginForm');
         const errorMsg = document.getElementById('errorMsg');
         const loginBtn = document.getElementById('loginBtn');

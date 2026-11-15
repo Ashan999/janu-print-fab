@@ -36,7 +36,7 @@ main{margin-left:220px;padding:24px;max-width:1200px}
 .tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}
 th{text-align:left;color:var(--mut);font-weight:500;font-size:13px;border-bottom:1px solid var(--line);padding:8px}
 td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}tr[data-act]{cursor:pointer}tr[data-act]:hover td{background:#f7fafd}
-.chip{display:inline-block;border-radius:99px;padding:1px 10px;font-size:12px;font-weight:700;color:#fff;background:var(--mut)}
+.chip{text-transform:capitalize;display:inline-block;border-radius:99px;padding:1px 10px;font-size:12px;font-weight:700;color:#fff;background:var(--mut)}
 .filters{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}.filters>*{width:auto;min-width:160px}
 .m{color:var(--mut);font-size:13px}.empty{text-align:center;color:var(--mut);padding:30px}
 .dr{position:fixed;inset:0 0 0 auto;width:min(560px,100%);background:#fff;box-shadow:-8px 0 30px #0003;padding:18px;overflow:auto;display:none;z-index:20}
@@ -75,7 +75,7 @@ td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}tr[da
 const CFG={
  SUPABASE_URL:'https://gilveahoqqbgqomerrov.supabase.co',
  SUPABASE_KEY:'',                       // only needed if ../config/supabase-config.js is not found
- STATUSES:['Pending','Accepted','Printing','Ready','Completed','Cancelled'],
+ STATUSES:['pending','accepted','printing','ready','completed','cancelled'],   // always lower-case, same as the database and the customer site
  PAY_OK:'paid',PAY_NO:'rejected',
  ART_BUCKET:'artwork',SLIP_BUCKET:'payment-slips',
  GROUPS:{
@@ -92,7 +92,8 @@ const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const pick=(o,ks)=>{for(const k of ks)if(o&&o[k]!=null&&o[k]!=='')return o[k]};
 const txt=v=>v&&typeof v==='object'?Object.values(v).filter(Boolean).join(', '):(v??'');
 const ref=o=>pick(o,['order_number'])||'#'+String(o.id).slice(0,8).toUpperCase();
-const money=n=>n==null?'-':'Rs '+Number(n).toLocaleString('en-LK',{maximumFractionDigits:2});
+const lab=s=>s?String(s).charAt(0).toUpperCase()+String(s).slice(1):'';
+const money=n=>n==null?'-':'LKR '+Number(n).toLocaleString('en-LK',{maximumFractionDigits:2});
 const fmt=d=>d?new Date(d).toLocaleString('en-GB',{dateStyle:'medium',timeStyle:'short'}):'-';
 const total=o=>pick(o,['total_price','total_amount','total','grand_total','payment_amount']);
 const cust=o=>{let c=o.customers;if(Array.isArray(c))c=c[0];c=c||{};return{name:pick(c,['name','full_name'])||pick(o,['customer_name']),phone:pick(c,['phone'])||pick(o,['customer_phone','phone']),email:pick(c,['email'])||pick(o,['customer_email','email'])}};
@@ -191,7 +192,7 @@ function viewOrders(){
  const q=(S.q||'').toLowerCase(),st=S.st||'';
  const list=S.orders.filter(o=>(!st||String(o.status).toLowerCase()===st.toLowerCase())&&(!q||(ref(o)+' '+cust(o).name+' '+cust(o).phone).toLowerCase().includes(q)));
  return `<div class="top"><h1>Orders</h1><button class="ghost" data-act="reload">Refresh</button></div>
- <div class="filters"><input id="q" placeholder="Search order, name or phone" value="${esc(S.q||'')}"><select id="st"><option value="">All statuses</option>${CFG.STATUSES.map(s=>`<option ${s===st?'selected':''}>${s}</option>`).join('')}</select></div>
+ <div class="filters"><input id="q" placeholder="Search order, name or phone" value="${esc(S.q||'')}"><select id="st"><option value="">All statuses</option>${CFG.STATUSES.map(s=>`<option value="${s}" ${s===String(st).toLowerCase()?'selected':''}>${lab(s)}</option>`).join('')}</select></div>
  <div class="card">${ordTable(list)}</div>`;
 }
 function viewPayments(){
@@ -200,27 +201,35 @@ function viewPayments(){
 }
 function openOrder(id){
  const o=S.orders.find(x=>x.id==id);if(!o)return;const c=cust(o),items=o.order_items||[];
- const sts=CFG.STATUSES.includes(o.status)||!o.status?CFG.STATUSES:[o.status,...CFG.STATUSES];
+ const cur=String(o.status||'').toLowerCase(),sts=!cur||CFG.STATUSES.includes(cur)?CFG.STATUSES:[cur,...CFG.STATUSES];
  const iso=o.estimated_delivery?new Date(new Date(o.estimated_delivery)-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,16):'';
  $('#dr').innerHTML=`<div class="dh"><div><h2>${esc(ref(o))}</h2><span class="m">${fmt(o.created_at)}</span></div><button class="ghost" data-act="close">Close</button></div>
  <section><h3>Customer</h3><p>${esc(c.name||'-')}<br>${c.phone?`<a href="tel:${esc(c.phone)}">${esc(c.phone)}</a> `:''}${esc(c.email||'')}</p><p class="m">${esc(txt(pick(o,['delivery_address','address','shipping_address']))||'No address saved')}</p></section>
  <section><h3>Items - ${money(total(o))}</h3>${items.length?items.map(it=>{
    const op=pick(it,['options','selected_options','details']),files=[];
-   Object.entries(it).forEach(([k,v])=>{if(/art|file|design/i.test(k))(Array.isArray(v)?v:[v]).forEach(x=>typeof x==='string'&&x&&files.push(x))});
+   Object.entries(it).forEach(([k,v])=>{if(/^(artwork_urls?|design_files?|files?)$/i.test(k))(Array.isArray(v)?v:[v]).forEach(x=>typeof x==='string'&&x&&files.push(x))});
    return `<div class="item"><b>${esc(pick(it,['product_name','name','title'])||'Item')}</b> x ${esc(pick(it,['quantity','qty'])||1)} <span class="m">${money(pick(it,['line_total','total_price','total','price']))}</span>
-   ${op&&typeof op==='object'?`<div class="m">${Object.entries(op).map(([k,v])=>esc(k)+': '+esc(txt(v))).join(' | ')}</div>`:''}
+   ${op&&typeof op==='object'?`<div class="m">${(Array.isArray(op.selections)?op.selections.map(x=>esc(x.label)+': '+esc(x.value)):Object.entries(op).filter(([k,v])=>!Array.isArray(v)&&!(v&&typeof v==='object')).map(([k,v])=>esc(k)+': '+esc(v))).join(' | ')}</div>`:''}
    ${files.map((f,i)=>`<button class="ghost" style="margin-top:6px" data-act="file" data-bucket="${CFG.ART_BUCKET}" data-path="${esc(f)}">Artwork ${i+1}</button> `).join('')}</div>`}).join(''):'<p class="m">No items found for this order.</p>'}</section>
- <section><h3>Order status</h3><div class="row"><select id="nst">${sts.map(s=>`<option ${s===o.status?'selected':''}>${esc(s)}</option>`).join('')}</select><button data-act="status" data-id="${esc(o.id)}">Save status</button></div></section>
+ <section><h3>Order status</h3><div class="row"><select id="nst">${sts.map(s=>`<option value="${esc(s)}" ${s===cur?'selected':''}>${esc(lab(s))}</option>`).join('')}</select><button data-act="status" data-id="${esc(o.id)}">Save status</button></div></section>
+ <section><h3>Status history</h3><div id="hist" class="m">Loading...</div></section>
  <section><h3>Payment</h3><p>${payChip(o)} <span class="m">${esc(o.payment_method||'')} ${o.payment_reference?'| Ref '+esc(o.payment_reference):''} ${o.payment_amount?'| '+money(o.payment_amount):''}</span></p>${o.payment_notes?`<p class="m">${esc(o.payment_notes)}</p>`:''}
   <div class="row">${receipt(o)?`<button class="ghost" data-act="file" data-bucket="${CFG.SLIP_BUCKET}" data-path="${esc(receipt(o))}">View receipt</button>`:'<span class="m">No receipt uploaded</span>'}
   <button class="ok" data-act="pay" data-v="${CFG.PAY_OK}" data-id="${esc(o.id)}">Approve payment</button><button class="bad" data-act="pay" data-v="${CFG.PAY_NO}" data-id="${esc(o.id)}">Reject</button></div></section>
  <section><h3>Delivery and tracking</h3><div class="row"><label>Courier<input id="dp" value="${esc(o.delivery_provider||'')}"></label><label>Tracking number<input id="tn" value="${esc(o.tracking_number||'')}"></label></div>
   <label>Estimated delivery<input id="edt" type="datetime-local" value="${iso}"></label><button data-act="ship" data-id="${esc(o.id)}">Save tracking</button></section>`;
  $('#dr').classList.add('open');
+ loadHistory(o.id);
+}
+async function loadHistory(id){
+ const h=$('#hist');if(!h)return;
+ const r=await db.from('order_status_history').select('*').eq('order_id',id).order('created_at',{ascending:false});
+ if(!$('#hist')||r.error){if($('#hist'))$('#hist').textContent='History is not available: '+(r.error?r.error.message:'');return}
+ $('#hist').innerHTML=(r.data||[]).length?r.data.map(x=>`<div class="item">${chip(x.status)} <span class="m">${fmt(x.created_at)}${x.note?' | '+esc(x.note):''}</span></div>`).join(''):'No history yet.';
 }
 async function patch(id,f,msg){
  const{data,error}=await db.from('orders').update(f).eq('id',id).select().maybeSingle();
- if(error||!data){toast(error?error.message:'Not saved. The database refused the change - the admin update policy on orders may be missing.','err');return false}
+ if(error||!data){toast(error?(/column .* does not exist|schema cache/i.test(error.message)?error.message+' - run database/migrations/20261114_standardize_status_payments_storage.sql in Supabase.':error.message):'Not saved. The database refused the change - the admin update policy on orders may be missing.','err');return false}
  Object.assign(S.orders.find(o=>o.id==id),data);toast(msg,'ok');render();openOrder(id);return true;
 }
 async function openFile(bucket,raw){
@@ -297,7 +306,7 @@ async function viewCat(){
  <p class="m" style="margin-bottom:12px">Product = main group (T-shirts, Mugs...). Sub product = the items inside it, with price and images. Same as the customer shop.</p>`+
  (S.cats.map(c=>{const L=S.prods.filter(p=>p.category_id==c.id);
   return `<div class="card"><div class="ch">${th(c.image_url)}<div style="flex:1"><h3>${esc(c.name)}</h3><span class="m">${L.length} sub products${c.is_visible===false?' | Hidden from customers':''}</span></div><button class="ghost" data-act="cedit" data-id="${esc(c.id)}">Edit</button><button data-act="pnew" data-id="${esc(c.id)}">+ Sub product</button></div>
-  ${L.map(p=>`<div class="item sub">${th(p.featured_image||(p.images||[])[0])}<div style="flex:1"><b>${esc(p.name)}</b><br><span class="m">${money(p.price_per_unit??p.price)}${p.min_quantity?' | min '+p.min_quantity:''}${p.is_visible===false?' | Hidden':''}</span></div><button class="ghost" data-act="pedit" data-id="${esc(p.id)}">Edit</button></div>`).join('')||'<p class="m">No sub products yet.</p>'}</div>`}).join('')||'<div class="card empty">No products yet. Press "+ Add product".</div>');
+  ${L.map(p=>`<div class="item sub">${th(p.featured_image||(p.images||[])[0])}<div style="flex:1"><b>${esc(p.name)}</b><br><span class="m">${money(p.price_per_unit||p.price)}${(Number(p.price_per_unit||p.price)>0&&'price_is_published' in p)?(p.price_is_published===true?' | Price shown':' | <b style="color:var(--m)">Price HIDDEN from customers</b>'):''}${p.min_quantity?' | min '+p.min_quantity:''}${p.is_visible===false?' | Hidden':''}</span></div><button class="ghost" data-act="pedit" data-id="${esc(p.id)}">Edit</button></div>`).join('')||'<p class="m">No sub products yet.</p>'}</div>`}).join('')||'<div class="card empty">No products yet. Press "+ Add product".</div>');
 }
 function openEd(kind,id,cat){
  const C=kind==='c',src=C?S.cats:S.prods,isNew=id==null,row=isNew?{}:src.find(x=>x.id==id);if(!row)return;
@@ -309,7 +318,8 @@ function openEd(kind,id,cat){
  ${f('name','Name',row.name)}
  ${C?'':`<label>Belongs to product<select data-f="category_id">${S.cats.map(c=>`<option value="${esc(c.id)}" ${c.id==(row.category_id??cat)?'selected':''}>${esc(c.name)}</option>`).join('')}</select></label>
  ${has('description')?`<label>Description<textarea data-f="description">${esc(row.description||'')}</textarea></label>`:''}
- <div class="row">${f('price','Price per unit (Rs)',row[pc],'number')}${has('min_quantity')?f('min_quantity','Minimum quantity',row.min_quantity,'number'):''}</div>`}
+ <div class="row">${f('price','Price per unit (Rs)',row[pc]??row.price??row.price_per_unit,'number')}${has('min_quantity')?f('min_quantity','Minimum quantity',row.min_quantity,'number'):''}</div>
+ ${has('price_is_published')?`<label><input type="checkbox" data-f="price_is_published" ${(isNew||row.price_is_published!==false)?'checked':''}> Show this price to customers</label>${(!isNew&&row.price_is_published===false)?'<p class="m" style="color:var(--m);margin:-6px 0 10px">Right now the price is hidden from customers. Tick the box and press Save to show it.</p>':''}`:''}`}
  <div class="row">${has('display_order')?f('display_order','Display order',row.display_order??0,'number'):''}${has('is_visible')?`<label style="padding-top:22px"><input type="checkbox" data-f="is_visible" ${row.is_visible!==false?'checked':''}> Show to customers</label>`:''}</div>
  <h3>${C?'Image':'Images (first one is the main image)'}</h3><div class="imgs" id="imgs"></div>
  <input type="file" accept="image/*" ${C?'':'multiple'} data-cup="1"></div>
@@ -324,7 +334,7 @@ async function sved(){
  if(E.has('is_visible'))o.is_visible=v('is_visible');
  if(E.has('display_order'))o.display_order=n('display_order')??0;
  if(C)o.image_url=E.imgs[0]||null;
- else{o.category_id=v('category_id');if(E.has('description'))o.description=v('description')||null;o[E.pc]=n('price');if(E.has('min_quantity'))o.min_quantity=n('min_quantity');o.featured_image=E.imgs[0]||null;if(E.has('images'))o.images=E.imgs}
+ else{o.category_id=v('category_id');if(E.has('description'))o.description=v('description')||null;const pr=n('price');o[E.pc]=pr;if(E.row&&E.row.id!=null||S.prods.length){const s0=S.prods[0]||{};if('price' in s0&&'price_per_unit' in s0){o.price=pr;o.price_per_unit=pr}}if(E.has('price_is_published'))o.price_is_published=!!(pr>0&&v('price_is_published'));if(E.has('min_quantity'))o.min_quantity=n('min_quantity');o.featured_image=E.imgs[0]||null;if(E.has('images'))o.images=E.imgs}
  if(E.isNew&&E.has('slug'))o.slug=SL(name)+'-'+Date.now().toString(36);
  const{data,error}=await(E.isNew?db.from(t).insert(o).select():db.from(t).update(o).eq('id',E.row.id).select());
  if(error||!data||!data.length)return toast(error?error.message:'Not saved. The admin policy on this table may be missing.','err');
@@ -400,16 +410,11 @@ document.addEventListener('click', async e => {
   }
 
   else if (a === 'status') {
-    const v = $('#nst').value;
+    const v = $('#nst').value.toLowerCase();
 
-    if (await patch(d.id, { status: v }, 'Status saved: ' + v)) {
-      db.from('order_timeline')
-        .insert({
-          order_id: d.id,
-          status: v
-        })
-        .then(() => {}, () => {});
-    }
+    // The database trigger writes the order_status_history row for every status change,
+    // so nothing is inserted from here (that would create duplicates).
+    await patch(d.id, { status: v }, 'Status saved: ' + lab(v));
   }
 
   /* ===== PAYMENT REVIEW: USE SUPABASE RPC ===== */
@@ -484,16 +489,18 @@ document.addEventListener('click', async e => {
   /* ===== SHIPPING / TRACKING ===== */
   else if (a === 'ship') {
     const ed = $('#edt').value;
+    const cur = S.orders.find(o => o.id == d.id) || {};
+    const tracking = $('#tn').value.trim() || null;
 
     patch(
       d.id,
       {
-        delivery_provider: $('#dp').value || null,
-        tracking_number: $('#tn').value || null,
+        delivery_provider: $('#dp').value.trim() || null,
+        tracking_number: tracking,
         estimated_delivery: ed
           ? new Date(ed).toISOString()
           : null,
-        dispatched_at: new Date().toISOString()
+        dispatched_at: tracking ? (cur.dispatched_at || new Date().toISOString()) : null
       },
       'Tracking saved'
     );

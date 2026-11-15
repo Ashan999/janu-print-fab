@@ -38,20 +38,39 @@
     return '';
   }
 
-  function bankDetailsHtml(contact, esc) {
-    const c = contact || {};
-    const bank = c.bank_name || c.payment_bank_name || 'NSB Bank';
-    const branch = c.bank_branch || c.payment_bank_branch || 'Hambantota';
-    const name = c.bank_account_name || c.payment_account_name || 'M.K. Ashan Virantha';
-    const number = c.bank_account_number || c.payment_account_number || '107810154261';
+  /* First non-empty value among candidate column names, looking in contact_details first,
+     then homepage_settings. Nothing is hard-coded: the admin controls every value. */
+  function pickField(sources, keys) {
+    for (const src of sources) {
+      if (!src) continue;
+      for (const k of keys) {
+        const v = src[k];
+        if (v !== null && v !== undefined && String(v).trim() !== '') return String(v).trim();
+      }
+    }
+    return '';
+  }
+
+  function bankDetailsHtml(contact, esc, settings) {
+    const src = [contact, settings];
+    const bank = pickField(src, ['bank_name', 'payment_bank_name']);
+    const branch = pickField(src, ['bank_branch', 'payment_bank_branch', 'branch']);
+    const name = pickField(src, ['bank_account_name', 'payment_account_name', 'account_name', 'account_holder']);
+    const number = pickField(src, ['bank_account_number', 'payment_account_number', 'account_number']);
+    const note = pickField(src, ['bank_instructions', 'payment_instructions']);
+    if (!bank && !number) {
+      return `<section class="card payment-bank-details" aria-label="Bank transfer details">
+      <b>Bank transfer details</b>
+      <p class="m">Our bank details are not available online right now. Please contact us to get them before you transfer.</p>
+    </section>`;
+    }
+    const item = (label, value, cls = '') => value ? `<div class="payment-bank-item ${cls}"><span>${label}</span><strong>${esc(value)}</strong></div>` : '';
     return `<section class="card payment-bank-details" aria-label="Bank transfer details">
       <b>Bank transfer details</b>
       <div class="payment-bank-grid">
-        <div class="payment-bank-item"><span>Bank</span><strong>${esc(bank)}</strong></div>
-        <div class="payment-bank-item"><span>Branch</span><strong>${esc(branch)}</strong></div>
-        <div class="payment-bank-item"><span>Account name</span><strong>${esc(name)}</strong></div>
-        <div class="payment-bank-item payment-account-number"><span>Account number</span><strong>${esc(number)}</strong></div>
+        ${item('Bank', bank)}${item('Branch', branch)}${item('Account name', name)}${item('Account number', number, 'payment-account-number')}
       </div>
+      ${note ? `<p class="m">${esc(note)}</p>` : ''}
     </section>`;
   }
 
@@ -77,6 +96,12 @@
     return { path, capabilityHash };
   }
 
+  /* Remove a receipt that was uploaded but not attached to the order (RPC failed). Best effort. */
+  async function removeReceipt(db, path) {
+    if (!path) return;
+    try { await db.storage.from('payment-slips').remove([path]); } catch (_) { /* nothing more we can do */ }
+  }
+
   function receiptPath(value) {
     const raw = String(value || '');
     if (!raw) return '';
@@ -100,7 +125,7 @@
   }
 
   function labelMethod(method) {
-    return method === 'bank_transfer' ? 'Bank Transfer' :
+    return ['bank_transfer', 'bank_deposit', 'online_transfer'].includes(method) ? 'Bank Transfer' :
            method === 'payhere' ? 'PayHere / Online Card' : '—';
   }
 
@@ -117,12 +142,21 @@
     return 'muted';
   }
 
-  function syncPayHereConfig() {}
+  /* PayHere switches (public values only) come from contact_details. The merchant secret never
+     leaves the Edge Functions. */
+  function syncPayHereConfig(contact) {
+    const cfg = window.JPF_PAYHERE;
+    if (!cfg || !contact) return;
+    cfg.enabled = contact.payhere_enabled === true;
+    cfg.merchantId = String(contact.payhere_merchant_id || '').trim();
+    if (typeof contact.payhere_sandbox === 'boolean') cfg.sandbox = contact.payhere_sandbox;
+  }
 
   window.JPFPayment = {
     bankDetailsHtml,
     validateReceiptFile,
     uploadReceipt,
+    removeReceipt,
     getSignedUrl,
     openReceipt,
     labelMethod,
