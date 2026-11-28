@@ -19,14 +19,10 @@ export default defineConfig({
         display: 'standalone',
         icons: [
           {
-            src: '/favicon.svg',
+            src: '/janu-print-fab.svg',
             sizes: 'any',
-            type: 'image/svg+xml'
-          },
-          {
-            src: '/favicon.svg',
-            sizes: 'any',
-            type: 'image/svg+xml'
+            type: 'image/svg+xml',
+            purpose: 'any maskable'
           }
         ]
       }
