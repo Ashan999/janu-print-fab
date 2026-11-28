@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://januprint.lk/sitemap.xml
